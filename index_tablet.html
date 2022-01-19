@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+    
+<head>
+    <style>
+        .backDoor {
+            background-color: #333;
+            position: relative;
+            width: 600px;
+            height: 900px;
+            margin: 0 auto;
+            margin-top: 200px;
+        }
+        .door {
+            background-color: brown;
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            width: 600px;
+            height: 900px;
+
+            transform-origin: left;
+            /*Speed of the Door animation*/
+            transition: all 1.5s ease-in-out;
+        }
+        .circle{
+            background-color: goldenrod;
+            position: absolute;
+            top: 450px;
+            left: 520px;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px; 
+            transform-origin: left;
+            /*Speed of the Door animation*/
+            transition: all 1.5s ease-in-out;
+        } 
+        .doorOpen {
+            /*prespectiv creates the door open effect*/
+            transform: perspective(1200px) translateZ(0px) translateX(0px) translateY(0px)
+            rotateY(-105deg);
+        }
+    </style>
+</head>
+<body>
+    <div class="backDoor">
+        <div class="door" id= "door_object">  
+            <div class="circle">  
+            </div>
+        </div>
+    </div>
+
+<script>
+    var queryString = decodeURIComponent(window.location.search);
+    var url_ = window.location.href;
+    var n_ = url_.indexOf("index_");        
+    var my_camera=url_[n_-2];
+    var num_cam=0;
+    //var n_ = url_.indexOf("10.200"); //10.11.140.104
+    //var my_ip=url_[n_]+url_[n_+1]+url_[n_+2]+url_[n_+3]+url_[n_+4]+url_[n_+5]+url_[n_+6]+url_[n_+7]+url_[n_+8]+url_[n_+9]+url_[n_+10]+url_[n_+11];
+    var my_ip='130.229.148.127';   
+    console.log('My IP is:'+my_ip);
+    
+    class Face {    
+        constructor(pitch,yaw,face_pitch,face_yaw) {
+            this.face_pitch = face_pitch;
+            this.face_yaw = face_yaw;
+            this.pitch = pitch;
+            this.yaw = yaw;
+        }
+    }
+    var door=false;
+    var counter=0;
+    var calibrated=false;
+    faces= [];
+    average_face=new Face(0,0,0,0);
+    
+    var door_color=document.getElementById("door_object");
+        
+    queryString = queryString.substring(1);
+    var queries = queryString.split("&");
+    
+    my_camera=queries[0].split("=")[1];
+    num_cam=queries[1].split("=")[1];
+    
+    if (my_camera=='L'){
+        door_color.style["background-color"] = "Green";
+    }else if (my_camera=='C'){
+        door_color.style["background-color"] = "Red";
+    }else if (my_camera=='R'){
+        door_color.style["background-color"] = "Blue";
+    }else 
+    
+    console.log('my camera side is:'+my_camera);
+    console.log('my camera number is:'+num_cam);
+        
+        
+    
+    var element = document.querySelector(".door");
+    element.addEventListener("click", toggleDoor);
+
+    function toggleDoor() {
+        element.classList.toggle("doorOpen");
+        calibrated=true;
+        console.log(faces);
+        faces.forEach((element) => {
+            average_face.face_pitch=average_face.face_pitch+element.face_pitch;
+            average_face.face_yaw=average_face.face_yaw+element.face_yaw;
+            average_face.pitch=average_face.pitch+element.pitch;
+            average_face.yaw=average_face.yaw+element.yaw;
+        })
+        average_face.face_pitch=average_face.face_pitch/4;
+        average_face.face_yaw=average_face.face_yaw/4;
+        average_face.pitch=average_face.pitch/4;
+        average_face.yaw=average_face.yaw/4;
+        
+        
+        
+        console.log(average_face);
+        
+        ws.close();
+        
+        setTimeout(function(){
+            queryString = "?fp=" + average_face.face_pitch + "&fy=" + average_face.face_yaw + "&gp=" + average_face.pitch + "&gy=" + average_face.yaw+ "&cam=" + my_camera+ "&num=" + num_cam;
+            window.location.href = "waiting.html"+queryString;
+            document.close();
+        }, 1000);
+    }
+    
+    if ("WebSocket" in window) {
+        //alert("WebSocket is supported by your Browser!");
+               
+        // Let us open a web socket
+        var ws = new WebSocket("ws://"+my_ip+":8888");
+				
+        ws.onopen = function() {
+            console.log('websocket connected');        
+            // Web Socket is connected, send data using send()
+            //ws.send("ping");
+            //alert("Message is sent...");
+        };
+				
+        ws.onmessage = function (evt) {
+            var object = JSON.parse(evt.data);
+            var received_msg = evt.data;
+            var face_aux=null;
+            
+            //console.log('length '+object["face"].length);
+            //console.log(object);
+            
+            if((object["face"].length > 0)&&(object["Camera"] == num_cam)){
+                    
+                var yaw=object["face"][0]["gaze"]["yaw"];
+                var pitch=object["face"][0]["gaze"]["pitch"];
+                var pos_x=object["face"][0]["face"]["x"];
+                var pos_y=object["face"][0]["face"]["y"];
+                var face_size=object["face"][0]["face"]["size"];
+                var face_pitch = object["face"][0]["direction"]["pitch"];
+                var face_yaw = object["face"][0]["direction"]["yaw"];
+                
+                //code to process face
+                
+                face_aux=new Face (object["face"][0]["gaze"]["pitch"],object["face"][0]["gaze"]["yaw"],object["face"][0]["direction"]["pitch"],object["face"][0]["direction"]["yaw"]);
+                                
+                if (counter>=4){
+                    counter=4;
+                    faces.shift();
+                    faces.push(face_aux);
+                }else{
+                    faces.push(face_aux);
+                }
+                counter++;
+                console.log('Found '+my_camera+' '+object);
+            }
+        };
+        ws.onclose = function() {        
+                  // websocket is closed.
+                  //alert("Connection is closed...");        
+        };
+    } else {
+            // The browser doesn't support WebSocket
+            alert("WebSocket NOT supported by your Browser!");
+    }
+</script> 
+
+</body>
+</html>

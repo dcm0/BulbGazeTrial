@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+    
+<head>
+    <style>
+        .button {
+              border: none;
+              color: white;
+              padding: 16px 32px;
+              text-align: center;
+              text-decoration: none;
+              display: inline-block;
+              font-size: 16px;
+              margin: 4px 2px;
+              transition-duration: 0.4s;
+              cursor: pointer;
+                 background-color: red;
+        }
+        .dot {
+            height: 50px;
+            width: 50px;
+            background-color: grey;
+            border-radius: 50%;
+            display: inline-block;
+            text-align: center;
+            font-size: 8px;
+        }
+    </style>
+</head>
+<body>
+    <p><strong>Choose camera:</strong> Look at the camera and the button will turn green</p>
+    <input type="button" id="Left" class="button button5" onclick="ding(1);" value="Left Cam" />
+    <input type="button" id="Center" class="button button5" onclick="ding(2);" value="Center Cam" />
+    <input type="button" id="Right" class="button button5" onclick="ding(3);" value="Right Cam" />
+    <p><strong>Camera:</strong> Look at the camera and the circle will turn green</p>
+    <div class="dot" id="cam1"> 1 </div>  
+    <div class="dot" id="cam2"> 2 </div> 
+    <div class="dot" id="cam3"> 3 </div> 
+
+<script>
+    var b_left = document.getElementById('Left');
+    var b_center = document.getElementById('Center');
+    var b_right = document.getElementById('Right');
+    var c1 = document.getElementById('cam1');
+    var c2 = document.getElementById('cam2');
+    var c3 = document.getElementById('cam3');
+    var last_camera=0;
+    class Face {    
+        constructor(x,y,size,pitch,yaw,face_pitch,face_yaw) {
+            this.x = x;
+            this.y = y;
+            this.face_pitch = face_pitch;
+            this.face_yaw = face_yaw;
+            this.size = size;
+            this.pitch = pitch;
+            this.yaw = yaw;
+            this.blind_counter=0;
+        }
+    }
+    faces= new Face (0,0,0,0,0,0,0);
+    
+    var url_ = window.location.href;
+    //var n_ = url_.indexOf("10.200"); //10.11.140.104
+    //var my_ip=url_[n_]+url_[n_+1]+url_[n_+2]+url_[n_+3]+url_[n_+4]+url_[n_+5]+url_[n_+6]+url_[n_+7]+url_[n_+8]+url_[n_+9]+url_[n_+10]+url_[n_+11];
+    var my_ip='130.229.148.127';
+    console.log('My ip is:' +my_ip);  
+    console.log('My ip is:' +my_ip);  
+
+    if ("WebSocket" in window) {
+        //alert("WebSocket is supported by your Browser!");
+               
+        // Let us open a web socket
+        var ws = new WebSocket("ws://"+my_ip+":8888");
+				
+        ws.onopen = function() {
+            console.log('websocket connected');  
+            // Web Socket is connected, send data using send()
+            //ws.send("ping");
+            //alert("Message is sent...");
+        };
+				
+        ws.onmessage = function (evt) {
+            var object = JSON.parse(evt.data);
+            var received_msg = evt.data;
+            
+            if(object["face"].length > 0){
+                    
+                var yaw=object["face"][0]["gaze"]["yaw"];
+                var pitch=object["face"][0]["gaze"]["pitch"];
+                var pos_x=object["face"][0]["face"]["x"];
+                var pos_y=object["face"][0]["face"]["y"];
+                var face_size=object["face"][0]["face"]["size"];
+                var face_pitch = object["face"][0]["direction"]["pitch"];
+                var face_yaw = object["face"][0]["direction"]["yaw"];
+                
+                //code to process face
+                //console.log('Y: '+'P:'+yaw+':'+pitch+'.');
+
+                var percentage=0.10;
+                var threshold=12;
+                
+                 if (object["Camera"] == 1){
+                     if ((Math.abs(yaw)<threshold)&&(Math.abs(pitch)<threshold)&&(Math.abs(face_yaw)<threshold)&&(Math.abs(face_pitch)<threshold)){
+                        console.log('Match '+ object["Camera"] );
+                         c1.style.backgroundColor = 'green';
+                         last_camera=object["Camera"];
+                     }else {
+                         c1.style.backgroundColor = 'gray';
+                         
+                     }
+                 }else if (object["Camera"] == 2){
+                     if ((Math.abs(yaw)<threshold)&&(Math.abs(pitch)<threshold)&&(Math.abs(face_yaw)<threshold)&&(Math.abs(face_pitch)<threshold)){
+                        console.log('Match '+ object["Camera"] );
+                         c2.style.backgroundColor = 'green';
+                         last_camera=object["Camera"];
+                     }else {
+                         c2.style.backgroundColor = 'gray';
+                         
+                     }
+                 }else if (object["Camera"] == 3){
+                     if ((Math.abs(yaw)<20)&&(Math.abs(pitch)<threshold)&&(Math.abs(face_yaw)<threshold)&&(Math.abs(face_pitch)<threshold)){
+                        console.log('Match '+ object["Camera"] );
+                         c3.style.backgroundColor = 'green';
+                         last_camera=object["Camera"];
+                     }else {
+                         c3.style.backgroundColor = 'gray';
+                         
+                     }
+                 }else{
+                     console.log('Unkown Match '+ object["Camera"] );
+                 }
+            }
+        };
+        ws.onclose = function() {        
+                  // websocket is closed.
+            console.log('DISCONNECTED');
+        };
+    } else {
+            // The browser doesn't support WebSocket
+            alert("WebSocket NOT supported by your Browser!");
+    }
+    
+    function ding(num_button){    
+        if (num_button==1){
+            console.log('switch to camera L now');
+                    setTimeout(function(){
+                        var queryString = "?cam=L&num="+1;
+                        window.location.href = "index_tablet.html"+queryString;
+                        document.close()
+                }, 1000);
+        }else if(num_button==2){
+            console.log('switch to camera C now');
+                    setTimeout(function(){
+                        var queryString = "?cam=C&num="+3;
+                        window.location.href = "index_tablet.html"+queryString;
+                        document.close()
+                }, 1000);
+        }else if(num_button==3){
+            console.log('switch to camera R now');
+                    setTimeout(function(){
+                        var queryString = "?cam=R&num="+2;
+                        window.location.href = "index_tablet.html"+queryString;
+                        document.close()
+                }, 1000);
+        }
+    }
+    function compare_numbers(_compare,average,_percenatge){
+        
+        _compare=_compare+100;
+        average=average+100;
+        //console.log('compare comp '+_compare);
+        //console.log('compare ave '+average);
+        
+        if ((_compare <= average*(1+_percenatge))&&(_compare >= average*(1-_percenatge))){
+            return (true);
+        }else{
+            return (false);
+            }
+    }
+    
+</script> 
+
+</body>
+</html>

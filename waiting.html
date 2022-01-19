@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+
+
+</style>
+</head>
+<body>
+
+<h1 style="text-align:center">Waiting for task to start</h1>
+
+<p>Wait while we set up next task</p>
+<p><strong>Tip:</strong> Enjoy your time</p>
+
+</body>
+</html>
+
+<script>
+    var queryString = decodeURIComponent(window.location.search);
+    class Face {    
+        constructor(pitch,yaw,face_pitch,face_yaw) {
+            this.face_pitch = face_pitch;
+            this.face_yaw = face_yaw;
+            this.pitch = pitch;
+            this.yaw = yaw;
+        }
+    }
+    
+    var url_ = window.location.href;
+    //var n_ = url_.indexOf("10.200"); //10.11.140.104
+    //var my_ip=url_[n_]+url_[n_+1]+url_[n_+2]+url_[n_+3]+url_[n_+4]+url_[n_+5]+url_[n_+6]+url_[n_+7]+url_[n_+8]+url_[n_+9]+url_[n_+10]+url_[n_+11];
+    var my_ip='130.229.148.127'
+    queryString = queryString.substring(1);
+    var queries = queryString.split("&");
+    average_face=new Face(queries[2].split("=")[1],queries[3].split("=")[1],queries[0].split("=")[1],queries[1].split("=")[1]);
+    
+    if ("WebSocket" in window) {
+        //alert("WebSocket is supported by your Browser!");
+               
+        // Let us open a web socket
+        var ws = new WebSocket("ws://"+my_ip+":8888");
+				
+        ws.onopen = function() {
+            console.log('websocket connected');
+            // Web Socket is connected, send data using send()
+            //ws.send("ping");
+            //alert("Message is sent...");
+        };
+				
+        ws.onmessage = function (evt) {
+            var object = JSON.parse(evt.data);
+            if(object.hasOwnProperty('command')){
+                console.log(object);
+                if (object['command']=='condition 1'){
+                    ws.close();
+                    console.log('switch to condition 1 now');
+                    setTimeout(function(){
+                        window.location.href = "condition_1.html"+'?'+queryString;
+                        window.close();
+                        document.close();
+                }, 1000);
+                }else if (object['command']=='condition 2'){
+                    ws.close();
+                    console.log('switch to condition 2 now');
+                    setTimeout(function(){
+                        window.location.href = "condition_1_2.html"+'?'+queryString;
+                        window.close();
+                        document.close();
+                }, 1000);
+                }else if (object['command']=='condition 3'){
+                    ws.close();
+                    console.log('switch to condition 3 now');
+                    setTimeout(function(){
+                        window.location.href = "condition_2.html"+'?'+queryString;
+                        window.close();
+                        document.close();
+                }, 1000);
+                }else if (object['command']=='condition 4'){
+                    ws.close();
+                    console.log('switch to condition 4 now');
+                    setTimeout(function(){
+                        window.location.href = "condition_2_2.html"+'?'+queryString;
+                        window.close();
+                        document.close();
+                }, 1000);
+                }else if (object['command']=='condition 6'){
+                    ws.close();
+                    console.log('switch to condition 6 now');
+                    setTimeout(function(){
+                        window.location.href = "condition_3.html"+'?'+queryString;
+                        window.close();
+                        document.close();
+                }, 1000);
+                }
+            }else if(object.hasOwnProperty('face')){
+                console.log('FACE MEESAAGE');
+            }
+        };
+        
+        ws.onclose = function() {        
+                  // websocket is closed.
+                  //alert("Connection is closed...");    
+                    console.log('DISCONENCTED');
+        };
+    } else {
+            // The browser doesn't support WebSocket
+            alert("WebSocket NOT supported by your Browser!");
+    }
+</script>

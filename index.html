@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            .button {
+                border: none;
+                color: white;
+                padding: 16px 32px;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                font-size: 16px;
+                margin: 4px 2px;
+                transition-duration: 0.4s;
+                cursor: pointer;
+            }
+
+            .button1 {
+                background-color: white;
+                color: black;
+                border: 2px solid green;
+            }
+
+            .button2 {
+                background-color: white; 
+                color: black; 
+                border: 2px solid blue;
+            }
+            .button3 {
+                background-color: white; 
+                color: black; 
+                border: 2px solid cyan;
+            }
+            .button4 {
+                background-color: white; 
+                color: black; 
+                border: 2px solid yellow;
+            }
+            .button6 {
+                background-color: white; 
+                color: black; 
+                border: 2px solid grey;
+            }
+            .button5 {
+                background-color: white; 
+                color: black; 
+                border: 2px solid red;
+            }
+
+            .button5:hover {
+                background-color: red;
+                color: white;
+            }
+
+        </style>
+    </head>
+    <body>
+
+        <h1>Gaze interaction Trial</h1>
+
+        <p>Use the buttons to start one of the 4 condition in all tablets</p>
+        <p><strong>Tip:</strong> Use the transition-duration property to determine the speed of the "hover" effect:</p>
+
+        <input type="button" id="con1" class="button button1" onclick="condition(1);" value="No feedback short" />
+        <input type="button" id="con2" class="button button2" onclick="condition(2);" value="No feedback long" />
+        <input type="button" id="con3" class="button button3" onclick="condition(3);" value="Feedback short" />
+        <input type="button" id="con4" class="button button4" onclick="condition(4);" value="Feedback long" />
+        <input type="button" id="con6" class="button button6" onclick="condition(6);" value="Gaze pattern" />
+
+        <p>Go back to waiting page</p>
+        <input type="button" id="home" class="button button5" onclick="home_button();"value="Home" />
+
+        <p>toggle to record an events log</p>
+        <input type="button" id="rec" class="button button5" onclick="record()"value="Record" />
+        <label for="fname">Trial Name:</label>
+        <input type="text" id="fname" name="fname" value="noName"><br><br>
+
+        <p><strong>Ding Dong:</strong> push to ding dong a door:</p>
+
+        <input type="button" id="Left" class="button button5" onclick="ding(1);" value="DingLeft" />
+        <input type="button" id="Center" class="button button5" onclick="ding(2);" value="DingCenter" />
+        <input type="button" id="Right" class="button button5" onclick="ding(3);" value="DingRight" />
+        <p><strong>Ding Dong:</strong> Random door selection</p>    
+        <input type="button" id="Random" class="button button5" onclick="ding(4);" value="RandomDingDong" />
+        <input type="button" id="auto" class="button button7" onclick="ding(5);" value="AutoDingDong" />
+
+        <p id="demo"></p>
+        <p id="counter"></p>
+
+    </body>
+</html>
+
+<script>
+    var button_con1 = document.getElementById('con1');
+    var button_con2 = document.getElementById('con2');
+    var button_con3 = document.getElementById('con3');
+    var button_con4 = document.getElementById('con4');
+    var button_con6 = document.getElementById('con6');
+    var button_rec = document.getElementById('rec');
+    var home = document.getElementById('home');
+    var recording=false;
+    var trial_name=document.getElementById('fname');
+
+    var counter_c=0;
+    var counter_r=0;
+    var counter_l=0;
+
+    var countDownDate=new Date().getTime();
+    var in_condition=false;
+    var auto_condition=false;
+
+    var x = setInterval(function() {
+
+        // Get today's date and time
+        var now = new Date().getTime();
+
+        // Find the distance between now and the count down date
+        var distance = countDownDate - now;
+
+        // Time calculations for days, hours, minutes and seconds
+        var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        // Display the result in the element with id="demo"
+        document.getElementById("demo").innerHTML = minutes + "m " + seconds + "s ";
+
+        // If the count down is finished, write some text 
+        if (distance < 0) {
+            document.getElementById("demo").innerHTML = "Paused";
+        }
+    }, 1000);
+
+    if ("WebSocket" in window) {
+        //alert("WebSocket is supported by your Browser!");
+
+        // Let us open a web socket
+        var ws = new WebSocket("ws://130.229.148.127:8888");
+        
+
+        ws.onopen = function() {
+
+            // Web Socket is connected, send data using send()
+            console.log("Connected");
+        };
+
+        ws.onmessage = function (evt) {
+            console.log("onmessage");
+        };
+        ws.onclose = function() {        
+            // websocket is closed.
+            //alert("Connection is closed...");        
+        };
+    } else {
+        // The browser doesn't support WebSocket
+        alert("WebSocket NOT supported by your Browser!");
+    }
+    function home_button(){
+        var json_obj = {"command"  :  "home"};
+        ws.send(JSON.stringify(json_obj));
+        console.log(json_obj);
+        home.style.backgroundColor = 'white';
+        button_con1.style.backgroundColor = 'white'
+        button_con2.style.backgroundColor = 'white'
+        button_con3.style.backgroundColor = 'white'
+        button_con4.style.backgroundColor = 'white'
+        button_con6.style.backgroundColor = 'white'
+        countDownDate = new Date().getTime();
+        counter_c=0;
+        counter_r=0;
+        counter_l=0;
+        document.getElementById("counter").innerHTML = "Left: " + counter_l+" - "+"Center: " + counter_c+" - "+"Right: " + counter_r;
+        in_condition=false;
+        auto_condition=false;
+    }
+    function condition(num_button){
+
+        if (in_condition==false){
+            in_condition=true;
+            auto_condition=false;
+            button_con1.style.backgroundColor = 'white'
+            button_con2.style.backgroundColor = 'white'
+            button_con3.style.backgroundColor = 'white'
+            button_con4.style.backgroundColor = 'white'
+            button_con6.style.backgroundColor = 'white'
+
+            var json_obj = {"command":{"condition":{"number":num_button,"status":1,"trial":trial_name.value}}};
+            ws.send(JSON.stringify(json_obj));
+            console.log(json_obj);
+            countDownDate = new Date().getTime()+600000;
+            document.getElementById("counter").innerHTML = "Left: " + counter_l+" - "+"Center: " + counter_c+" - "+"Right: " + counter_r;
+            if (num_button==1){
+                button_con1.style.backgroundColor = 'green';
+            }else if (num_button==2){
+                button_con2.style.backgroundColor = 'blue';
+            }else if (num_button==3){
+                button_con3.style.backgroundColor = 'cyan';
+            }else if (num_button==4){
+                button_con4.style.backgroundColor = 'yellow';
+            }else if (num_button==6){
+                button_con6.style.backgroundColor = 'grey';
+            }
+        }
+    }
+    function record(num_button){    
+        if (recording==false){
+            var json_obj = {"command"  :  "start"};
+            ws.send(JSON.stringify(json_obj));
+            console.log(json_obj);
+            recording=true;
+            button_rec.style.backgroundColor = 'red';
+        }else if (recording==true){
+            var json_obj = {"command"  :  "stop"};
+            ws.send(JSON.stringify(json_obj));
+            console.log(json_obj);
+            recording=false;
+            button_rec.style.backgroundColor = 'white';
+        }
+
+    }
+    function ding(num_button){  
+        var door_numer_main=Math.floor(Math.random() * 799)+100;
+        var door_number_sec=Math.floor(Math.random() * 899)+100;
+        if (num_button==1){
+            var json_obj = {"command":{"number_ring":{"number_active":door_numer_main,"number_pasive":door_number_sec,"door":'L'}}};
+            ws.send(JSON.stringify(json_obj));
+            counter_l++;
+            console.log(JSON.stringify(json_obj));
+        }else if(num_button==2){
+            var json_obj = {"command":{"number_ring":{"number_active":door_numer_main,"number_pasive":door_number_sec,"door":'C'}}};
+            ws.send(JSON.stringify(json_obj));
+            console.log('number Center');
+            console.log(JSON.stringify(json_obj));
+            counter_c++;
+        }else if(num_button==3){
+            var json_obj = {"command":{"number_ring":{"number_active":door_numer_main,"number_pasive":door_number_sec,"door":'R'}}};
+            ws.send(JSON.stringify(json_obj));
+            console.log(JSON.stringify(json_obj));
+            counter_r++;
+        }else if(num_button==4){
+            var random_door=Math.floor(Math.random() * 3);
+            if (random_door==0){
+                ding(1);
+            }else if (random_door==1){
+                ding(2);
+            }else if (random_door==2){
+                ding(3);
+            } 
+        }else if(num_button==5){
+            if ((in_condition==true)&&(auto_condition==false)){
+                auto_condition=true;
+                while((in_condition==true)&&(auto_condition==true)&&((counter_l+counter_c+counter_r)<=20)){
+                    
+                    
+                    
+                    
+                    
+                    
+                    var random_door=Math.floor(Math.random() * 3);
+                    if (random_door==0){
+                        ding(1);
+                    }else if (random_door==1){
+                        ding(2);
+                    }else if (random_door==2){
+                        ding(3);
+                    }
+                }
+            }
+        }
+        document.getElementById("counter").innerHTML = "Left: " + counter_l+" - "+"Center: " + counter_c+" - "+"Right: " + counter_r+" - "+"TOTAL: " + (counter_l+counter_c+counter_r);
+    }
+</script>

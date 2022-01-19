@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.0.min.js"></script>
+        <style>
+            *, *:after, *:before {
+                margin:0;
+                padding:0;
+                box-sizing:border-box;
+                -webkit-animation-fill-mode: both; /* Chrome, Safari, Opera */
+                animation-fill-mode: both
+            }
+            .pie {
+                background-color:darkorange;
+                margin:0px;
+                width:80px;
+                height:80px;
+                -moz-border-radius:40px;
+                -webkit-border-radius:40px;
+                border-radius:50%;
+                position:absolute;
+                top: 450px;
+                left: 500px;
+                overflow:hidden;
+            }
+            .clip1 {
+                position:absolute;
+                top:0;
+                left:0;
+                width:80px;
+                height:80px;
+                clip:rect(0px, 80px, 80px, 40px);
+                box-shadow:0 2px 2px rgba(0,0,0,0.2) inset;
+                border-radius:50%;
+            }
+            .slice1 {
+                position:absolute;
+                width:80px;
+                height:80px;
+                clip:rect(0px, 40px, 80px, 0px);
+                -moz-border-radius:40px;
+                -webkit-border-radius:40px;
+                border-radius:40px;
+                background-color:limegreen;
+                border-color:#f7e5e1;
+                -moz-transform:rotate(0);
+                -webkit-transform:rotate(0);
+                -o-transform:rotate(0);
+                transform:rotate(0);
+                transition:all 0.3s linear 0s;
+            }
+            .clip2 {
+                position:absolute;
+                top:0;
+                left:0;
+                width:80px;
+                height:80px;
+                clip:rect(0, 40px, 80px, 0px);
+                box-shadow:0 2px 2px rgba(0,0,0,0.2) inset;
+                border-radius:50%;
+            }
+            .slice2 {
+                position:absolute;
+                width:80px;
+                height:80px;
+                clip:rect(0px, 80px, 80px, 40px);
+                -moz-border-radius:40px;
+                -webkit-border-radius:40px;
+                border-radius:40px;
+                background-color:limegreen;
+                border-color:#f7e5e1;
+                -moz-transform:rotate(0);
+                -webkit-transform:rotate(0);
+                -o-transform:rotate(0);
+                transform:rotate(0);
+                transition:all 0.3s linear 0.3s;
+            }
+
+            .backDoor {
+                background-color: #333;
+                position: relative;
+                width: 600px;
+                height: 900px;
+                margin: 0 auto;
+                margin-top: 50px;
+            }
+            .door {
+                background-color: grey;
+                position: absolute;
+                top: 0px;
+                left: 0px;
+                width: 600px;
+                height: 900px;
+
+                transform-origin: left;
+                /*Speed of the Door animation*/
+                transition: all 0.7s ease-in-out;
+            }
+            .num_door {
+                background-color: grey;
+                position: absolute;
+                width: 200px;
+                padding: 50px;
+                top: 150px;
+                left: 200px;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                font-size: 50px;
+                border-radius: 25px;
+            }
+            .circle{
+                background-color: goldenrod;
+                position: absolute;
+                top: 300px;
+                left: 350px;
+                border-radius: 50%;
+                width: 38px;
+                height: 38px; 
+                transform-origin: left;
+                /*Speed of the Door animation*/
+                transition: all 0.7s ease-in-out;
+            } 
+            .doorOpen {
+                /*prespectiv creates the door open effect*/
+                transform: perspective(1200px) translateZ(0px) translateX(0px) translateY(0px)
+                    rotateY(-105deg);
+            }
+        </style>
+    </head>
+    <body>
+        <div id="back_door_background" class="backDoor">
+            <div id= "door_object" class="door">  
+                <div class="pie" data-x="0">
+                    <div class="clip1">
+                        <div class="slice1"></div>
+                    </div>
+                    <div class="clip2">
+                        <div class="slice2"></div>
+                    </div>
+                    <div class="outher">
+                    </div>
+                </div>
+                <div class="num_door" id="number_door">  000
+                </div>
+            </div>
+        </div>
+
+        <script>
+            $(document).ready(function () {
+                var door=false;
+                var counter=0;
+                var gaze_wheel=0;
+
+                // A sound file object
+                var audio = new Audio('DingDong.mp3');
+                var audio_door = new Audio('door_lock.mp3');
+
+                var max_trigger=4;
+                var state_machine=0;
+
+                var cooldown=2000;
+                var t_cooldown=Date.now();
+
+                var url_ = window.location.href;
+                var n_ = url_.indexOf("condition_");        
+                var my_camera=url_[n_-2];
+                var n_ = url_.indexOf("10.200."); //10.11.140.104
+    var my_ip=url_[n_]+url_[n_+1]+url_[n_+2]+url_[n_+3]+url_[n_+4]+url_[n_+5]+url_[n_+6]+url_[n_+7]+url_[n_+8]+url_[n_+9]+url_[n_+10]+url_[n_+11];
+                var my_ip='130.229.148.127';
+
+                console.log('My IP is:'+my_ip);     
+
+                var last_pitch=0;
+                var last_yaw=0;
+                
+                
+                ///////// MY GAZE PATTERN HERE //////////////
+                
+                ///DONNY 1 example
+                //var gaze_pattern = "center center center left";
+                
+                ///DONNY 2 example
+                //var gaze_pattern = "center left left left left center";
+                
+                ///DONNY 3 example
+                //var gaze_pattern = "center up center up center";
+                
+                ///KASPER 1 example
+                //var gaze_pattern = "center center center center right";
+                
+                ///KASPER 5 example
+                //var gaze_pattern = "center center center center right";
+                
+                ///JORDI 6 example
+                var gaze_pattern = "center down center left";
+
+                
+                
+                
+                ////////////////////////////////////////////
+                
+                
+                
+                
+                
+                
+                
+                
+                console.log('My Gestue is '+gaze_pattern);
+                var pattern =gaze_pattern.split(" ");
+
+
+                var element = document.querySelector(".door");
+                element.addEventListener("click", toggleDoor);
+
+                var door_color=document.getElementById("door_object");
+                var number=document.getElementById('number_door');
+                var back_door=document.getElementById('back_door_background');
+
+                function toggleDoor() {
+                    element.classList.toggle("doorOpen");
+                }
+
+                class Face {    
+                    constructor(x,y,size,pitch,yaw,face_pitch,face_yaw) {
+                        this.x = x;
+                        this.y = y;
+                        this.face_pitch = face_pitch;
+                        this.face_yaw = face_yaw;
+                        this.size = size;
+                        this.pitch = pitch;
+                        this.yaw = yaw;
+                        this.blind_counter=0;
+                    }
+                }
+
+                var queryString = decodeURIComponent(window.location.search);
+
+                average_face=new Face(0,0,0,parseFloat(gup('gp')),parseFloat(gup('gy')),parseFloat(gup('fp')),parseFloat(gup('fy')));
+
+                my_camera=gup('cam',url_);
+                num_cam=gup('num',url_);
+
+                if (my_camera=='L'){
+                    door_color.style["background-color"] = "DarkGreen";
+                }else if (my_camera=='C'){
+                    door_color.style["background-color"] = "DarkRed";
+                }else if (my_camera=='R'){
+                    door_color.style["background-color"] = "MidnightBlue";
+                } 
+
+                faces= new Face (0,0,0,0,0,0,0);
+
+                progressBarUpdate(max_trigger,max_trigger);
+
+                if ("WebSocket" in window) {
+                    //alert("WebSocket is supported by your Browser!");
+
+                    // Let us open a web socket
+                    var ws = new WebSocket("ws://"+my_ip+":8888");
+
+                    ws.onopen = function() {
+                        console.log('websocket connected');     
+                        // Web Socket is connected, send data using send()
+                        //alert("Message is sent...");
+                    };
+
+                    ws.onmessage = function (evt) {
+                        var object = JSON.parse(evt.data);
+                        var received_msg = evt.data;
+
+                        if(object.hasOwnProperty('command')){
+
+                            if (object['command']=='home'){
+                                ws.close();
+                                setTimeout(function(){
+                                    var queryString = decodeURIComponent(window.location.search);
+                                    queryString = queryString.substring(1);
+                                    window.location.href = "waiting.html"+'?'+queryString;
+                                    document.close()
+                                    window.close();
+                                }, 1000);
+                            }else if (object['command']=='ding'+my_camera){
+                                console.log('Ding '+my_camera);
+                                //change color to open door color
+                                //door_color.style["background-color"] = "DarkOliveGreen";
+                            } else if (object['command'].hasOwnProperty('number_ring')){
+                                console.log('number received '+object['command']);
+                                if (object['command']['number_ring']['door']==my_camera){
+                                    console.log('number received for my camera');
+                                    number.innerHTML=object['command']['number_ring']['number_active'];
+                                    back_door.style["background-color"] = "LightGrey";
+                                }else{
+                                    number.innerHTML=object['command']['number_ring']['number_pasive'];
+                                    back_door.style["background-color"] = "black";
+                                }
+                                state_machine=0;
+                                if (door==true){
+                                    door=false;
+                                    element.classList.toggle("doorOpen");
+                                }
+                                
+                            }else{
+                                console.log('Unknown command');
+                            } 
+                        }else if(object.hasOwnProperty('face')){
+                            if (object["Camera"] == num_cam){
+                                if ((Date.now()-t_cooldown)>cooldown){
+                                    if(object["face"].length > 0){
+                                        var yaw=object["face"][0]["gaze"]["yaw"];
+                                        var pitch=object["face"][0]["gaze"]["pitch"];
+                                        var pos_x=object["face"][0]["face"]["x"];
+                                        var pos_y=object["face"][0]["face"]["y"];
+                                        var face_size=object["face"][0]["face"]["size"];
+                                        var face_pitch = object["face"][0]["direction"]["pitch"];
+                                        var face_yaw = object["face"][0]["direction"]["yaw"];
+                                        
+                                        if (state_machine==0){
+                                            last_pitch=average_face.pitch;
+                                            last_yaw=average_face.yaw;
+                                        }
+
+                                        var percentage=10;
+                                        if (door==false){
+                                            switch(pattern[state_machine]) {
+                                                case "up":
+                                                    if ((compare_numbers_linear(face_yaw,average_face.face_yaw,percentage+10))&&(compare_numbers_linear(face_pitch,average_face.face_pitch,percentage+10))){
+                                                        if (pitch>(last_pitch+percentage)){
+                                                            state_machine++;
+                                                            console.log('Moving to state machine in state number '+state_machine);
+                                                            progressBarUpdate(state_machine,pattern.length);
+                                                            if (state_machine==1) send_events("interaction_start");
+                                                        }
+                                                    }else{
+                                                        state_machine=0;
+                                                        console.log('state machine resetet to 0 fro face missalignment');
+                                                        progressBarUpdate(0,pattern.length);
+                                                    }
+                                                    break;
+                                                case "down":
+                                                    if ((compare_numbers_linear(face_yaw,average_face.face_yaw,percentage+10))&&(compare_numbers_linear(face_pitch,average_face.face_pitch,percentage+10))){
+                                                        if (pitch<(last_pitch-percentage)){
+                                                            state_machine++;
+                                                            console.log('Moving to state machine in state number '+state_machine);
+                                                            progressBarUpdate(state_machine,pattern.length);
+                                                            if (state_machine==1) send_events("interaction_start");
+                                                        }
+                                                    }else{
+                                                        state_machine=0;
+                                                        console.log('state machine resetet to 0 fro face missalignment');
+                                                        progressBarUpdate(0,pattern.length);
+                                                    }
+                                                    break;
+                                                case "center":
+                                                    if ((compare_numbers_linear(face_yaw,average_face.face_yaw,percentage+10))&&(compare_numbers_linear(face_pitch,average_face.face_pitch,percentage+10))){
+                                                        if ((compare_numbers_linear(face_yaw,average_face.yaw,percentage))&&(compare_numbers_linear(face_pitch,average_face.pitch,percentage))){
+                                                            state_machine++;
+                                                            console.log('Moving to state machine in state number '+state_machine);
+                                                            progressBarUpdate(state_machine,pattern.length);
+                                                            last_pitch=average_face.pitch;
+                                                            last_yaw=average_face.yaw;
+                                                            if (state_machine==1) send_events("interaction_start");
+                                                        }
+                                                    }else{
+                                                        state_machine=0;
+                                                        console.log('state machine resetet to 0 fro face missalignment');
+                                                        progressBarUpdate(0,pattern.length);
+                                                    }
+                                                    break;
+                                                case "left":
+                                                    if ((compare_numbers_linear(face_yaw,average_face.face_yaw,percentage+10))&&(compare_numbers_linear(face_pitch,average_face.face_pitch,percentage+10))){
+                                                        if (yaw>(last_yaw+percentage)){
+                                                            state_machine++;
+                                                            console.log('Moving to state machine in state number '+state_machine);
+                                                            progressBarUpdate(state_machine,pattern.length);
+                                                            if (state_machine==1) send_events("interaction_start");
+                                                        }
+                                                    }else{
+                                                        state_machine=0;
+                                                        console.log('state machine resetet to 0 fro face missalignment');
+                                                        progressBarUpdate(0,pattern.length);
+                                                    }
+                                                    break;
+                                                case "right":
+                                                    if ((compare_numbers_linear(face_yaw,average_face.face_yaw,percentage+10))&&(compare_numbers_linear(face_pitch,average_face.face_pitch,percentage+10))){
+                                                        if (yaw<(last_yaw-percentage)){
+                                                            state_machine++;
+                                                            console.log('Moving to state machine in state number '+state_machine);
+                                                            progressBarUpdate(state_machine,pattern.length);
+                                                            if (state_machine==1) send_events("interaction_start");
+                                                        }
+                                                    }else{
+                                                        state_machine=0;
+                                                        console.log('state machine resetet to 0 fro face missalignment');
+                                                        progressBarUpdate(0,pattern.length);
+                                                    }
+                                                    break;
+                                                default:
+                                                    console.log('COmmand not found in gestures '+pattern[state_machine]);
+                                            }
+
+                                            if (state_machine==pattern.length){
+                                                state_machine=0;
+                                                console.log('Door open');
+                                                audio_door.play();
+                                                t_cooldown=Date.now();
+                                                door=true;
+                                                progressBarUpdate(pattern.length,pattern.length);
+                                                element.classList.toggle("doorOpen");
+                                                send_events("doorOpen");
+                                            }
+                                        }else{
+                                            console.log('closing door out of timeout');
+                                            state_machine=0;
+                                            progressBarUpdate(0,pattern.length);
+                                            door=false;
+                                            element.classList.toggle("doorOpen");
+                                            //door_color.style["background-color"] = "grey";
+                                            send_events("doorClose");
+                                        }
+                                    }else if(object["face"].length <= 0){
+                                        //door=false;
+                                        //element.classList.toggle("doorOpen");
+                                        console.log('No face');
+                                        console.log('state machine to 0 cancel');
+                                        state_machine=0;
+                                        progressBarUpdate(0,pattern.length);
+                                        if (door==true){
+                                            door=false;
+                                            element.classList.toggle("doorOpen");
+                                            //door_color.style["background-color"] = "grey";
+                                            send_events("doorClose");
+                                        }
+                                    }
+                                }else{
+                                    console.log('Cooldown'); 
+                                }
+                            }
+                        }else{
+                            console.log('Unknown command');
+                        }
+                    };
+                    ws.onclose = function() {        
+                        // websocket is closed.
+                        //alert("Connection is closed...");   
+                        console.log('Disconnected'); 
+                    };
+                } else {
+                    // The browser doesn't support WebSocket
+                    alert("WebSocket NOT supported by your Browser!");
+                }
+                function rotate(element, degree) {
+                    element.css({
+                        '-webkit-transform': 'rotate(' + degree + 'deg)',
+                        '-moz-transform': 'rotate(' + degree + 'deg)',
+                        '-ms-transform': 'rotate(' + degree + 'deg)',
+                        '-o-transform': 'rotate(' + degree + 'deg)',
+                        'transform': 'rotate(' + degree + 'deg)',
+                        'zoom': 1
+                    });
+                }
+
+
+                function progressBarUpdate(x, outOf) {
+                    var firstHalfAngle = 180;
+                    var secondHalfAngle = 0;
+                    var oldAngle = parseInt($(".pie").attr('data-angle'));
+                    // caluclate the angle
+                    var drawAngle = x / outOf * 360;
+
+                    // calculate the angle to be displayed if each half
+                    if (drawAngle <= 180) {
+                        firstHalfAngle = drawAngle;
+                    } else {
+                        secondHalfAngle = drawAngle - 180;
+                    }
+
+                    if (drawAngle > 180 && oldAngle < 180){
+                        $(".slice1, .slice2").css({
+                            'transition-duration':'0.15s',
+                            '-webkit-transition-duration':'0.15s'
+                        });
+                        $(".slice1").css({
+                            'transition-delay':'0s',
+                            '-webkit-transition-delay':'0s'
+                        });
+                        $(".slice2").css({
+                            'transition-delay':'0.15s',
+                            '-webkit-transition-delay':'0.15s'
+                        });
+                    } else if (drawAngle < 180 && oldAngle > 180){
+                        $(".slice1, .slice2").css({
+                            'transition-duration':'0.15s',
+                            '-webkit-transition-duration':'0.15s'
+                        });
+                        $(".slice2").css({
+                            'transition-delay':'0s',
+                            '-webkit-transition-delay':'0s'
+                        });
+                        $(".slice1").css({
+                            'transition-delay':'0.15s',
+                            '-webkit-transition-delay':'0.15s'
+                        });
+                    } else {
+                        $(".slice1, .slice2").css({
+                            'transition-delay':'0s',
+                            '-webkit-transition-delay':'0s',
+                            'transition-duration':'0.3s',
+                            '-webkit-transition-duration':'0.3s'
+                        });
+                    }
+
+                    $('.pie').attr('data-angle', drawAngle);
+                    $('.pie').attr('data-x', x);
+
+                    // set the transition
+                    rotate($(".slice1"), firstHalfAngle);
+                    rotate($(".slice2"), secondHalfAngle);
+                }
+
+                function compare_numbers(_compare,average,_percenatge){
+
+                    _compare=_compare+100;
+                    average=average+100;
+                    //console.log('compare comp '+_compare);
+                    //console.log('compare ave '+average);
+
+                    if ((_compare <= average*(1+_percenatge))&&(_compare >= average*(1-_percenatge))){
+                        return (true);
+                    }else{
+                        return (false);
+                    }
+                }
+
+                function compare_numbers_linear(_compare,average,_sum){
+                    var low_n=average-_sum;
+                    var high_n=average+_sum;
+
+                    if ((low_n <= _compare)&&(high_n >= _compare)){
+                        return (true);
+                    }else{
+                        return (false);
+                    }
+                }
+
+                function gup( name, url ) {
+                    if (!url) url = location.href;
+                    name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+                    var regexS = "[\\?&]"+name+"=([^&#]*)";
+                    var regex = new RegExp( regexS );
+                    var results = regex.exec( url );
+                    return results == null ? null : results[1];
+                }
+
+                function send_events(type_event){
+                    var event_res_json;
+                    console.log('event_res_json print');
+
+                    event_res_json={
+                        "event": {
+                            "condition": "condition 6",
+                            "camera":my_camera,
+                            "time": Date.now(),
+                            "ip":null,
+                            "config":{
+                                "face_pitch":average_face.face_pitch,
+                                "face_yaw":average_face.face_yaw,
+                                "gaze_pitch":average_face.pitch,
+                                "gaze_yaw":average_face.yaw
+                            },
+                            type_event:type_event
+                        }
+                    }
+                    ws.send(JSON.stringify(event_res_json));
+                }
+            });
+        </script> 
+
+    </body>
+</html>
