@@ -1,8 +1,0 @@
-{
-    "name": "bulbserver",
-    "version": "0.0.1",
-    "description": "Bulb Server",
-    "dependencies": {
-        "express": "^4.17.2"
-    }
-}
