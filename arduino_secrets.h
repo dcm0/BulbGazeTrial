@@ -1,4 +1,4 @@
-//#define SECRET_SSID "wrtrobot"
-//#define SECRET_PASS "Wiet7phaedae"
-#define SECRET_SSID "JSB_net"
-#define SECRET_PASS "1716171617"
+#define SECRET_SSID "Extralitylab3"
+#define SECRET_PASS "extralitylab3"
+#define WS_SERVER_IP "192.168.137.1"
+#define WS_SERVER_PORT 80
