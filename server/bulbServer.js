@@ -23,7 +23,7 @@ var current_gaze_pattern = "center up left";
 class bulbController {
 
   constructor(socket, controlnsp, dashnsp) {
-    this.nsp = socket.namespace;
+    this.nsp = socket.nsp;
     this.socket = socket;
     this.controlnsp = controlnsp;
     this.dashnsp = dashnsp;
@@ -237,7 +237,7 @@ socket.on('game', (json_data) => {
   console.log('cnsp');
 payload = JSON.parse(json_data);
 console.log(json_data);
-console.log(payload);
+console.log(payload['command']);
 switch (payload['command']) {
   case "check":
     //check if the pattern matches
