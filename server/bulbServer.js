@@ -23,7 +23,7 @@ var current_gaze_pattern = "center up left";
 class bulbController {
 
   constructor(socket, controlnsp, dashnsp) {
-    this.nsp = socket.nsp;
+    this.nsp = socket.namespace;
     this.socket = socket;
     this.controlnsp = controlnsp;
     this.dashnsp = dashnsp;
@@ -236,20 +236,22 @@ cnsp.on('connection', function (socket) {
 socket.on('game', (json_data) => {
   console.log('cnsp');
 payload = JSON.parse(json_data);
+console.log(json_data);
+console.log(payload);
 switch (payload['command']) {
   case "check":
     //check if the pattern matches
     if(checkQuiz()){
       logger.info('CONTROLLER CHECK - Pass');
-      cnsp.emit('game', "{command:'passCheck'");
+      cnsp.emit('game', "{command:'passCheck'}");
     }else{
       logger.info('CONTROLLER CHECK - Fail');
-      cnsp.emit('game', "{command:'failCheck'");
+      cnsp.emit('game', "{command:'failCheck'}");
     }
     break;
   case "skip":
     logger.info('CONTROLLER SKIP');
-    cnsp.emit('game', "{command:'skipInitiated'");
+    cnsp.emit('game', "{command:'skipInitiated'}");
     //record this as a cancel/skip
     setupNewQuiz();
     break;
@@ -258,7 +260,7 @@ switch (payload['command']) {
     break;
   case "next":
     logger.info('CONTROLLER NEXT');
-    cnsp.emit('game', "{command:'nextInitiated'");
+    cnsp.emit('game', "{command:'nextInitiated'}");
     //record this as a cancel/skip   
     setupNewQuiz();
     break;
@@ -283,7 +285,7 @@ dnsp.on('connection', function (socket) {
     case "skip":
       logger.info('DASHBOARD SKIP');
       //record this as a cancel/skip and notify to start the waiting screen on controller
-      cnsp.emit('game', "{command:'passCheck'");
+      cnsp.emit('game', "{command:'passCheck'}");
       //then just do the new pattern command below
     case "newQuiz":
       console.log('DASHBOARD New Quiz');
