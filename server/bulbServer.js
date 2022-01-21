@@ -39,11 +39,16 @@ class bulbController {
     this.lightOn = false;
     this.log = logger.child({ camera: this.nsp.name });
 
-    this.socket.on("face", this.nextFrame); //no 100% sure on this one...
-    this.socket.on('bulb', this.statusHandler);
+    this.socket.onAny(this.catchAll);
+    // this.socket.on("face", this.nextFrame); //no 100% sure on this one...
+    // this.socket.on('bulb', this.statusHandler);
 
   }
 
+  async catchAll(name, item){
+    console.log(name);
+    console.log(item);
+  }
   setPattern(gaze_pattern) {
     this.log.info("Updating pattern on " + this.nsp.name + " to " + gaze_pattern);
     this.pattern = gaze_pattern.split(" ");
