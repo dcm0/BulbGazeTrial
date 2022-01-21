@@ -261,6 +261,7 @@ dnsp.on('game', (json_data) => {
       cnsp.emit('game', "{command:'passCheck'");
       //then just do the new pattern command below
     case "newQuiz":
+      console.log('DASHBOARD New Quiz');
       logger.info('DASHBOARD New Quiz');
       setupNewQuiz(payload['differences']);
       break;
@@ -369,6 +370,7 @@ function setupNewQuiz(differences = last_differences) {
     }
     round_counter++;
     var target_json = "{command:'newQuiz', round:'"+round_counter+"', target_pattern:"+JSON.stringify(target_pattern)+", gaze_pattern:'"+current_gaze_pattern+"'}";
+    console.log(target_json);
     dnsp.emit('game', target_json);
     cnsp.emit('game', target_json);
     logger.info('Starting new round ('+round_counter+") differences:"+differences+" elements to change:"+JSON.stringify(change_indexes));
