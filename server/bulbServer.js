@@ -3,7 +3,7 @@
 const { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } = require('constants');
 const app = require('express');
 const { runInThisContext } = require('vm');
-const logger = require('pino')(pino.destination('./bulbLogs.log'))
+const logger = require('pino')('./bulbLogs.log'); //pino.destination()
 const http = require('http').createServer(app);
 const io = require('socket.io')(http, {
   cors: {
@@ -12,9 +12,9 @@ const io = require('socket.io')(http, {
 });
 
 //Status Variables
-last_differences = 2;
-current_target;
-round_counter = 0;
+var last_differences = 2;
+var current_target;
+var round_counter = 0;
 
 
 
@@ -359,7 +359,7 @@ function setupNewQuiz(differences = last_differences) {
     var target_json = "{command:'newQuiz', round:'"+round_counter+"', target_pattern:"+JSON.stringify(target_pattern)+"}";
     dnsp.emit('game', target_json);
     cnsp.emit('game', target_json);
-    logger.info('Starting new round ('+round_counter+") differences:"+differences+" elements to change:"JSON.stringify(change_indexes));
+    logger.info('Starting new round ('+round_counter+") differences:"+differences+" elements to change:"+JSON.stringify(change_indexes));
 
   }
 }
