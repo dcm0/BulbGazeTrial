@@ -13,8 +13,9 @@
 	import { io } from "socket.io-client";
 	//import { io } from "https://cdn.socket.io/4.3.2/socket.io.esm.min.js";
 	// let src="/socket.io/socket.io.js"
-	//var socket = io('192.168.137.1:80');
-	var socket = io('10.200.32.0');
+	console.log("hiyaa")
+	var socket = io('http://192.168.137.1:8080/controller');
+	//var socket = io('10.200.32.0');
 
 
 
