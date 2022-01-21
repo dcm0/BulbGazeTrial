@@ -231,6 +231,39 @@ cnsp.on('connection', function (socket) {
   console.log('controller connected');
   logger.info('controller connected');
   cnsp.emit('bulb', 'Hello controller');
+  socket.on('game', (json_data) => {
+
+    payload = JSON.parse(json_data);
+    switch (payload['command']) {
+      case "check":
+        //check if the pattern matches
+        if(checkQuiz()){
+          logger.info('CONTROLLER CHECK - Pass');
+          cnsp.emit('game', "{command:'passCheck'");
+        }else{
+          logger.info('CONTROLLER CHECK - Fail');
+          cnsp.emit('game', "{command:'failCheck'");
+        }
+        break;
+      case "skip":
+        logger.info('CONTROLLER SKIP');
+        cnsp.emit('game', "{command:'skipInitiated'");
+        //record this as a cancel/skip
+        setupNewQuiz();
+        break;
+      case "start_timer":
+        logger.info('ROUND STARTED');
+        break;
+      case "next":
+        logger.info('CONTROLLER NEXT');
+        cnsp.emit('game', "{command:'nextInitiated'");
+        //record this as a cancel/skip   
+        setupNewQuiz();
+        break;
+  
+  
+    }
+
 });
 
 var dnsp = io.of('/dashboard');
@@ -238,6 +271,35 @@ dnsp.on('connection', function (socket) {
   console.log('dash connected');
   logger.info('Dashboard connected');
   dnsp.emit('bulb', 'Hello dash!');
+  socket.on('game', (json_data) => {
+
+    payload = JSON.parse(json_data);
+    switch (payload['command']) {
+      case "skip":
+        logger.info('DASHBOARD SKIP');
+        //record this as a cancel/skip and notify to start the waiting screen on controller
+        cnsp.emit('game', "{command:'passCheck'");
+        //then just do the new pattern command below
+      case "newQuiz":
+        console.log('DASHBOARD New Quiz');
+        logger.info('DASHBOARD New Quiz');
+        setupNewQuiz(payload['differences']);
+        break;
+      case "setInteraction":
+        for (let index = 0; index < bulbControllers.length; index++) {
+          bulbControllers[index].setPattern(payload['interaction_pattern']);
+        }
+        logger.info('Interaction Changed ' + payload['interaction_pattern']);
+        break;
+      case "resetCounter":
+        round_counter=0;
+        break;
+      case "logString":
+        //Figure we might want to send participant ID to the logs or something
+        logger.info(payload['logString']);
+    }
+  
+  });
 
 });
 
@@ -251,69 +313,69 @@ cameras.on("connection", (socket) => {
 });
 
 //Dashboard Event handlers
-dnsp.on('game', (json_data) => {
+// dnsp.on('game', (json_data) => {
 
-  payload = JSON.parse(json_data);
-  switch (payload['command']) {
-    case "skip":
-      logger.info('DASHBOARD SKIP');
-      //record this as a cancel/skip and notify to start the waiting screen on controller
-      cnsp.emit('game', "{command:'passCheck'");
-      //then just do the new pattern command below
-    case "newQuiz":
-      console.log('DASHBOARD New Quiz');
-      logger.info('DASHBOARD New Quiz');
-      setupNewQuiz(payload['differences']);
-      break;
-    case "setInteraction":
-      for (let index = 0; index < bulbControllers.length; index++) {
-        bulbControllers[index].setPattern(payload['interaction_pattern']);
-      }
-      logger.info('Interaction Changed ' + payload['interaction_pattern']);
-      break;
-    case "resetCounter":
-      round_counter=0;
-      break;
-    case "logString":
-      //Figure we might want to send participant ID to the logs or something
-      logger.info(payload['logString']);
-  }
+//   payload = JSON.parse(json_data);
+//   switch (payload['command']) {
+//     case "skip":
+//       logger.info('DASHBOARD SKIP');
+//       //record this as a cancel/skip and notify to start the waiting screen on controller
+//       cnsp.emit('game', "{command:'passCheck'");
+//       //then just do the new pattern command below
+//     case "newQuiz":
+//       console.log('DASHBOARD New Quiz');
+//       logger.info('DASHBOARD New Quiz');
+//       setupNewQuiz(payload['differences']);
+//       break;
+//     case "setInteraction":
+//       for (let index = 0; index < bulbControllers.length; index++) {
+//         bulbControllers[index].setPattern(payload['interaction_pattern']);
+//       }
+//       logger.info('Interaction Changed ' + payload['interaction_pattern']);
+//       break;
+//     case "resetCounter":
+//       round_counter=0;
+//       break;
+//     case "logString":
+//       //Figure we might want to send participant ID to the logs or something
+//       logger.info(payload['logString']);
+//   }
 
-});
+// });
 
 //Controller Event handlers
-cnsp.on('game', (json_data) => {
+// cnsp.on('game', (json_data) => {
 
-  payload = JSON.parse(json_data);
-  switch (payload['command']) {
-    case "check":
-      //check if the pattern matches
-      if(checkQuiz()){
-        logger.info('CONTROLLER CHECK - Pass');
-        cnsp.emit('game', "{command:'passCheck'");
-      }else{
-        logger.info('CONTROLLER CHECK - Fail');
-        cnsp.emit('game', "{command:'failCheck'");
-      }
-      break;
-    case "skip":
-      logger.info('CONTROLLER SKIP');
-      cnsp.emit('game', "{command:'skipInitiated'");
-      //record this as a cancel/skip
-      setupNewQuiz();
-      break;
-    case "start_timer":
-      logger.info('ROUND STARTED');
-      break;
-    case "next":
-      logger.info('CONTROLLER NEXT');
-      cnsp.emit('game', "{command:'nextInitiated'");
-      //record this as a cancel/skip   
-      setupNewQuiz();
-      break;
+//   payload = JSON.parse(json_data);
+//   switch (payload['command']) {
+//     case "check":
+//       //check if the pattern matches
+//       if(checkQuiz()){
+//         logger.info('CONTROLLER CHECK - Pass');
+//         cnsp.emit('game', "{command:'passCheck'");
+//       }else{
+//         logger.info('CONTROLLER CHECK - Fail');
+//         cnsp.emit('game', "{command:'failCheck'");
+//       }
+//       break;
+//     case "skip":
+//       logger.info('CONTROLLER SKIP');
+//       cnsp.emit('game', "{command:'skipInitiated'");
+//       //record this as a cancel/skip
+//       setupNewQuiz();
+//       break;
+//     case "start_timer":
+//       logger.info('ROUND STARTED');
+//       break;
+//     case "next":
+//       logger.info('CONTROLLER NEXT');
+//       cnsp.emit('game', "{command:'nextInitiated'");
+//       //record this as a cancel/skip   
+//       setupNewQuiz();
+//       break;
 
 
-  }
+//   }
 
 });
 
