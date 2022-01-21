@@ -252,7 +252,7 @@ cameras.on("connection", (socket) => {
 
 //Dashboard Event handlers
 dnsp.on('game', (json_data) => {
-
+    console.log('dnsp');
   payload = JSON.parse(json_data);
   switch (payload['command']) {
     case "skip":
@@ -283,7 +283,7 @@ dnsp.on('game', (json_data) => {
 
 //Controller Event handlers
 cnsp.on('game', (json_data) => {
-
+    console.log('cnsp');
   payload = JSON.parse(json_data);
   switch (payload['command']) {
     case "check":
