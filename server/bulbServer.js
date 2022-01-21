@@ -18,7 +18,7 @@ var round_counter = 0;
 
 
 
-//Bulb Controller object 
+//Bulb Controller object
 class bulbController {
 
   constructor(namespace, controlnsp, dashnsp) {
@@ -249,7 +249,7 @@ cameras.on("connection", (socket) => {
   cameras.emit('bulb', 'Hello camera ' + socket.nsp.name);
 });
 
-//Dashboard Event handlers 
+//Dashboard Event handlers
 dnsp.on('game', (json_data) => {
 
   payload = JSON.parse(json_data);
@@ -265,7 +265,7 @@ dnsp.on('game', (json_data) => {
       break;
     case "setInteraction":
       for (let index = 0; index < bulbControllers.length; index++) {
-        bulbControllers[index].setPattern(payload['interaction_pattern']); 
+        bulbControllers[index].setPattern(payload['interaction_pattern']);
       }
       logger.info('Interaction Changed ' + payload['interaction_pattern']);
       break;
@@ -279,7 +279,7 @@ dnsp.on('game', (json_data) => {
 
 });
 
-//Controller Event handlers 
+//Controller Event handlers
 cnsp.on('game', (json_data) => {
 
   payload = JSON.parse(json_data);
@@ -298,7 +298,7 @@ cnsp.on('game', (json_data) => {
     case "skip":
       logger.info('CONTROLLER SKIP');
       cnsp.emit('game', "{command:'skipInitiated'");
-      //record this as a cancel/skip   
+      //record this as a cancel/skip
       setupNewQuiz();
   }
 
@@ -320,7 +320,7 @@ function checkQuiz(){
 
 function setupNewQuiz(differences = last_differences) {
 
-  //randomise status of lights. 
+  //randomise status of lights.
   //store as target
   //change the correct number of lights
   //set as current status
@@ -370,5 +370,3 @@ http.listen(8080, () => {
 
   console.log("Server launched on port 8080");
 })
-
-

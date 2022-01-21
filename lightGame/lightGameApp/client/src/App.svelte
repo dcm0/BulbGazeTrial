@@ -6,6 +6,8 @@
 	let activeList = [0,0,0,0,0,0]
 	let jsonData;
 	let form;
+	let gaze_pattern;
+	let completed;
 
 
 	import GameView from './game.svelte';
@@ -13,7 +15,6 @@
 	import { io } from "socket.io-client";
 	//import { io } from "https://cdn.socket.io/4.3.2/socket.io.esm.min.js";
 	// let src="/socket.io/socket.io.js"
-	console.log("hiyaa")
 	var socket = io('http://192.168.137.1:8080/controller');
 	//var socket = io('10.200.32.0');
 
@@ -41,15 +42,27 @@
 		socket.emit('game', "hello");
 	})
 	socket.on('game', function(msg) {
-	console.log(msg);
-	updateGameMode(msg)
+	jsonData = JSON.parse(msg);
+	if (jsonData["command"] == "passCheck"){
+
+	} else if (jsonData["command"] == "failCheck") {
+
+	} else if (jsonData["command"] == "newQuiz") {
+		updateGameMode(jsonData)
+	}
+	console.log(jsonData);
 });
+
+function patternToMode(gaze_pattern){
+	return 0//the number mapping to an image
+}
 
 
 
 	function updateGameMode(jsonData){
-		chosenGameMode = jsonData["gameMode"];
-		activeList = jsonData["lightList"];
+		gaze_pattern = jsonData["gaze_pattern"];
+		chosenGameMode = patternToMode(gaze_pattern);
+		activeList = JSON.parse(jsonData["target_pattern"]);
 	}
 
 </script>
@@ -81,7 +94,7 @@
 </button>
 </div>
 {:else}
-	<GameView bind:chosenGameValue bind:chosenGameMode bind:activeList bind:socket/>
+	<GameView bind:chosenGameValue bind:chosenGameMode bind:activeList bind:socket bind:completed/>
 {/if}
 <style>
 	h1{

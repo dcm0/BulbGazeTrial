@@ -5,8 +5,8 @@
   export let chosenGameMode = 1;
 	export let activeList;
 	export let socket;
+	export let completed;
 	let started = false;
-	let complete = false;
   let activeColor = "#eee310";
   let passiveColor = "#888888";
   let iteration = 1;
@@ -15,27 +15,27 @@
   let colorList = ["#888888","#888888","#888888","#888888","#888888","#888888"]
   let srcList = ["./interactionTypes/1.svg","./interactionTypes/2.svg","./interactionTypes/3.svg"]
   function skip(){
-		complete=true;
+		completed=true;
     socket.emit('game', "{command:'skip'}");
   }
 	function start(){
-		socket.emit('gametimer', "start");
+		socket.emit('game', "{command:'start_timer'}");
 		started = true;
 	}
 
 	function check(){
-		socket.emit('check', "check");
+		socket.emit('game', "{command:'check'}");
 	}
 	function next(){
-		complete=true;
-		socket.emit('game', "next");
+		completed=true;
+		socket.emit('game', "{command:'next'}");
 	}
-	socket.on('gamecheck', function(msg) {
-		console.log(msg);
-		if(msg=true){
-			complete=true;
-		}
-	});
+	// socket.on('game', function(msg) {
+	// 	console.log(msg);
+	// 	if(msg=true){
+	// 		complete=true;
+	// 	}
+	// });
   function initNewRound(){
     //shuffle(itemList)
 
@@ -96,7 +96,7 @@
 start
 </button>
 {:else}
-<Timer bind:complete/>
+<Timer bind:completed/>
 <div class="button-container">
 	<button id="next" class="button">
 		next
