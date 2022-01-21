@@ -15,7 +15,7 @@
 	  //   console.log("Opened")
 	  // })
 	  	console.log("onmount"	);
-		socket.emit('game', "newQuiz");
+		
 	});
 	socket.on('game', function(msg) {
 		jsonData = JSON.parse(msg);
