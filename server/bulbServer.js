@@ -426,6 +426,8 @@ function setupNewQuiz(differences = last_differences) {
     differences = bulbControllers.length;
   }
 
+  var change_indexes = new Array(0);
+
   while (change_indexes.length < differences) {
     var random_number = Math.floor(Math.random() * (bulbControllers.length));
     if (change_indexes.indexOf(random_number) == -1) {
