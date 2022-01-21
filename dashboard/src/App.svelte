@@ -1,8 +1,33 @@
 <script>
 	export let name;
 	import { io } from "socket.io-client";
+	//import { io } from "https://cdn.socket.io/4.3.2/socket.io.esm.min.js";
+	// let src="/socket.io/socket.io.js"
+	var socket = io('http://192.168.137.1:8080/dashboard');
+	console.log("UOSOSOSOSOS");
+	//var socket = io('10.200.32.0');
 
+	import { onMount } from 'svelte';
+	onMount(() => {
 
+	  // socket = new WebSocket("ws://localhost:8000/chat")
+	  // socket.addEventListener("open", ()=> {
+	  //   console.log("Opened")
+	  // })
+	  console.log("onmount");
+		socket.emit('game', "newQuiz");
+	});
+	socket.on('game', function(msg) {
+		jsonData = JSON.parse(msg);
+		if (jsonData["command"] == "passCheck"){
+
+		} else if (jsonData["command"] == "failCheck") {
+
+		} else if (jsonData["command"] == "newQuiz") {
+			
+		}
+	});
+	
 
 </script>
 
