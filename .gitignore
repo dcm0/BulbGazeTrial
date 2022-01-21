@@ -103,3 +103,6 @@ dist
 # TernJS port file
 .tern-port
 .DS_Store
+.vs/BulbGazeTrial/v17/.suo
+.vs/slnx.sqlite
+.vs/slnx.sqlite

@@ -23,7 +23,7 @@ var current_gaze_pattern = "center up left";
 class bulbController {
 
   constructor(socket, controlnsp, dashnsp) {
-    this.nsp = socket.namespace;
+    this.nsp = socket.nsp;
     this.socket = socket;
     this.controlnsp = controlnsp;
     this.dashnsp = dashnsp;
