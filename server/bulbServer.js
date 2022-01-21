@@ -15,6 +15,7 @@ const io = require('socket.io')(http, {
 var last_differences = 2;
 var current_target;
 var round_counter = 0;
+var current_gaze_pattern = "center up left";
 
 
 
@@ -289,7 +290,6 @@ cnsp.on('game', (json_data) => {
       if(checkQuiz()){
         logger.info('CONTROLLER CHECK - Pass');
         cnsp.emit('game', "{command:'passCheck'");
-        setupNewQuiz();
       }else{
         logger.info('CONTROLLER CHECK - Fail');
         cnsp.emit('game', "{command:'failCheck'");
@@ -300,6 +300,18 @@ cnsp.on('game', (json_data) => {
       cnsp.emit('game', "{command:'skipInitiated'");
       //record this as a cancel/skip
       setupNewQuiz();
+      break;
+    case "start_timer":
+      logger.info('ROUND STARTED');
+      break;
+    case "next":
+      logger.info('CONTROLLER NEXT');
+      cnsp.emit('game', "{command:'nextInitiated'");
+      //record this as a cancel/skip   
+      setupNewQuiz();
+      break;
+
+
   }
 
 });
@@ -356,7 +368,7 @@ function setupNewQuiz(differences = last_differences) {
       bulbControllers[index].setState(start_pattern[index]);
     }
     round_counter++;
-    var target_json = "{command:'newQuiz', round:'"+round_counter+"', target_pattern:"+JSON.stringify(target_pattern)+"}";
+    var target_json = "{command:'newQuiz', round:'"+round_counter+"', target_pattern:"+JSON.stringify(target_pattern)+", gaze_pattern:'"+current_gaze_pattern+"'}";
     dnsp.emit('game', target_json);
     cnsp.emit('game', target_json);
     logger.info('Starting new round ('+round_counter+") differences:"+differences+" elements to change:"+JSON.stringify(change_indexes));

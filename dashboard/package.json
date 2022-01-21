@@ -5,22 +5,19 @@
   "scripts": {
     "build": "rollup -c",
     "dev": "rollup -c -w",
-    "autobuild": "rollup -c -w",
     "start": "sirv public --no-clear"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^17.0.0",
     "@rollup/plugin-node-resolve": "^11.0.0",
-    "rollup": "^2.65.0",
+    "rollup": "^2.3.4",
     "rollup-plugin-css-only": "^3.1.0",
     "rollup-plugin-livereload": "^2.0.0",
-    "rollup-plugin-svelte": "^7.1.0",
+    "rollup-plugin-svelte": "^7.0.0",
     "rollup-plugin-terser": "^7.0.0",
-    "svelte": "^3.46.2"
+    "svelte": "^3.0.0"
   },
   "dependencies": {
-    "node": "^17.3.1",
-    "sirv-cli": "^1.0.0",
-    "socket.io-client": "^4.4.1"
+    "sirv-cli": "^2.0.0"
   }
 }
