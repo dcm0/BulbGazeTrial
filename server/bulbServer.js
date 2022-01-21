@@ -22,8 +22,9 @@ var current_gaze_pattern = "center up left";
 //Bulb Controller object
 class bulbController {
 
-  constructor(namespace, controlnsp, dashnsp) {
-    this.nsp = namespace;
+  constructor(socket, controlnsp, dashnsp) {
+    this.nsp = socket.namespace;
+    this.socket = socket;
     this.controlnsp = controlnsp;
     this.dashnsp = dashnsp;
     this.stateMachine = 0;
@@ -38,8 +39,8 @@ class bulbController {
     this.lightOn = false;
     this.log = logger.child({ camera: this.nsp.name });
 
-    this.nsp.on("face", this.nextFrame); //no 100% sure on this one...
-    this.nsp.on('bulb', this.statusHandler);
+    this.socket.on("face", this.nextFrame); //no 100% sure on this one...
+    this.socket.on('bulb', this.statusHandler);
 
   }
 
@@ -311,7 +312,7 @@ dnsp.on('connection', function (socket) {
 var cameras = io.of(/^\/camera-\d+$/);
 cameras.on("connection", (socket) => {
   console.log('bulb connected');
-  bulbControllers.push(new bulbController(socket.nsp, cnsp, dnsp));
+  bulbControllers.push(new bulbController(socket, cnsp, dnsp));
   //What is the Average Face stuff? Where do I get that?
   logger.info('Bulb connected ' + socket.nsp.name);
   cameras.emit('bulb', 'Hello camera ' + socket.nsp.name);
