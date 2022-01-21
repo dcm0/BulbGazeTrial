@@ -14,7 +14,7 @@
 	  // socket.addEventListener("open", ()=> {
 	  //   console.log("Opened")
 	  // })
-	  console.log("onmount");
+	  	console.log("onmount"	);
 		socket.emit('game', "newQuiz");
 	});
 	socket.on('game', function(msg) {
@@ -28,12 +28,22 @@
 		}
 	});
 	
+	function sendNewgame(){
+
+		console.log('ububuub');
+		socket.emit('game', '{command:"newQuiz"}');
+	}
 
 </script>
 
 <main>
 	<h1>Hello {name}!</h1>
 	<p>Visit the <a href="https://svelte.dev/tutorial">Svelte tutorial</a> to learn how to build Svelte apps.</p>
+	
+<p> One dim</p>
+<button class="button" on:click={() => sendNewgame()}>
+1
+</button>
 </main>
 
 <style>
