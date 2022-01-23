@@ -13,8 +13,8 @@
 
 	let participantNameD = "Participant";
 	let participantName = "Participant";
-	let roundNumber = 1;
-	let conditionNumber = 1;
+	let roundNumber = 0;
+	let conditionNumber = 0;
 	let currentPattern = 'Unset';
 
 
@@ -59,12 +59,11 @@
 	function handleBoxClick(boxString){
 		if(isCalibrate){
 			socket.emit('game', '{"command":"calibrate", "camString":"'+boxString+'"}');
-			
-			calibration[boxString] = true;
+			calibration[boxString] = true; //testing wait for callback
 			console.log(boxString);
 		}else{
 			socket.emit('game', '{"command":"toggleCamera", "camString":"'+boxString+'", "status":}');
-			lightStatus[boxString] = !lightStatus[boxString];
+			lightStatus[boxString] = !lightStatus[boxString];//testing wait for callback
 		}
 
 
