@@ -7,12 +7,10 @@
 	console.log("connected");
 	//var socket = io('10.200.32.0');
 	let isCalibrate;
-	let camera1on = false;
-	let camera2on = false;
-	let camera3on = false;
-	let camera4on = false;
-	let camera5on = false;
-	let camera6on = false;		
+		
+	let calibration = {'camera-1':false, 'camera-2':false, 'camera-3':false, 'camera-4':false, 'camera-5':false, 'camera-6':false};
+	let lightStatus = {'camera-1':false, 'camera-2':false, 'camera-3':false, 'camera-4':false, 'camera-5':false, 'camera-6':false};
+
 	let participantNameD = "Participant";
 	let participantName = "Participant";
 	let roundNumber = 1;
@@ -46,7 +44,13 @@
 		case "bulb":
 			var but = payload["bulb"];
 			var status = payload["status"];
+			lightStatus[but] = status=='On'?true:false;
 			console.log(but+" change to "+status);
+			break;
+		case "calibrationComplete":
+			var but = payload["bulb"];
+			calibration[but] =true;
+			console.log(but+" calibration done");
 			break;
 
 		}
@@ -55,8 +59,12 @@
 	function handleBoxClick(boxString){
 		if(isCalibrate){
 			socket.emit('game', '{"command":"calibrate", "camString":"'+boxString+'"}');
+			
+			calibration[boxString] = true;
+			console.log(boxString);
 		}else{
 			socket.emit('game', '{"command":"toggleCamera", "camString":"'+boxString+'", "status":}');
+			lightStatus[boxString] = !lightStatus[boxString];
 		}
 
 
@@ -81,6 +89,8 @@
 		if(participantName != participantNameD){
 			socket.emit('game', '{"command":"logParticipant", "name":"'+participantNameD+'"}');
 			participantName = participantNameD;
+			//New Participant - so recalibrate?
+			calibration = {'camera-1':false, 'camera-2':false, 'camera-3':false, 'camera-4':false, 'camera-5':false, 'camera-6':false};
 		}
 	}
 
@@ -113,23 +123,35 @@
 
 
 	<button class="button" id="camera-1" on:click={() => handleBoxClick("camera-1")}>
-			Box 1
+			Box 1 <br>
+			Light On: {lightStatus['camera-1']} |
+			Calibrated: {calibration['camera-1']}<br>
 	</button>
 	<button class="button" id="camera-2" on:click={() => handleBoxClick("camera-2")}>
-			Box 2
+			Box 2<br>
+			Light On: {lightStatus['camera-2']} |
+			Calibrated: {calibration['camera-2']}<bR>
 	</button>
 	<button class="button" id="camera-3" on:click={() => handleBoxClick("camera-3")}>
-			Box 3
+			Box 3<br>
+			Light On: {lightStatus['camera-3']} |
+			Calibrated: {calibration['camera-3']}<bR>
 	</button>
 	<br>
 	<button class="button" id="camera-4" on:click={() => handleBoxClick("camera-4")}>
-			Box 4
+			Box 4<br>
+			Light On: {lightStatus['camera-4']} |
+			Calibrated: {calibration['camera-4']}<bR>
 	</button>
 	<button class="button" id="camera-5" on:click={() => handleBoxClick("camera-5")}>
-			Box 5
+			Box 5<br>
+			Light On: {lightStatus['camera-5']} |
+			Calibrated: {calibration['camera-5']}<bR>
 	</button>
 	<button class="button" id="camera-6" on:click={() => handleBoxClick("camera-6")}>
-			Box 6
+			Box 6<br>
+			Light On: {lightStatus['camera-6']} |
+			Calibrated: {calibration['camera-6']}<bR>
 	</button>
 	<br>
 	<br>

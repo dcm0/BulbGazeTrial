@@ -225,4 +225,4 @@ class bulbController {
     }
   }
 
-  module.exports = bulbController;
+  export default bulbController;

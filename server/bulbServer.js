@@ -4,7 +4,7 @@ const { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } = require('constants');
 const app = require('express');
 const { runInThisContext } = require('vm');
 const logger = require('pino')('./bulbLogs.log'); //pino.destination()
-const bulbController = require('./bulbController.js')
+const bulbController = require('./bulbController.js').default
 const http = require('http').createServer(app);
 const io = require('socket.io')(http, {
   cors: {
@@ -132,73 +132,6 @@ cameras.on("connection", (socket) => {
   cameras.emit('bulb', 'Hello camera ' + socket.nsp.name);
 });
 
-//Dashboard Event handlers
-// dnsp.on('game', (json_data) => {
-//     console.log('dnsp');
-//   payload = JSON.parse(json_data);
-//   switch (payload['command']) {
-//     case "skip":
-//       logger.info('DASHBOARD SKIP');
-//       //record this as a cancel/skip and notify to start the waiting screen on controller
-//       cnsp.emit('game', "{command:'passCheck'");
-//       //then just do the new pattern command below
-//     case "newQuiz":
-//       console.log('DASHBOARD New Quiz');
-//       logger.info('DASHBOARD New Quiz');
-//       setupNewQuiz(payload['differences']);
-//       break;
-//     case "setInteraction":
-//       for (let index = 0; index < bulbControllers.length; index++) {
-//         bulbControllers[index].setPattern(payload['interaction_pattern']);
-//       }
-//       logger.info('Interaction Changed ' + payload['interaction_pattern']);
-//       break;
-//     case "resetCounter":
-//       round_counter=0;
-//       break;
-//     case "logString":
-//       //Figure we might want to send participant ID to the logs or something
-//       logger.info(payload['logString']);
-//   }
-
-// });
-
-// //Controller Event handlers
-// cnsp.on('game', (json_data) => {
-//     console.log('cnsp');
-//   payload = JSON.parse(json_data);
-//   switch (payload['command']) {
-//     case "check":
-//       //check if the pattern matches
-//       if(checkQuiz()){
-//         logger.info('CONTROLLER CHECK - Pass');
-//         cnsp.emit('game', "{command:'passCheck'");
-//       }else{
-//         logger.info('CONTROLLER CHECK - Fail');
-//         cnsp.emit('game', "{command:'failCheck'");
-//       }
-//       break;
-//     case "skip":
-//       logger.info('CONTROLLER SKIP');
-//       cnsp.emit('game', "{command:'skipInitiated'");
-//       //record this as a cancel/skip
-//       setupNewQuiz();
-//       break;
-//     case "start_timer":
-//       logger.info('ROUND STARTED');
-//       break;
-//     case "next":
-//       logger.info('CONTROLLER NEXT');
-//       cnsp.emit('game', "{command:'nextInitiated'");
-//       //record this as a cancel/skip   
-//       setupNewQuiz();
-//       break;
-
-
-//   }
-
-// });
-
 
 function checkQuiz(){
 
@@ -208,7 +141,7 @@ function checkQuiz(){
       correct = false;
     }
   }
-  return false;
+  return correct;
 
 }
 
