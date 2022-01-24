@@ -1,7 +1,8 @@
 // Gaze IoT controller for Arduino MKR1010(c) 2021 Jordi Solsona
 
 #include <Adafruit_NeoPixel.h>
-
+#include <ArduinoJson.h>
+#include <Regexp.h>
 
 #if ( defined(ARDUINO_SAM_DUE) || defined(__SAM3X8E__) )
 // Default pin 10 to SS/CS
@@ -109,17 +110,65 @@ void socketIOEvent(socketIOmessageType_t type, uint8_t * payload, size_t length)
       Serial.println("[IOc] Disconnected");
       break;
     case sIOtype_CONNECT:
+
       Serial.print("[IOc] Connected to url: ");
       Serial.println((char*) payload);
 
       // join default namespace (no auto join in Socket.IO V3)
-      socketIO.send(sIOtype_CONNECT, "/");
+      socketIO.send(sIOtype_CONNECT, "/camera-1");
 
       break;
     case sIOtype_EVENT:
-      Serial.print("[IOc] Get event: ");
-      Serial.println((char*) payload);
+      {
 
+        Serial.print("[IOc] Get event: ");
+        Serial.println((char*) payload);
+
+        String aux_payload = (char*) payload;
+
+        aux_payload = charTrim((char*) payload, '\\');
+        aux_payload = aux_payload.substring(aux_payload.indexOf('{'), aux_payload.length() - 1);
+        /*while(aux_payload.indexOf("\\")){
+          aux_payload.remove(aux_payload.indexOf("\\"));
+          }*/
+        Serial.print("[XXXXXXX] parse event payload");
+        Serial.println(aux_payload);
+
+        StaticJsonDocument<800> command_json;
+
+        // Deserialize the JSON document
+        DeserializationError error = deserializeJson(command_json, aux_payload);
+
+
+        // Test if parsing succeeds.
+        if (error) {
+          Serial.print(F("deserializeJson() failed: "));
+          Serial.println(error.f_str());
+          return;
+        } else {
+
+          //println(command_json["command"]);
+          String aux_s = command_json["command"];
+          Serial.println(aux_s);
+          if (aux_s == "ring") {
+            Serial.println("inside IF");
+            for (int i = 0; i < NUMPIXELS; i++) { // For each pixel...
+              String r_string = command_json[String(i) + "r"];
+              int r = r_string.toInt();
+              String g_string = command_json[String(i) + "g"];
+              int g = g_string.toInt();
+              String b_string = command_json[String(i) + "b"];
+              int b = b_string.toInt();
+              pixels.setPixelColor(i, pixels.Color(r, g, b));
+            }
+            pixels.show();   // Send the updated pixel colors to the hardware.
+          } else if (aux_s == "bulb") {
+            String status = command_json["status"];
+            //send ON for LED
+            //pixels.setPixelColor(i, pixels.Color(r, g, b));
+          }
+        }
+      }
       break;
     case sIOtype_ACK:
       Serial.print("[IOc] Get ack: ");
@@ -241,12 +290,12 @@ void setup() {
   Serial.println(WS_SERVER_PORT);
 
   // setReconnectInterval to 10s, new from v2.5.1 to avoid flooding server. Default is 0.5s
-  socketIO.setReconnectInterval(10000);
+  socketIO.setReconnectInterval(2000);
 
   socketIO.setExtraHeaders("Authorization: 1234567890");
 
   // server address, port and URL
-  // void begin(IPAddress host, uint16_t port, String url = "/socket.io/?EIO=4", String protocol = "arduino");
+  void begin(IPAddress host, uint16_t port, String url = "/socket.io/?EIO=4", String protocol = "arduino");
   // To use default EIO=4 from v2.5.1
   socketIO.begin(WS_SERVER_IP, WS_SERVER_PORT);
 
@@ -286,41 +335,69 @@ void loop() {
     }
   }
   for (int i = 0; i < num_faces; i++) {
-    Serial.print("F:");
-    Serial.print(i);
-    Serial.print(": ");
-    Serial.print(face[i].pos[0]);
-    Serial.print(":");
-    Serial.print(face[i].pos[1]);
-    Serial.print(":G: ");
-    Serial.print(face[i].gaze[0]);
-    Serial.print(":");
-    Serial.print(face[i].gaze[1]);
-    Serial.println(":.");
+    /*Serial.print("F:");
+      Serial.print(i);
+      Serial.print(": ");
+      Serial.print(face[i].pos[0]);
+      Serial.print(":");
+      Serial.print(face[i].pos[1]);
+      Serial.print(":G: ");
+      Serial.print(face[i].gaze[0]);
+      Serial.print(":");
+      Serial.print(face[i].gaze[1]);
+      Serial.println(":.");*/
 
-    // creat JSON message for Socket.IO (event)
-      DynamicJsonDocument doc(1024);
-      JsonArray array = doc.to<JsonArray>();
+    StaticJsonDocument<1000> doc;
+    JsonArray faces_ = doc.createNestedArray("face");
 
-      // add evnet name
-      // Hint: socket.on('event_name', ....
-      array.add("game"); //change to faces
+    for (int i = 0; i < num_faces; i++) {
+      StaticJsonDocument<100> face_features;
+      StaticJsonDocument<100> direction_features;
+      StaticJsonDocument<100> gaze_features;
+      StaticJsonDocument<800> aux_face;
 
-      for (int i = 0; i < num_faces; i++) {
-        // add payload (parameters) for the event
-        JsonObject param1 = array.createNestedObject();
-        param1[String(i)] = String(face[i].pos[0]);
-      }
+      face_features["x"] = 1;
+      face_features["y"] = 2;
+      face_features["size"] = 3;
+      face_features["confidence"] = 4;
 
-      // JSON to String (serializion)
-      String output;
-      serializeJson(doc, output);
+      direction_features["yaw"] = 5;
+      direction_features["pitch"] = 6;
+      direction_features["roll"] = 7;
+      direction_features["confidence"] = 8;
 
-      // Send event
-      socketIO.sendEVENT(output);
+      gaze_features["yaw"] = 9;
+      gaze_features["pitch"] = 10;
 
-      // Print JSON for debugging
-      Serial.println(output);
+      aux_face["face"] = face_features;
+      aux_face["direction"] = direction_features;
+      aux_face["gaze"] = gaze_features;
+
+      faces_.add(aux_face);
+    }
+
+    // JSON to String (serializion)
+    String output;
+
+    serializeJson(doc, output);
+
+    // Send event
+    //socketIO.sendEVENT(output);
+
+    output.replace("\"", "\\\"");
+
+
+    String msg = String("/camera-1,[\"");
+    msg += "bulb";
+    msg += "\"";
+    if (output) {
+      msg += ",\"";
+      //msg += "{\\\"command\\\":\\\"calibrate\\\"}";
+      msg += output;
+    }
+    msg += "\"]";
+    socketIO.sendEVENT(msg);
+    Serial.println(msg);
   }
 }
 
@@ -340,6 +417,19 @@ void printWifiStatus()
   Serial.print("signal strength (RSSI):");
   Serial.print(rssi);
   Serial.println(" dBm");
+}
+
+char* charTrim(char* stringToTrim, char charsToTrim) {
+  String output;
+  String toTrim = String(stringToTrim);
+  for (int i = 0; i < toTrim.length(); i++) {
+    if (i == 0) continue; //skip the first char '"'
+    if (toTrim.charAt(i) != charsToTrim) {
+      output += toTrim.charAt(i);
+    }
+  }
+  //Serial << "before const_cast return: " << output << endl;    //<<---------------
+  return const_cast<char*>(output.c_str());
 }
 
 void update()
