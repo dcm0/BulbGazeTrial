@@ -1,4 +1,5 @@
 //Bulb Controller object
+const e = require('express');
 const lightRing = require('./lightRing');
 
 class bulbController {
@@ -14,13 +15,16 @@ class bulbController {
         this.cooldown = 2000;
         this.t_cooldown = Date.now()
         this.pattern;
+        this.feedbackType = 'rotate';
         this.processing = false;
         this.last_pitch = 0;
         this.last_yaw = 0;
         this.lightOn = false;
         this.log = logger.child({ camera: this.nsp.name });
         this.calibrating = false;
-        this.lightRing = new lightRing(100,50,25);
+        this.calibrationCount = 0;
+        this.calibrationLimit = 6;
+        this.lightRing = new lightRing(100, 50, 25);
 
         // this.socket.onAny(this.catchAll);
         this.socket.on("face", this.nextFrame); //no 100% sure on this one...
@@ -61,6 +65,7 @@ class bulbController {
         console.log("sending {\"command\":\"calibrate\"}");
         this.average_face = { face_yaw: 0, face_pitch: 0, pitch: 0, yaw: 0 };
         this.calibrating = true;
+        this.calibrationCount = 0;
     }
 
     setState(newLight) {
@@ -71,6 +76,43 @@ class bulbController {
 
     sendRing() {
         this.nsp.emit('bulb', '{"command":"ring", ' + this.lightRing.toString() + '}');
+    }
+
+    async updateFeedback() {
+        if (this.calibrating) {
+            var baseCol = [0, 0, 0];
+            var acol = [120, 120, 120];
+            var gcol = [0, 230, 0];
+
+            if (this.calibrationCount == 0) {
+                this.lightRing.setAll(baseCol[0], baseCol[1], baseCol[2]);
+            } else if (this.calibrationCount == this.calibrationLimit) {
+                this.lightRing.setAll(gcol[0], gcol[1], gcol[2]);
+            } else {
+                var fill_level = this.calibrationCount * abs(this.lightRing.no_lights / this.calibrationLimit);
+                this.lightRing.setRange(0, fill_level, gcol[0], gcol[1], gcol[2]);
+                this.lightRing.setRange(fill_level, this.lightRing.no_lights, acol[0], acol[1], acol[2]);
+            }
+            return;
+        }
+
+        switch (this.feedbackType) {
+            case "rotate":
+                var baseCol = [0, 0, 0];
+                var acol = [120, 120, 120];
+                var gcol = [0, 230, 0];
+
+                if (this.state_machine == 0) {
+                    this.lightRing.setAll(baseCol[0], baseCol[1], baseCol[2]);
+                } else if (this.state_machine == this.patern.length) {
+                    this.lightRing.setAll(gcol[0], gcol[1], gcol[2]);
+                } else {
+                    var fill_level = this.state_machine * abs(this.lightRing.no_lights / this.pattern.length);
+                    this.lightRing.setRange(0, fill_level, gcol[0], gcol[1], gcol[2]);
+                    this.lightRing.setRange(fill_level, this.lightRing.no_lights, acol[0], acol[1], acol[2]);
+                }
+                break;
+        }
     }
 
     async statusHandler(json_data) {
@@ -96,7 +138,7 @@ class bulbController {
         } else {
             this.processing = true;
         }
-        console.log("pricessing");
+
         if (this.calibrating) {
             face = JSON.parse(rawface);
             //make the average face 
@@ -104,6 +146,14 @@ class bulbController {
             this.average_face.yaw = this.average_face.yaw + face.yaw;
             this.average_face.face_pitch = this.average_face.face_pitch + face.face_pitch;
             this.average_face.face_yaw = this.average_face.face_yaw + face.face_yaw;
+            this.calibrationCount++;
+            if (this.calibrationCount < this.calibrationLimit) {
+                this.updateFeedback();
+            } else {
+                this.lightRing.setAll(0, 0, 0);
+                this.calibrating = false;
+                this.log.info('Calibration Finiished');
+            }
         }
 
         if (this.pattern.length == 0) {
@@ -214,6 +264,7 @@ class bulbController {
 
             this.nsp.emit('progress', "{x:'" + this.state_machine + "', outof:'" + this.pattern.length + "'}");
             this.log.info('PROGRESS, x:' + this.state_machine + " outof: " + this.pattern.length);
+            this.updateFeedback();
             if (this.state_machine == 1) this.nsp.emit('interaction starts'); //not sure this one is needed?
             if (this.state_machine == this.pattern.length) {
                 this.state_machine = 0;

@@ -13,6 +13,14 @@ class lightRing {
         }
     }
 
+    setAll(r,g,b){
+        for (let index = 0; index < this.no_lights; index++) {
+            this.lightArray[index]['r'] = r;
+            this.lightArray[index]['g'] = g;
+            this.lightArray[index]['b'] = b;
+        }
+    }
+
     setRange(from, to, r, g, b){
         if(from<0) from=0;
         if(to>this.lightArray.length) to=this.lightArray.length;
