@@ -73,8 +73,10 @@ dnsp.on('connection', function (socket) {
   dnsp.emit('bulb', 'Hello dash!');
 
   socket.on('game', (json_data) => {
-    console.log('dnsp');
+    
   payload = JSON.parse(json_data);
+  console.log("Dash Command: "+payload['command']);
+
   switch (payload['command']) {
     case "skip":
       logger.info('DASHBOARD SKIP');
@@ -115,7 +117,7 @@ dnsp.on('connection', function (socket) {
       var light = payload['status'];
       
       bulbControllers.forEach(bulb => {
-        console.log(bulb);
+        console.log("WHat the hell?"+bulb);
         console.log(bulb.nsp.name.toString());
         if(bulb.nsp.name.toString().includes(cam)){
           console.log(bulb.nsp.name.toString());
