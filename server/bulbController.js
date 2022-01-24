@@ -233,9 +233,10 @@ class bulbController {
 }
 
 class lightRing {
-    no_lights = 12;
+    
 
     constructor(r, g, b) {
+        this.no_lights = 12;
         this.lightArray = new Array();
         for (let index = 0; index < no_lights; index++) {
             this.lightArray[index] = new Array();
@@ -268,4 +269,4 @@ class lightRing {
 }
 
 module.exports = bulbController;
-module.exports = lightRing;
+module.exports = lightRing
