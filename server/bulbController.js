@@ -30,6 +30,7 @@ class bulbController {
         console.log(name);
         console.log(item);
     }
+
     setPattern(gaze_pattern) {
         this.log.info("Updating pattern on " + this.nsp.name + " to " + gaze_pattern);
         this.pattern = gaze_pattern.split(" ");
@@ -269,4 +270,3 @@ class lightRing {
 }
 
 module.exports = bulbController;
-module.exports = lightRing
