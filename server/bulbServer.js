@@ -4,7 +4,7 @@ const { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } = require('constants');
 const app = require('express');
 const { runInThisContext } = require('vm');
 const logger = require('pino')('./bulbLogs.log'); //pino.destination()
-const bulbController = require('./bulbController.js').default
+const bulbController = require('./bulbController');
 const http = require('http').createServer(app);
 const io = require('socket.io')(http, {
   cors: {
@@ -126,7 +126,7 @@ dnsp.on('connection', function (socket) {
 var cameras = io.of(/^\/camera-\d+$/);
 cameras.on("connection", (socket) => {
   console.log('bulb connected');
-  bulbControllers.push(new bulbController(socket, cnsp, dnsp));
+  bulbControllers.push(new bulbController(socket, cnsp, dnsp, logger));
   //What is the Average Face stuff? Where do I get that?
   logger.info('Bulb connected ' + socket.nsp.name);
   cameras.emit('bulb', 'Hello camera ' + socket.nsp.name);

@@ -1,7 +1,7 @@
 //Bulb Controller object
 class bulbController {
 
-    constructor(socket, controlnsp, dashnsp) {
+    constructor(socket, controlnsp, dashnsp, logger) {
       this.nsp = socket.nsp;
       this.socket = socket;
       this.controlnsp = controlnsp;
@@ -225,3 +225,4 @@ class bulbController {
     }
   }
 
+module.exports = bulbController;
