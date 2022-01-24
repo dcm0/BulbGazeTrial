@@ -164,7 +164,6 @@ cameras.on("connection", (socket) => {
 
 
 function checkQuiz() {
-
   correct = true;
   for (let index = 0; index < bulbControllers.length; index++) {
     if (bulbControllers[index].lightOn != current_target[index]) {
@@ -172,7 +171,6 @@ function checkQuiz() {
     }
   }
   return correct;
-
 }
 
 

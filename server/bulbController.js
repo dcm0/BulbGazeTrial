@@ -93,6 +93,7 @@ class bulbController {
                 this.lightRing.setRange(0, fill_level, gcol[0], gcol[1], gcol[2]);
                 this.lightRing.setRange(fill_level, this.lightRing.no_lights, acol[0], acol[1], acol[2]);
             }
+            this.sendRing();
             return;
         }
 
@@ -113,6 +114,7 @@ class bulbController {
                 }
                 break;
         }
+        this.sendRing();
     }
 
     async statusHandler(json_data) {
