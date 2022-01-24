@@ -27,7 +27,7 @@ class lightRing {
     toString(){
         var lightString = "";
         for (let index = 0; index < this.lightArray.length; index++) {
-            lightString = `${lightString} "${index}": "[${this.lightArray[index]['r']},${this.lightArray[index]['g']},${this.lightArray[index]['b']}]"`;
+            lightString = `${lightString} "${index}r": "${this.lightArray[index]['r']}", "${index}g":"${this.lightArray[index]['g']}", "${index}b":"${this.lightArray[index]['b']}"`;
             if(index!=this.lightArray.length-1){
                 lightString = lightString + ", ";
             }
