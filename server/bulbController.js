@@ -238,7 +238,7 @@ class lightRing {
     constructor(r, g, b) {
         this.no_lights = 12;
         this.lightArray = new Array();
-        for (let index = 0; index < no_lights; index++) {
+        for (let index = 0; index < this.no_lights; index++) {
             this.lightArray[index] = new Array();
             this.lightArray[index]['r'] = r;
             this.lightArray[index]['g'] = g;
