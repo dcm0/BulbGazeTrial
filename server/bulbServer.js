@@ -17,6 +17,7 @@ const io = require('socket.io')(http, {
 var last_differences = 2;
 var current_target;
 var round_counter = 0;
+var condition_counter=0;
 var current_gaze_pattern = "center up left";
 
 var bulbControllers = [];
@@ -98,6 +99,12 @@ dnsp.on('connection', function (socket) {
     case "resetCounter":
       round_counter=0;
       break;
+    case "setRound":
+      round_counter=payload['value'];
+      break;
+    case "setCondition":
+      condition_counter=payload['value'];
+      break;              
     case "logString":
       //Figure we might want to send participant ID to the logs or something
       logger.info(payload['logString']);

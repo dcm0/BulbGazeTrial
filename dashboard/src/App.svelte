@@ -30,8 +30,8 @@
 	});
 	socket.on('game', function(msg) {
 		//catch updates from server
-		jsonData = JSON.parse(msg);
-		payload = JSON.parse(json_data);
+		//jsonData = JSON.parse(msg);
+		var payload = JSON.parse(msg);
   		switch (payload['command']) {
 		case "passCheck":
 			break;
