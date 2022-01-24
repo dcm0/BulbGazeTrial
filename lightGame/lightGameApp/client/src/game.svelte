@@ -6,6 +6,7 @@
 	export let activeList;
 	export let socket;
 	export let completed;
+	export let gameActive;
 	let started = false;
   let activeColor = "#eee310";
   let passiveColor = "#888888";
@@ -16,19 +17,19 @@
   let srcList = ["./interactionTypes/1.svg","./interactionTypes/2.svg","./interactionTypes/3.svg"]
   function skip(){
 		completed=true;
-    socket.emit('game', "{command:'skip'}");
+    socket.emit('game', '{"command":"skip"}');
   }
 	function start(){
-		socket.emit('game', "{command:'start_timer'}");
+		socket.emit('game', '{"command":"start_timer"}');
 		started = true;
 	}
 
 	function check(){
-		socket.emit('game', "{command:'check'}");
+		socket.emit('game', '{"command":"check"}');
 	}
 	function next(){
 		completed=true;
-		socket.emit('game', "{command:'next'}");
+		socket.emit('game', '{"command":"next"}');
 	}
 	// socket.on('game', function(msg) {
 	// 	console.log(msg);
@@ -36,9 +37,10 @@
 	// 		complete=true;
 	// 	}
 	// });
-  function initNewRound(){
+  function initNewRound(activeList){
     //shuffle(itemList)
-
+		completed=false;
+		console.log("reinit")
     for (let i = 0; i<6;i++){
 			colorList[i] = passiveColor;
 			if(activeList[i] == 1){
@@ -52,8 +54,10 @@
     //   colorList[itemList[i]] = activeColor;
     // }
   }
-  initNewRound()
-
+  initNewRound(activeList)
+	$: {
+		initNewRound(activeList);
+	}
 
 //   function shuffle(array) {
 //     let currentIndex = array.length,  randomIndex;
@@ -98,14 +102,18 @@ start
 {:else}
 <Timer bind:completed/>
 <div class="button-container">
-	<button id="next" class="button">
+{#if completed}
+	<button id="next" class="button" on:click={next}>
 		next
 	</button>
-
-	<button id="skip" class="button"  on:click={skip}>
+{:else}
+<button id="check" class="button" on:click={check}>
+	check
+</button>
+	<button id="skip" class="button" on:click={skip}>
 		skip
 	</button>
-
+{/if}
 </div>
 		{/if}
 <style>
@@ -175,6 +183,11 @@ border-color:#FF2525;
 
 	}
 	#next{
+		background-color:lightgreen;
+		border-color:lightgreen;
+		margin-right:25px;
+	}
+	#check{
 		background-color:lightgreen;
 		border-color:lightgreen;
 		margin-right:25px;

@@ -1,10 +1,10 @@
 <script>
 import { tweened } from 'svelte/motion';
-export let complete;
+export let completed;
 let original = 0; // TYPE NUMBER OF SECONDS HERE
 let timer = tweened(original)
 setInterval(() => {
-    if ($timer < 60*5 && !complete) $timer++;
+    if ($timer < 60*5 && !completed) $timer++;
   }, 1000);
 
 $: minutes = Math.floor($timer / 60);

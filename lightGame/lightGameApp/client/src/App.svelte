@@ -7,7 +7,7 @@
 	let jsonData;
 	let form;
 	let gaze_pattern;
-	let completed;
+	let completed = false;
 
 
 	import GameView from './game.svelte';
@@ -31,7 +31,9 @@
 
 	}
 
-
+	function start(){
+		socket.emit('game', '{"command":"next"}');
+	}
   import { onMount } from 'svelte';
 	onMount(() => {
 
@@ -39,7 +41,7 @@
 	  // socket.addEventListener("open", ()=> {
 	  //   console.log("Opened")
 	  // })
-		socket.emit('game', "hello");
+		//socket.emit('game', "hello");
 	})
 	socket.on('game', function(msg) {
 	jsonData = JSON.parse(msg);
@@ -48,6 +50,7 @@
 	} else if (jsonData["command"] == "failCheck") {
 
 	} else if (jsonData["command"] == "newQuiz") {
+		console.log("newQuiz found!")
 		updateGameMode(jsonData)
 	}
 	console.log(jsonData);
@@ -59,17 +62,25 @@ function patternToMode(gaze_pattern){
 
 
 
-	function updateGameMode(jsonData){
-		gaze_pattern = jsonData["gaze_pattern"];
-		chosenGameMode = patternToMode(gaze_pattern);
-		activeList = JSON.parse(jsonData["target_pattern"]);
+function updateGameMode(jsonData){
+	if (jsonData["round"]>0){
+		gameActive=true;
 	}
+	gaze_pattern = jsonData["gaze_pattern"];
+	chosenGameMode = patternToMode(gaze_pattern);
+	activeList = JSON.parse(jsonData["target_pattern"]);
+}
 
 </script>
 <form></form>
 <h1>{name}!</h1>
 {#if !gameActive}
 <div class="button-container">
+<button id="next" class="button" on:click={start}>
+	. ' * s t a r t * ' .
+</button>
+</div>
+<!-- <div class="button-container">
 <p> One dim</p>
 <button class="button" on:click={() => setGame(1, 1)}>
 1
@@ -92,9 +103,9 @@ function patternToMode(gaze_pattern){
 <button class="button" on:click={() => setGame(3, 2)}>
 3
 </button>
-</div>
+</div> -->
 {:else}
-	<GameView bind:chosenGameValue bind:chosenGameMode bind:activeList bind:socket bind:completed/>
+	<GameView bind:chosenGameValue bind:chosenGameMode bind:activeList bind:socket bind:completed bind:gameActive/>
 {/if}
 <style>
 	h1{
@@ -112,7 +123,7 @@ function patternToMode(gaze_pattern){
 	}
 	.button{
 		background-color: #111111;
-		width: 70px;
+		width: 150px;
 		border: 1px solid #111111;
 		border-radius: 6px;
 		box-shadow: rgba(0, 0, 0, 0.1) 1px 2px 4px;
@@ -134,6 +145,21 @@ function patternToMode(gaze_pattern){
 		-webkit-user-select: none;
 	 touch-action: manipulation;
 	 vertical-align: middle;
+	 margin: 0 auto;
+	 display: block;
+}
+.button-container{
+	margin: auto;
+	margin-top: 50px;
+	width: 170px;
+}
+#start{
+	margin: 0 auto;
+display: block;
+
+background-color:#FF2525;
+border-color:#FF2525;
+
 }
 
 .button:hover,
