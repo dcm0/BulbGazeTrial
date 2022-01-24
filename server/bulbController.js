@@ -225,4 +225,3 @@ class bulbController {
     }
   }
 
-  export default bulbController;
