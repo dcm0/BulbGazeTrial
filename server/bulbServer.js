@@ -197,6 +197,16 @@ function setupNewQuiz(differences = last_differences) {
       //bulbControllers[index].setState(start_pattern[index]);
     }
     round_counter++;
+
+    var outputPattern = [false,false,false,false,false,false];
+    if(target_pattern.length < outputPattern.length){
+      for (let index = 0; index < target_pattern.length; index++) {
+        outputPattern[index] = target_pattern[index];
+      }
+    }else{
+      outputPattern = target_pattern;
+    }
+
     var target_json = '{"command":"newQuiz", "round":"'+round_counter+'", "target_pattern":"'+JSON.stringify(target_pattern)+'", "gaze_pattern":"'+current_gaze_pattern+'"}';
     console.log(target_json);
     dnsp.emit('game', target_json);
