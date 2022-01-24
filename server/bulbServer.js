@@ -5,6 +5,7 @@ const app = require('express');
 const { runInThisContext } = require('vm');
 const logger = require('pino')('./bulbLogs.log'); //pino.destination()
 const bulbController = require('./bulbController');
+const lightRing = require('./lightRing');
 const http = require('http').createServer(app);
 const io = require('socket.io')(http, {
   cors: {
@@ -122,7 +123,7 @@ dnsp.on('connection', function (socket) {
         if(bulb.nsp.name.toString().includes(cam)){
           console.log(bulb.nsp.name.toString());
           bulb.setState(light=='off'?false:true);
-          bulb.sendRing(lightArray);
+          bulb.sendRing();
         }  
       });
       break;
