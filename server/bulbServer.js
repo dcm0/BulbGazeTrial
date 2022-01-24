@@ -115,6 +115,7 @@ dnsp.on('connection', function (socket) {
       var light = payload['status'];
       
       bulbControllers.forEach(bulb => {
+        console.log(bulb);
         console.log(bulb.nsp.name.toString());
         if(bulb.nsp.name.toString().includes(cam)){
           console.log(bulb.nsp.name.toString());
