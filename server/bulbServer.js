@@ -190,7 +190,7 @@ function setupNewQuiz(differences = last_differences) {
     current_target = target_pattern;
 
     for (let index = 0; index < bulbControllers.length; index++) {
-      bulbControllers[index].setState(start_pattern[index]);
+      bulbControllers[index].setPattern(start_pattern[index]);
     }
     round_counter++;
     var target_json = '{"command":"newQuiz", "round":"'+round_counter+'", "target_pattern":"'+JSON.stringify(target_pattern)+'", "gaze_pattern":"'+current_gaze_pattern+'"}';
