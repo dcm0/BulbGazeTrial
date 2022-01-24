@@ -102,7 +102,9 @@ dnsp.on('connection', function (socket) {
     case "calibrate":
       var cam = payload['camString'];
       bulbControllers.forEach(bulb => {
-        if(bulb.nsp.includes(cam)){
+        console.log(bulb.nsp.toString());
+        if(bulb.nsp.toSring().includes(cam)){
+          console.log(bulb.nsp.toString());
           bulb.calibrate();
         }  
       });
@@ -111,8 +113,9 @@ dnsp.on('connection', function (socket) {
       var cam = payload['camString'];
       var light = payload['status'];
       bulbControllers.forEach(bulb => {
-
+        console.log(bulb.nsp.toString());
         if(bulb.nsp.toString().includes(cam)){
+          console.log(bulb.nsp.toString());
           bulb.toggle(light=='off'?false:true);
         }  
       });
