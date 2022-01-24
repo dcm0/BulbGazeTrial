@@ -68,7 +68,7 @@ class bulbController {
     sendRing(lightRingArray){
         var lightString = "";
         for (let index = 0; index < lightRingArray.length; index++) {
-            lightString = `${lightstring} "${index}": "${lightRingArray[index]['r']},${lightRingArray[index]['g']},${lightRingArray[index]['b']}"`;
+            lightString = `${lightString} "${index}": "${lightRingArray[index]['r']},${lightRingArray[index]['g']},${lightRingArray[index]['b']}"`;
         }
         this.nsp.emit('bulb', '{"command":"ring", '+lightString+'}');
     }
