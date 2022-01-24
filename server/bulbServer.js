@@ -101,11 +101,12 @@ dnsp.on('connection', function (socket) {
       break;
     case "calibrate":
       var cam = payload['camString'];
+      console.log(cam);
       bulbControllers.forEach(bulb => {
-        console.log(bulb.nsp.toString());
-        if(bulb.nsp.toSring().includes(cam)){
-          console.log(bulb.nsp.toString());
-          bulb.calibrate();
+        console.log("tostrgin: "+bulb.nsp.name.toString());
+        if(bulb.nsp.name.toString().includes(cam)){
+          console.log(bulb.nsp.name.toString());
+          bulb.startCalibrate();
         }  
       });
       break;
@@ -113,10 +114,10 @@ dnsp.on('connection', function (socket) {
       var cam = payload['camString'];
       var light = payload['status'];
       bulbControllers.forEach(bulb => {
-        console.log(bulb.nsp.toString());
-        if(bulb.nsp.toString().includes(cam)){
-          console.log(bulb.nsp.toString());
-          bulb.toggle(light=='off'?false:true);
+        console.log(bulb.nsp.name.toString());
+        if(bulb.nsp.name.toString().includes(cam)){
+          console.log(bulb.nsp.name.toString());
+          bulb.setState(light=='off'?false:true);
         }  
       });
       break;

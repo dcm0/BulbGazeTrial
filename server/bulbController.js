@@ -19,7 +19,7 @@ class bulbController {
       this.log = logger.child({ camera: this.nsp.name });
       this.calibrating = false;
   
-      //this.socket.onAny(this.catchAll);
+     // this.socket.onAny(this.catchAll);
       this.socket.on("face", this.nextFrame); //no 100% sure on this one...
       this.socket.on('bulb', this.statusHandler);
   
@@ -54,6 +54,7 @@ class bulbController {
 
     startCalibrate(){
         this.nsp.emit('bulb', '{"command":"calibrate"}');
+        console.log("sending {\"command\":\"calibrate\"}");
         this.average_face = {face_yaw: 0, face_pitch: 0, pitch:0, yaw:0};
         this.calibrating = true;
     }
@@ -65,8 +66,9 @@ class bulbController {
     }
   
     async statusHandler(json_data) {
-  
-      payload = JSON.parse(json_data);
+      console.log(json_data);
+      var payload = JSON.parse(json_data);
+      console.log(payload['command']);
       switch (payload['command']) {
         case "status":
           //Update the object and send to dashboard
@@ -80,15 +82,15 @@ class bulbController {
     }
   
     async nextFrame(rawface) {
-  
+      console.log(rawface);
       if (this.processing) {
         return;
       } else {
         this.processing = true;
       }
-
+      console.log("pricessing");
       if(this.calibrating){
-        face = JSON.parse(rawface)[0];
+        face = JSON.parse(rawface);
         //make the average face 
         this.average_face.pitch = this.average_face.pitch+face.pitch;
         this.average_face.yaw = this.average_face.yaw+face.yaw;
@@ -102,7 +104,7 @@ class bulbController {
       }
   
       //GET THE FACE OUT OF THE RAW DATA
-      face = JSON.parse(rawface)[0];
+      face = JSON.parse(rawface);
   
       if ((Date.now() - this.t_cooldown) > this.cooldown) {
         var yaw = face["gaze"]["yaw"];
