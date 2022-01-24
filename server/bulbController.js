@@ -64,6 +64,14 @@ class bulbController {
         this.nsp.emit('bulb', '{"command":"toggle"}');
       }
     }
+
+    sendRing(lightRingArray){
+        var lightString = "";
+        for (let index = 0; index < lightRingArray.length; index++) {
+            lightString = `${lightstring} "${index}": "${lightRingArray[index]['r']},${lightRingArray[index]['g']},${lightRingArray[index]['b']}"`;
+        }
+        this.nsp.emit('bulb', '{"command":"ring", '+lightString+'}');
+    }
   
     async statusHandler(json_data) {
       console.log(json_data);

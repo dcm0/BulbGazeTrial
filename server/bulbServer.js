@@ -113,11 +113,49 @@ dnsp.on('connection', function (socket) {
     case "toggleCamera":
       var cam = payload['camString'];
       var light = payload['status'];
+      var lightArray;
+      lightArray[0]['r'] = 100;
+      lightArray[0]['g'] = 50;
+      lightArray[0]['b'] = 0;
+      lightArray[1]['r'] = 100;
+      lightArray[1]['g'] = 50;
+      lightArray[1]['b'] = 0;
+      lightArray[2]['r'] = 100;
+      lightArray[2]['g'] = 50;
+      lightArray[2]['b'] = 0;
+      lightArray[3]['r'] = 100;
+      lightArray[3]['g'] = 50;
+      lightArray[3]['b'] = 0;
+      lightArray[4]['r'] = 100;
+      lightArray[4]['g'] = 50;
+      lightArray[4]['b'] = 0;
+      lightArray[5]['r'] = 100;
+      lightArray[5]['g'] = 50;
+      lightArray[5]['b'] = 0;
+      lightArray[6]['r'] = 100;
+      lightArray[6]['g'] = 50;
+      lightArray[6]['b'] = 0;
+      lightArray[7]['r'] = 100;
+      lightArray[7]['g'] = 50;
+      lightArray[7]['b'] = 0;
+      lightArray[8]['r'] = 100;
+      lightArray[8]['g'] = 50;
+      lightArray[8]['b'] = 0;
+      lightArray[9]['r'] = 100;
+      lightArray[9]['g'] = 50;
+      lightArray[9]['b'] = 0;
+      lightArray[10]['r'] = 100;
+      lightArray[10]['g'] = 50;
+      lightArray[10]['b'] = 0;
+      lightArray[11]['r'] = 100;
+      lightArray[11]['g'] = 50;
+      lightArray[11]['b'] = 0;
       bulbControllers.forEach(bulb => {
         console.log(bulb.nsp.name.toString());
         if(bulb.nsp.name.toString().includes(cam)){
           console.log(bulb.nsp.name.toString());
           bulb.setState(light=='off'?false:true);
+          bulb.sendRing(lightArray);
         }  
       });
       break;
