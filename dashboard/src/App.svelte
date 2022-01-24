@@ -62,7 +62,7 @@
 			calibration[boxString] = true; //testing wait for callback
 			console.log(boxString);
 		}else{
-			socket.emit('game', '{"command":"toggleCamera", "camString":"'+boxString+'", "status":}');
+			socket.emit('game', '{"command":"toggleCamera", "camString":"'+boxString+'", "status":"off"}');
 			lightStatus[boxString] = !lightStatus[boxString];//testing wait for callback
 		}
 

@@ -111,7 +111,8 @@ dnsp.on('connection', function (socket) {
       var cam = payload['camString'];
       var light = payload['status'];
       bulbControllers.forEach(bulb => {
-        if(bulb.nsp.includes(cam)){
+
+        if(bulb.nsp.toString().includes(cam)){
           bulb.toggle(light=='off'?false:true);
         }  
       });
