@@ -17,7 +17,7 @@ const io = require('socket.io')(http, {
 var last_differences = 2;
 var current_target;
 var round_counter = 0;
-var condition_counter=0;
+var condition_counter = 0;
 var current_gaze_pattern = "center up left";
 
 var bulbControllers = [];
@@ -28,43 +28,40 @@ cnsp.on('connection', function (socket) {
   console.log('controller connected');
   logger.info('controller connected');
   cnsp.emit('bulb', 'Hello controller');
-//Controller Event handlers
-socket.on('game', (json_data) => {
-  console.log('cnsp');
-payload = JSON.parse(json_data);
-console.log(json_data);
-console.log(payload['command']);
-switch (payload['command']) {
-  case "check":
-    //check if the pattern matches
-    if(checkQuiz()){
-      logger.info('CONTROLLER CHECK - Pass');
-      cnsp.emit('game', '{"command":"passCheck"}');
-    }else{
-      logger.info('CONTROLLER CHECK - Fail');
-      cnsp.emit('game', '{"command":"failCheck"}');
+  //Controller Event handlers
+  socket.on('game', (json_data) => {
+    console.log('cnsp');
+    payload = JSON.parse(json_data);
+    console.log(json_data);
+    console.log(payload['command']);
+    switch (payload['command']) {
+      case "check":
+        //check if the pattern matches
+        if (checkQuiz()) {
+          logger.info('CONTROLLER CHECK - Pass');
+          cnsp.emit('game', '{"command":"passCheck"}');
+        } else {
+          logger.info('CONTROLLER CHECK - Fail');
+          cnsp.emit('game', '{"command":"failCheck"}');
+        }
+        break;
+      case "skip":
+        logger.info('CONTROLLER SKIP');
+        cnsp.emit('game', '{"command":"skipInitiated"}');
+        //record this as a cancel/skip
+        setupNewQuiz();
+        break;
+      case "start_timer":
+        logger.info('ROUND STARTED');
+        break;
+      case "next":
+        logger.info('CONTROLLER NEXT');
+        cnsp.emit('game', '{"command":"nextInitiated"}');
+        //record this as a cancel/skip   
+        setupNewQuiz();
+        break;
     }
-    break;
-  case "skip":
-    logger.info('CONTROLLER SKIP');
-    cnsp.emit('game', '{"command":"skipInitiated"}');
-    //record this as a cancel/skip
-    setupNewQuiz();
-    break;
-  case "start_timer":
-    logger.info('ROUND STARTED');
-    break;
-  case "next":
-    logger.info('CONTROLLER NEXT');
-    cnsp.emit('game', '{"command":"nextInitiated"}');
-    //record this as a cancel/skip   
-    setupNewQuiz();
-    break;
-
-
-}
-
-});
+  });
 
 });
 
@@ -75,70 +72,71 @@ dnsp.on('connection', function (socket) {
   dnsp.emit('bulb', 'Hello dash!');
 
   socket.on('game', (json_data) => {
-    
-  payload = JSON.parse(json_data);
-  console.log("Dash Command: "+payload['command']);
 
-  switch (payload['command']) {
-    case "skip":
-      logger.info('DASHBOARD SKIP');
-      //record this as a cancel/skip and notify to start the waiting screen on controller
-      cnsp.emit('game', '{"command":"passCheck"}');
+    payload = JSON.parse(json_data);
+    console.log("Dash Command: " + payload['command']);
+
+    switch (payload['command']) {
+      case "skip":
+        logger.info('DASHBOARD SKIP');
+        //record this as a cancel/skip and notify to start the waiting screen on controller
+        cnsp.emit('game', '{"command":"passCheck"}');
       //then just do the new pattern command below
-    case "newQuiz":
-      console.log('DASHBOARD New Quiz');
-      logger.info('DASHBOARD New Quiz');
-      setupNewQuiz(payload['differences']);
-      break;
-    case "setInteraction":
-      for (let index = 0; index < bulbControllers.length; index++) {
-        bulbControllers[index].setPattern(payload['interaction_pattern']);
-      }
-      logger.info('Interaction Changed ' + payload['interaction_pattern']);
-      break;
-    case "resetCounter":
-      round_counter=0;
-      break;
-    case "setRound":
-      round_counter=payload['value'];
-      break;
-    case "setCondition":
-      condition_counter=payload['value'];
-      break;              
-    case "logString":
-      //Figure we might want to send participant ID to the logs or something
-      logger.info(payload['logString']);
-      break;
-    case "calibrate":
-      var cam = payload['camString'];
-      console.log(cam);
-      bulbControllers.forEach(bulb => {
-        console.log("tostrgin: "+bulb.nsp.name.toString());
-        if(bulb.nsp.name.toString().includes(cam)){
-          console.log(bulb.nsp.name.toString());
-          bulb.startCalibrate();
-        }  
-      });
-      break;
-    case "toggleCamera":
-      var cam = payload['camString'];
-      var light = payload['status'];
-      
-      bulbControllers.forEach(bulb => {
-        console.log("WHat the hell?"+bulb);
-        console.log(bulb.nsp.name.toString());
-        if(bulb.nsp.name.toString().includes(cam)){
-          console.log(bulb.nsp.name.toString());
-          bulb.setState(light=='off'?false:true);
-          bulb.lightRing.setRange(0,6,250,0,0);
-          bulb.lightRing.setRange(7,11,0,250,0);
-          bulb.sendRing();
-        }  
-      });
-      break;
-  }
+      case "newQuiz":
+        console.log('DASHBOARD New Quiz');
+        logger.info('DASHBOARD New Quiz');
+        setupNewQuiz(payload['differences']);
+        break;
+      case "setInteraction":
 
-});
+        bulbControllers.forEach(bulb => {
+          bulb.setPattern(payload['interaction_pattern']);
+        });
+        logger.info('Interaction Changed ' + payload['interaction_pattern']);
+        break;
+      case "resetCounter":
+        round_counter = 0;
+        break;
+      case "setRound":
+        round_counter = payload['value'];
+        break;
+      case "setCondition":
+        condition_counter = payload['value'];
+        break;
+      case "logString":
+        //Figure we might want to send participant ID to the logs or something
+        logger.info(payload['logString']);
+        break;
+      case "calibrate":
+        var cam = payload['camString'];
+        console.log(cam);
+        bulbControllers.forEach(bulb => {
+          console.log("tostrgin: " + bulb.nsp.name.toString());
+          if (bulb.nsp.name.toString().includes(cam)) {
+            console.log(bulb.nsp.name.toString());
+            bulb.startCalibrate();
+          }
+        });
+        break;
+      case "toggleCamera":
+        var cam = payload['camString'];
+        var light = payload['status'];
+
+        bulbControllers.forEach(bulb => {
+          console.log("WHat the hell?" + bulb);
+          console.log(bulb.nsp.name.toString());
+          if (bulb.nsp.name.toString().includes(cam)) {
+            console.log(bulb.nsp.name.toString());
+            bulb.setState(light == 'off' ? false : true);
+            bulb.lightRing.setRange(0, 6, 250, 0, 0);
+            bulb.lightRing.setRange(7, 11, 0, 250, 0);
+            bulb.sendRing();
+          }
+        });
+        break;
+    }
+
+  });
 
 
 });
@@ -146,18 +144,30 @@ dnsp.on('connection', function (socket) {
 var cameras = io.of(/^\/camera-\d+$/);
 cameras.on("connection", (socket) => {
   console.log('bulb connected');
-  bulbControllers.push(new bulbController(socket, cnsp, dnsp, logger));
+  var newBulb = true;
+
+  bulbControllers.forEach(function (bulb, index, bulbarray) {
+    if (bulb.nsp.name == socket.nsp.name) {
+      //Then we have a reconnection on the same name. Kill and restart?
+      newBulb = false;
+      //Do I have to disconnect?
+      bulbArray[index] = new bulbController(socket, cnsp, dnsp, logger);
+    }
+  });
+  if (newBulb) {
+    bulbControllers.push(new bulbController(socket, cnsp, dnsp, logger));
+  }
   //What is the Average Face stuff? Where do I get that?
   logger.info('Bulb connected ' + socket.nsp.name);
   cameras.emit('bulb', 'Hello camera ' + socket.nsp.name);
 });
 
 
-function checkQuiz(){
+function checkQuiz() {
 
   correct = true;
   for (let index = 0; index < bulbControllers.length; index++) {
-    if(bulbControllers[index].lightOn != target_pattern[index]){
+    if (bulbControllers[index].lightOn != current_target[index]) {
       correct = false;
     }
   }
@@ -207,20 +217,20 @@ function setupNewQuiz(differences = last_differences) {
     }
     round_counter++;
 
-    var outputPattern = [false,false,false,false,false,false];
-    if(target_pattern.length < outputPattern.length){
+    var outputPattern = [false, false, false, false, false, false];
+    if (target_pattern.length < outputPattern.length) {
       for (let index = 0; index < target_pattern.length; index++) {
         outputPattern[index] = target_pattern[index];
       }
-    }else{
+    } else {
       outputPattern = target_pattern;
     }
 
-    var target_json = '{"command":"newQuiz", "round":"'+round_counter+'", "target_pattern":"'+JSON.stringify(outputPattern)+'", "gaze_pattern":"'+current_gaze_pattern+'"}';
+    var target_json = '{"command":"newQuiz", "round":"' + round_counter + '", "target_pattern":"' + JSON.stringify(outputPattern) + '", "gaze_pattern":"' + current_gaze_pattern + '"}';
     console.log(target_json);
     dnsp.emit('game', target_json);
     cnsp.emit('game', target_json);
-    logger.info('Starting new round ('+round_counter+") differences:"+differences+" elements to change:"+JSON.stringify(change_indexes));
+    logger.info('Starting new round (' + round_counter + ") differences:" + differences + " elements to change:" + JSON.stringify(change_indexes));
 
   }
 }

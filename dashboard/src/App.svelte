@@ -97,7 +97,13 @@
 		if(con != conditionNumber){
 			socket.emit('game', '{"command":"setCondition", "value":"'+con+'"}');
 			conditionNumber = con;
+			roundNumber = 0;
 		}
+	}
+
+	function forceSkip(){
+		socket.emit('game', '{"command":"logString", "logString":"Skip Forced from Dashboard"}');
+		socket.emit('game', '{"command":"newQuiz"}');
 	}
 
 	function setRound(con){
@@ -186,7 +192,7 @@
 	</button>
 	<h3>Participant: {participantName}, condition {conditionNumber}, round {roundNumber}</h3>
 
-	<button class="button" id="nextRound" on:click={() => setRound(roundNumber+1)}>
+	<button class="button" id="nextRound" on:click={() => forceSkip()}>
 		Next Round
 	</button>
 
