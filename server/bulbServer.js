@@ -207,7 +207,7 @@ function setupNewQuiz(differences = last_differences) {
       outputPattern = target_pattern;
     }
 
-    var target_json = '{"command":"newQuiz", "round":"'+round_counter+'", "target_pattern":"'+JSON.stringify(target_pattern)+'", "gaze_pattern":"'+current_gaze_pattern+'"}';
+    var target_json = '{"command":"newQuiz", "round":"'+round_counter+'", "target_pattern":"'+JSON.stringify(outputPattern)+'", "gaze_pattern":"'+current_gaze_pattern+'"}';
     console.log(target_json);
     dnsp.emit('game', target_json);
     cnsp.emit('game', target_json);
