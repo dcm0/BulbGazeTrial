@@ -153,10 +153,10 @@ dnsp.on('connection', function (socket) {
 
             /***********DEBUG CODE SENDING LIGHT RING VALUES */
             if(!bulb.lightOn){
-              bulb.setAll(255,0,0);
+              bulb.lightRing.setAll(255,0,0);
               bulb.sendRing();
             }else{
-              bulb.setAll(0,255,0);
+              bulb.lightRing.setAll(0,255,0);
               bulb.sendRing();
             }
            
