@@ -39,6 +39,8 @@ class bulbController {
         this.socket.on("face", this.nextFrame); 
         this.socket.on('bulb', this.statusHandler);
 
+        this.bulbController = this;
+
     }
 
     setPattern(gaze_pattern) {
@@ -149,6 +151,7 @@ class bulbController {
         //Process a face
         //console.log(rawface);
         //this.logSomething("do you work?");
+        this.bulbController.log.info('strange test');
         if (this.processing) {
             return;
         } else {
