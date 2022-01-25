@@ -153,10 +153,10 @@ dnsp.on('connection', function (socket) {
 
             /***********DEBUG CODE SENDING LIGHT RING VALUES */
             if(!bulb.lightOn){
-              bulb.lightRing.setAll(255,0,0);
+              bulb.lightRing.setAll(99,0,0);
               bulb.sendRing();
             }else{
-              bulb.lightRing.setAll(0,255,0);
+              bulb.lightRing.setAll(0,99,0);
               bulb.sendRing();
             }
            
@@ -203,6 +203,7 @@ cameras.on("connection", (socket) => {
 function checkQuiz() {
   //Loop through the boxes and check if the light status
   //matches the target for the round
+  console.log('checking quiz');
   correct = true;
   for (let index = 0; index < bulbControllers.length; index++) {
     console.log("Checking Bulb "+ bulbControllers[index].lightOn + " = "+ current_target[index]);
