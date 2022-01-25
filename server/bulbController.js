@@ -1,12 +1,12 @@
 //Bulb Controller object
 const e = require('express');
 const lightRing = require('./lightRing');
-const logger = require('pino')('./bulbLogs.log'); //pino.destination()
+//const logger = require('pino')('./bulbLogs.log'); //pino.destination()
 
 
 class bulbController {
 
-    constructor(socket, controlnsp, dashnsp, logger2, current_gaze_pattern, current_feedback) {
+    constructor(socket, controlnsp, dashnsp, logger, current_gaze_pattern, current_feedback) {
         this.nsp = socket.nsp;
         this.socket = socket;
         this.controlnsp = controlnsp;
@@ -17,7 +17,7 @@ class bulbController {
         this.cooldown = 2000;
         this.t_cooldown = Date.now()
         this.pattern;
-        //this.logger = logger;
+        this.logger = logger;
         this.feedbackType = current_feedback;
         this.processing = false;
         this.last_pitch = 0;
@@ -63,6 +63,10 @@ class bulbController {
         } else {
             return (false);
         }
+    }
+
+    logSomething(logLine){
+        this.log.info(logLine);
     }
 
     startCalibrate() {
@@ -144,7 +148,7 @@ class bulbController {
     async nextFrame(rawface) {
         //Process a face
         //console.log(rawface);
-        console.log(this.logger);
+        this.logSomething("do you work?");
         if (this.processing) {
             return;
         } else {
