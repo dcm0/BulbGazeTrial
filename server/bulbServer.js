@@ -172,12 +172,12 @@ cameras.on("connection", (socket) => {
   console.log('bulb connected');
   var newBulb = true;
 
-  bulbControllers.forEach(function (bulb, index, bulbarray) {
+  bulbControllers.forEach(function (bulb, index, bulb_array) {
     if (bulb.nsp.name == socket.nsp.name) {
       //Then we have a reconnection on the same name. Kill and restart?
       newBulb = false;
       //Do I have to disconnect?
-      bulbArray[index] = new bulbController(socket, cnsp, dnsp, logger, current_gaze_pattern, current_feedback);
+      bulb_array[index] = new bulbController(socket, cnsp, dnsp, logger, current_gaze_pattern, current_feedback);
     }
   });
   if (newBulb) {
