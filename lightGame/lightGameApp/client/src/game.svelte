@@ -78,7 +78,7 @@
 </script>
 <div class="box-container">
 <div id="interaction-type">
-<img src={srcList[chosenGameMode-1]} id="intType">
+<img src={srcList[chosenGameMode]} id="intType">
 </div>
 </div>
 

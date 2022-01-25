@@ -18,7 +18,7 @@ var last_differences = 2;
 var current_target;
 var round_counter = 0;
 var condition_counter = 0;
-var current_gaze_pattern = "center up left";
+var current_gaze_pattern = "center center center center";
 var current_feedback = "rotate";
 
 var bulbControllers = [];
@@ -59,7 +59,7 @@ cnsp.on('connection', function (socket) {
       case "next":
         logger.info('CONTROLLER NEXT');
         cnsp.emit('game', '{"command":"nextInitiated"}');
-        //record this as a cancel/skip   
+        //record this as a cancel/skip
         setupNewQuiz();
         break;
     }
@@ -105,7 +105,7 @@ dnsp.on('connection', function (socket) {
       case "setFeedback":
         //Loop each bulb and update the feedback pattern
         //Possible patterns must be coded into bulbController
-        //currently only 'rotate' is valid. 
+        //currently only 'rotate' is valid.
         bulbControllers.forEach(bulb => {
           bulb.setPattern(payload['feedbackName']);
         });
@@ -184,7 +184,7 @@ cameras.on("connection", (socket) => {
     bulbControllers.push(new bulbController(socket, cnsp, dnsp, logger, current_gaze_pattern, current_feedback));
   }
   logger.info('Bulb connected ' + socket.nsp.name);
-  //Probably shouldn't be sending helo camera anymore? 
+  //Probably shouldn't be sending helo camera anymore?
   cameras.emit('bulb', 'Hello camera ' + socket.nsp.name);
 });
 /*********END GAZEBULB ROUTING*********************** */
@@ -242,11 +242,11 @@ function setupNewQuiz(differences = last_differences) {
 
   current_target = target_pattern;
 
-  //then make the bulbs match 
+  //then make the bulbs match
   for (let index = 0; index < bulbControllers.length; index++) {
     //Javascript being strange with types
     var bulb = bulbControllers[index];
-    bulb.setState(start_pattern[index]==true); 
+    bulb.setState(start_pattern[index]==true);
   }
 
   //Now send this to the game controller (it is hardcoded to 6 bulbs, so make sure that is the same.)
@@ -260,7 +260,7 @@ function setupNewQuiz(differences = last_differences) {
     outputPattern = target_pattern;
   }
 
-  //Now send this out to the dash and the controller, and log it. 
+  //Now send this out to the dash and the controller, and log it.
   var target_json = '{"command":"newQuiz", "round":"' + round_counter + '", "target_pattern":"' + JSON.stringify(outputPattern) + '", "gaze_pattern":"' + current_gaze_pattern + '"}';
   console.log(target_json);
   dnsp.emit('game', target_json);

@@ -8,7 +8,13 @@
 	let form;
 	let gaze_pattern;
 	let completed = false;
-
+	let patterDict = {
+		"center center center center": 1,
+		"center center left left": 2,
+		"center center up up": 3,
+		"center center down down right right": 4,
+		"center center right right up up": 5,
+};
 
 	import GameView from './game.svelte';
 
@@ -57,7 +63,7 @@
 });
 
 function patternToMode(gaze_pattern){
-	return 0//the number mapping to an image
+	return patterDict[gaze_pattern]//the number mapping to an image
 }
 
 

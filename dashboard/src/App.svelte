@@ -7,7 +7,7 @@
 	console.log("connected");
 	//var socket = io('10.200.32.0');
 	let isCalibrate;
-		
+
 	let calibration = {'camera-1':false, 'camera-2':false, 'camera-3':false, 'camera-4':false, 'camera-5':false, 'camera-6':false};
 	let lightStatus = {'camera-1':false, 'camera-2':false, 'camera-3':false, 'camera-4':false, 'camera-5':false, 'camera-6':false};
 
@@ -26,7 +26,7 @@
 	  //   console.log("Opened")
 	  // })
 	  	console.log("onmount");
-		
+
 	});
 	socket.on('game', function(msg) {
 		//catch updates from server
@@ -71,7 +71,7 @@
 
 
 	}
-	
+
 	function sendNewgame(){
 
 		socket.emit('game', '{"command":"newQuiz"}');
@@ -83,7 +83,7 @@
 			roundNumber = 1;
 			socket.emit('game', '{"command":"updatePattern", "pattern":"'+patternString+'", "condition":"'+conditionNumber+'"}');
 			currentPattern = patternString;
-			
+
 		}
 	}
 
@@ -121,8 +121,8 @@
 
 
 <main>
-	
-	
+
+
 	<Toggle bind:checked={isCalibrate} let:checked={checked}>
 		<button>
 			{checked ? 'Calibration Mode' : 'Light Control'}
@@ -164,21 +164,20 @@
 	<br>
 	<br>
 	<h3>Set Interaction Pattern</h3>
-	
-	<button class="button" id="pattern1" on:click={() => setPattern("center center center left")}>
-		"center center center left"	
+	<button class="button" id="pattern1" on:click={() => setPattern("center center center center")}>
+		"center center center center"
 	</button>
-	<button class="button" id="pattern2" on:click={() => setPattern("center left left left left center")}>
-		"center left left left left center"	
+	<button class="button" id="pattern2" on:click={() => setPattern("center center left left")}>
+		"center center left left"
 	</button>
-	<button class="button" id="pattern3" on:click={() => setPattern("center up center up center")}>
-		"center up center up center"	
+	<button class="button" id="pattern3" on:click={() => setPattern("center center up up")}>
+		"center center up up"
 	</button>
-	<button class="button" id="pattern4" on:click={() => setPattern("center center center center right")}>
-		"center center center center right"	
+	<button class="button" id="pattern4" on:click={() => setPattern("center center down down right right")}>
+		"center center down down right right"
 	</button>
-	<button class="button" id="pattern5" on:click={() => setPattern("center center center center right")}>
-		"center center center center right"	
+	<button class="button" id="pattern5" on:click={() => setPattern("center center right right up up")}>
+		"center center right right up up"
 	</button>
 	<h4>Current Pattern: {currentPattern}</h4>
 
@@ -191,7 +190,7 @@
 		Reset Condition
 	</button>
 	<button class="button" id="reset rounts" on:click={() => setRound(1)}>
-		Reset Round	
+		Reset Round
 	</button>
 	<h3>Participant: {participantName}, condition {conditionNumber}, round {roundNumber}</h3>
 
@@ -202,7 +201,7 @@
 	<button class="button" id="nextCondition" on:click={() => setCondition(conditionNumber+1)}>
 		Next Condition
 	</button>
-	
+
 
 
 
