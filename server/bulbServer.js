@@ -154,7 +154,7 @@ dnsp.on('connection', function (socket) {
             /***********DEBUG CODE SENDING LIGHT RING VALUES */
             bulb.lightRing.setRange(0, 6, 250, 0, 0);
             bulb.lightRing.setRange(7, 11, 0, 250, 0);
-            bulb.sendRing();
+           // bulb.sendRing();
             /***********END   CODE SENDING LIGHT RING VALUES */
           }
         });

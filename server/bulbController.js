@@ -70,11 +70,12 @@ class bulbController {
     }
 
     setState(newLight) {
-        if (newLight != this.lightOn) {
+        //if (newLight != this.lightOn) {
             this.lightOn=newLight;
+            console.log('Toggling LED Bulb'+this.lightOn);
             this.nsp.emit('bulb', '{"command":"status", "status":"'+this.lightOn+'"}');
             this.log.info('Toggling LED Bulb'+this.lightOn);
-        }
+        //}
     }
 
     sendRing() {
