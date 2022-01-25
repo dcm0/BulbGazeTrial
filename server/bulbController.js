@@ -26,12 +26,12 @@ class bulbController {
         this.calibrating = false;
         this.calibrationCount = 0;
         this.calibrationLimit = 6;
-        
-        this.setPattern(current_gaze_pattern);
 
         //This prefixes all the logs made by this camera with the cameraname
         logger.info("Testing");
         this.log = logger.child({ camera: this.nsp.name });
+        
+        this.setPattern(current_gaze_pattern);
 
         this.socket.on("face", this.nextFrame); 
         this.socket.on('bulb', this.statusHandler);
