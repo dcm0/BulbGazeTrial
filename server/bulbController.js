@@ -30,6 +30,7 @@ class bulbController {
         this.setPattern(current_gaze_pattern);
 
         //This prefixes all the logs made by this camera with the cameraname
+        logger.info("Testing");
         this.log = logger.child({ camera: this.nsp.name });
 
         this.socket.on("face", this.nextFrame); 
@@ -163,11 +164,13 @@ class bulbController {
 
         if (this.pattern.length == 0) {
             //not initalised with an interaction pattern, so do nothing
+            //Might be depreciated, can use it to turn off interaction though.
             return;
         }
 
         //GET THE FACE OUT OF THE RAW DATA
         face = JSON.parse(rawface);
+        let old_machine = this.stateMachine;
 
         if ((Date.now() - this.t_cooldown) > this.cooldown) {
             var yaw = face["gaze"]["yaw"];
@@ -184,6 +187,7 @@ class bulbController {
             }
 
             var percentage = 10;
+           
 
             switch (this.pattern[this.state_machine]) {
                 case "up":
@@ -193,12 +197,11 @@ class bulbController {
                             this.t_cooldown = Date.now(); //got a good look, reset cooldown
                             console.log('Moving to state machine in state number ' + this.state_machine);
                             this.log.info('UP, moving to ' + this.state_machine);
-                            //progressBarUpdate(this.state_machine, this.pattern.length);
                         }
                     } else {
                         this.state_machine = 0;
                         this.log.info('UP, moving to ' + this.state_machine);
-                        console.log('state machine resetet to 0 fro face missalignment');
+                        console.log('state machine reset to 0 for face missalignment');
                     }
                     break;
                 case "down":
@@ -208,12 +211,11 @@ class bulbController {
                             this.log.info('DOWN, moving to ' + this.state_machine);
                             this.t_cooldown = Date.now(); //got a good look, reset cooldown
                             console.log('Moving to state machine in state number ' + this.state_machine);
-                            //progressBarUpdate(this.state_machine, this.pattern.length);
                         }
                     } else {
                         this.state_machine = 0;
                         this.log.info('DOWN, moving to ' + this.state_machine);
-                        console.log('state machine resetet to 0 fro face missalignment');
+                        console.log('state machine reset to 0 for face missalignment');
                     }
                     break;
                 case "center":
@@ -223,14 +225,13 @@ class bulbController {
                             this.log.info('CENTER, moving to ' + this.state_machine);
                             this.t_cooldown = Date.now(); //got a good look, reset cooldown
                             console.log('Moving to state machine in state number ' + this.state_machine);
-                            //progressBarUpdate(this.state_machine, this.pattern.length);
                             this.last_pitch = this.average_face.pitch;
                             this.last_yaw = this.average_face.yaw;
                         }
                     } else {
                         this.state_machine = 0;
                         this.log.info('CENTER, moving to ' + this.state_machine);
-                        console.log('state machine resetet to 0 fro face missalignment');
+                        console.log('state machine reset to 0 for face missalignment');
                     }
                     break;
                 case "left":
@@ -240,12 +241,11 @@ class bulbController {
                             this.log.info('LEFT, moving to ' + this.state_machine);
                             this.t_cooldown = Date.now(); //got a good look, reset cooldown
                             console.log('Moving to state machine in state number ' + this.state_machine);
-                            //progressBarUpdate(this.state_machine, this.pattern.length);
                         }
                     } else {
                         this.state_machine = 0;
                         this.log.info('LEFT, moving to ' + this.state_machine);
-                        console.log('state machine resetet to 0 fro face missalignment');
+                        console.log('state machine reset to 0 for face missalignment');
                     }
                     break;
                 case "right":
@@ -255,28 +255,30 @@ class bulbController {
                             this.log.info('RIGHT, moving to ' + this.state_machine);
                             this.t_cooldown = Date.now(); //got a good look, reset cooldown
                             console.log('Moving to state machine in state number ' + this.state_machine);
-                            //progressBarUpdate(this.state_machine, this.pattern.length);
                         }
                     } else {
                         this.state_machine = 0;
                         this.log.info('RIGHT, moving to ' + this.state_machine);
-                        console.log('state machine resetet to 0 fro face missalignment');
+                        console.log('state machine reset to 0 for face missalignment');
                     }
                     break;
                 default:
                     console.log('Command not found in gestures ' + this.pattern[this.state_machine]);
             }
 
-            this.nsp.emit('progress', "{x:'" + this.state_machine + "', outof:'" + this.pattern.length + "'}");
+            //this.nsp.emit('progress', "{x:'" + this.state_machine + "', outof:'" + this.pattern.length + "'}");
             this.log.info('PROGRESS, x:' + this.state_machine + " outof: " + this.pattern.length);
             this.updateFeedback();
+
             if (this.state_machine == 1) this.nsp.emit('interaction starts'); //not sure this one is needed?
             if (this.state_machine == this.pattern.length) {
                 this.state_machine = 0;
                 console.log('interaction complete');
                 this.log.info('INTERACTION SUCCESS');
                 this.t_cooldown = Date.now();
-                this.nsp.emit('interaction complete'); //bulb should do something when it gets this.
+                //this.nsp.emit('interaction complete'); //bulb should do something when it gets this.
+                this.nsp.emit('bulb', '{"command":"toggle"}');
+                this.log.info('Toggling LED Bulb');
             }
 
 
@@ -285,7 +287,13 @@ class bulbController {
             console.log('timeout');
             this.log.info('TIMEOUT');
             this.state_machine = 0;
-            this.nsp.emit('progress', "{x:'" + this.state_machine + "', outof:'" + this.pattern.length + "'}");
+            this.updateFeedback();
+            
+        }
+
+        if(old_machine != this.state_machine){
+            //Send the new progress to the dashboard
+            this.dashnsp.emit('game', "{x:'" + this.state_machine + "', outof:'" + this.pattern.length + "'}");
         }
 
     }
