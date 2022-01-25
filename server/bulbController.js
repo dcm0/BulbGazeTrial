@@ -30,7 +30,7 @@ class bulbController {
         //This prefixes all the logs made by this camera with the cameraname
         logger.info("Testing");
         this.log = logger.child({ camera: this.nsp.name });
-        
+        console.log(this.log);
         this.setPattern(current_gaze_pattern);
 
         this.socket.on("face", this.nextFrame); 
