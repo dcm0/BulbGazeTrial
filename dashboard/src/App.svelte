@@ -86,7 +86,7 @@
 		if(patternString != currentPattern){
 			conditionNumber++;
 			roundNumber = 1;
-			socket.emit('game', '{"command":"updatePattern", "pattern":"'+patternString+'", "condition":"'+conditionNumber+'"}');
+			socket.emit('game', '{"command":"setInteraction", "interaction_pattern":"'+patternString+'", "condition":"'+conditionNumber+'"}');
 			currentPattern = patternString;
 
 		}
