@@ -4,7 +4,7 @@ const lightRing = require('./lightRing');
 
 class bulbController {
 
-    constructor(socket, controlnsp, dashnsp, logger) {
+    constructor(socket, controlnsp, dashnsp, logger, current_gaze_pattern, current_feedback) {
         this.nsp = socket.nsp;
         this.socket = socket;
         this.controlnsp = controlnsp;
@@ -15,7 +15,7 @@ class bulbController {
         this.cooldown = 2000;
         this.t_cooldown = Date.now()
         this.pattern;
-        this.feedbackType = 'rotate';
+        this.feedbackType = current_feedback;
         this.processing = false;
         this.last_pitch = 0;
         this.last_yaw = 0;
@@ -25,6 +25,8 @@ class bulbController {
         this.calibrationCount = 0;
         this.calibrationLimit = 6;
         this.lightRing = new lightRing(100, 50, 25);
+
+        this.setPattern(current_gaze_pattern);
 
         // this.socket.onAny(this.catchAll);
         this.socket.on("face", this.nextFrame); //no 100% sure on this one...

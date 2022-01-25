@@ -34,10 +34,13 @@
 		var payload = JSON.parse(msg);
   		switch (payload['command']) {
 		case "passCheck":
+			//TODO: Some display of ongoing stuff
 			break;
 		case "failCheck":
+			//TODO: Some display of ongoing stuff
 			break;
 		case "newQuiz":
+			//TODO: Some display of ongoing stuff
 			console.log("New Quiz Detected");
 			roundNumber++;
 			break;
