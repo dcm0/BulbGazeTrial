@@ -147,7 +147,7 @@ class bulbController {
     }
 
     
-    nextFrame(rawface) {
+    async nextFrame(rawface) {
         //Process a face
         //console.log(rawface);
         //this.logSomething("do you work?");
