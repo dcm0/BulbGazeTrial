@@ -145,10 +145,10 @@ class bulbController {
     }
 
     
-    async nextFrame(rawface) {
+    nextFrame(rawface) {
         //Process a face
         //console.log(rawface);
-        this.logSomething("do you work?");
+        //this.logSomething("do you work?");
         if (this.processing) {
             return;
         } else {
