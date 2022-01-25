@@ -11,7 +11,7 @@ class bulbController {
         this.socket = socket;
         this.controlnsp = controlnsp;
         this.dashnsp = dashnsp;
-        this.stateMachine = 0;
+        this.state_machine = 0;
         this.counter = 0;
         this.max_trigger = 4;
         this.cooldown = 2000;
@@ -24,6 +24,7 @@ class bulbController {
         this.last_yaw = 0;
         this.lightOn = false;
         this.lightRing = new lightRing(100, 50, 25);
+        this.average_face = { face_yaw: 0, face_pitch: 0, pitch: 0, yaw: 0 };
 
         //Calibration Options. 5 Frames at the moment.
         this.calibrating = false;
@@ -31,13 +32,13 @@ class bulbController {
         this.calibrationLimit = 6;
 
         //This prefixes all the logs made by this camera with the cameraname
-        logger.info("Testing");
+       // logger.info("Testing");
         this.log = logger.child({ camera: this.nsp.name });
-        console.log(this.log);
+        //console.log(this.log);
         this.setPattern(current_gaze_pattern);
 
         this.socket.on("face", this.nextFrame.bind(this)); 
-        this.socket.on('bulb', this.statusHandler);
+   
 
         this.bulbController = this;
 
@@ -47,7 +48,7 @@ class bulbController {
         this.log.info("Updating pattern to " + gaze_pattern);
         this.pattern = gaze_pattern.split(" ");
         console.log("pattern length "+this.pattern.length);
-        this.stateMachine = 0;
+        this.state_machine = 0;
         this.t_cooldown = Date.now()
     }
 
@@ -96,15 +97,15 @@ class bulbController {
         //Called when state changes to update the light ring
         if (this.calibrating) {
             var baseCol = [0, 0, 0];
-            var acol = [120, 120, 120];
-            var gcol = [0, 230, 0];
+            var acol = [20, 20, 20];
+            var gcol = [0, 30, 0];
 
             if (this.calibrationCount == 0) {
                 this.lightRing.setAll(baseCol[0], baseCol[1], baseCol[2]);
             } else if (this.calibrationCount == this.calibrationLimit) {
                 this.lightRing.setAll(gcol[0], gcol[1], gcol[2]);
             } else {
-                var fill_level = this.calibrationCount * abs(this.lightRing.no_lights / this.calibrationLimit);
+                var fill_level = this.calibrationCount * Math.abs(this.lightRing.no_lights / this.calibrationLimit);
                 this.lightRing.setRange(0, fill_level, gcol[0], gcol[1], gcol[2]);
                 this.lightRing.setRange(fill_level, this.lightRing.no_lights, acol[0], acol[1], acol[2]);
             }
@@ -116,15 +117,15 @@ class bulbController {
         switch (this.feedbackType) {
             case "rotate":
                 var baseCol = [0, 0, 0];
-                var acol = [120, 120, 120];
-                var gcol = [0, 230, 0];
+                var acol = [20, 20, 20];
+                var gcol = [0, 30, 0];
 
                 if (this.state_machine == 0) {
                     this.lightRing.setAll(baseCol[0], baseCol[1], baseCol[2]);
-                } else if (this.state_machine == this.patern.length) {
+                } else if (this.state_machine == this.pattern.length) {
                     this.lightRing.setAll(gcol[0], gcol[1], gcol[2]);
                 } else {
-                    var fill_level = this.state_machine * abs(this.lightRing.no_lights / this.pattern.length);
+                    var fill_level = this.state_machine * Math.abs(this.lightRing.no_lights / this.pattern.length);
                     this.lightRing.setRange(0, fill_level, gcol[0], gcol[1], gcol[2]);
                     this.lightRing.setRange(fill_level, this.lightRing.no_lights, acol[0], acol[1], acol[2]);
                 }
@@ -151,7 +152,7 @@ class bulbController {
         //Process a face
         //console.log(rawface);
         //this.logSomething("do you work?");
-        this.log.info('strange test');
+       // this.log.info('strange test');
         if (this.processing) {
             return;
         } else {
@@ -159,7 +160,7 @@ class bulbController {
         }
 
         if (this.calibrating) {
-            face = JSON.parse(rawface);
+            face = JSON.parse(rawface)["face"][0];
             //make the average face 
             this.average_face.pitch = this.average_face.pitch + face.pitch;
             this.average_face.yaw = this.average_face.yaw + face.yaw;
@@ -187,12 +188,17 @@ class bulbController {
         }
 
         //GET THE FACE OUT OF THE RAW DATA
-        var face = JSON.parse(rawface);
-        let old_machine = this.stateMachine;
-        console.log(util.inspect(face, {breakLength: Infinity}))
+        var face = JSON.parse(rawface)["face"][0];
+        let old_machine = this.state_machine;
+        console.log(face["face"]);
+        console.log(face["gaze"]);
+        console.log(face["direction"]);
+        //console.log(face["face"][0]["gaze"]);
+        //console.log(face["face"][0]["direction"]);
+        console.log("Timeout Debug " + Date.now() + " " + this.t_cooldown + " " + (Date.now() - this.t_cooldown) + " " +  this.cooldown);
 
 
-        if ((Date.now() - this.t_cooldown) > this.cooldown) {
+        if ((Date.now() - this.t_cooldown) < this.cooldown) {
             var yaw = face["gaze"]["yaw"];
             var pitch = face["gaze"]["pitch"];
             var pos_x = face["face"]["x"];
@@ -207,11 +213,12 @@ class bulbController {
             }
 
             var percentage = 10;
-           
+
+            console.log("State: " + this.state_machine + " at " + this.pattern[this.state_machine]);
 
             switch (this.pattern[this.state_machine]) {
                 case "up":
-                    if ((compare_numbers_linear(face_yaw, this.average_face.face_yaw, percentage + 10)) && (compare_numbers_linear(face_pitch, this.average_face.face_pitch, percentage + 10))) {
+                    if ((this.compare_numbers_linear(face_yaw, this.average_face.face_yaw, percentage + 10)) && (this.compare_numbers_linear(face_pitch, this.average_face.face_pitch, percentage + 10))) {
                         if (pitch > (this.last_pitch + percentage)) {
                             this.state_machine++;
                             this.t_cooldown = Date.now(); //got a good look, reset cooldown
@@ -225,7 +232,7 @@ class bulbController {
                     }
                     break;
                 case "down":
-                    if ((compare_numbers_linear(face_yaw, this.average_face.face_yaw, percentage + 10)) && (compare_numbers_linear(face_pitch, this.average_face.face_pitch, percentage + 10))) {
+                    if ((this.compare_numbers_linear(face_yaw, this.average_face.face_yaw, percentage + 10)) && (this.compare_numbers_linear(face_pitch, this.average_face.face_pitch, percentage + 10))) {
                         if (pitch < (this.last_pitch - percentage)) {
                             this.state_machine++;
                             this.log.info('DOWN, moving to ' + this.state_machine);
@@ -239,8 +246,8 @@ class bulbController {
                     }
                     break;
                 case "center":
-                    if ((compare_numbers_linear(face_yaw, this.average_face.face_yaw, percentage + 10)) && (compare_numbers_linear(face_pitch, this.average_face.face_pitch, percentage + 10))) {
-                        if ((compare_numbers_linear(face_yaw, this.average_face.yaw, percentage)) && (compare_numbers_linear(face_pitch, this.average_face.pitch, percentage))) {
+                    if ((this.compare_numbers_linear(face_yaw, this.average_face.face_yaw, percentage + 10)) && (this.compare_numbers_linear(face_pitch, this.average_face.face_pitch, percentage + 10))) {
+                        if ((this.compare_numbers_linear(face_yaw, this.average_face.yaw, percentage)) && (this.compare_numbers_linear(face_pitch, this.average_face.pitch, percentage))) {
                             this.state_machine++;
                             this.log.info('CENTER, moving to ' + this.state_machine);
                             this.t_cooldown = Date.now(); //got a good look, reset cooldown
@@ -255,7 +262,7 @@ class bulbController {
                     }
                     break;
                 case "left":
-                    if ((compare_numbers_linear(face_yaw, this.average_face.face_yaw, percentage + 10)) && (compare_numbers_linear(face_pitch, this.average_face.face_pitch, percentage + 10))) {
+                    if ((this.compare_numbers_linear(face_yaw, this.average_face.face_yaw, percentage + 10)) && (this.compare_numbers_linear(face_pitch, this.average_face.face_pitch, percentage + 10))) {
                         if (yaw > (this.last_yaw + percentage)) {
                             this.state_machine++;
                             this.log.info('LEFT, moving to ' + this.state_machine);
@@ -269,7 +276,7 @@ class bulbController {
                     }
                     break;
                 case "right":
-                    if ((compare_numbers_linear(face_yaw, this.average_face.face_yaw, percentage + 10)) && (compare_numbers_linear(face_pitch, this.average_face.face_pitch, percentage + 10))) {
+                    if ((this.compare_numbers_linear(face_yaw, this.average_face.face_yaw, percentage + 10)) && (this.compare_numbers_linear(face_pitch, this.average_face.face_pitch, percentage + 10))) {
                         if (yaw < (this.last_yaw - percentage)) {
                             this.state_machine++;
                             this.log.info('RIGHT, moving to ' + this.state_machine);
@@ -297,16 +304,15 @@ class bulbController {
                 this.log.info('INTERACTION SUCCESS');
                 this.t_cooldown = Date.now();
                 //this.nsp.emit('interaction complete'); //bulb should do something when it gets this.
-                this.nsp.emit('bulb', '{"command":"toggle"}');
+                this.setState(!this.lightOn);
                 this.log.info('Toggling LED Bulb');
             }
 
 
             this.processing = false;
         } else {
-            console.log('timeout');
-            console.log(this.nsp.name);
-            console.log(this.log);
+            console.log('timeout ' + this.nsp.name);
+            this.t_cooldown = Date.now();
             this.log.info('TIMEOUT');
             this.state_machine = 0;
             this.updateFeedback();
