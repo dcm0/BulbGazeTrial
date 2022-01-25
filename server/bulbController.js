@@ -141,6 +141,7 @@ class bulbController {
     async nextFrame(rawface) {
         //Process a face
         //console.log(rawface);
+        console.log(this.log);
         if (this.processing) {
             return;
         } else {
