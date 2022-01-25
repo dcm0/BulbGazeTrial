@@ -20,27 +20,25 @@ class bulbController {
         this.last_pitch = 0;
         this.last_yaw = 0;
         this.lightOn = false;
-        this.log = logger.child({ camera: this.nsp.name });
+        this.lightRing = new lightRing(100, 50, 25);
+
+        //Calibration Options. 5 Frames at the moment.
         this.calibrating = false;
         this.calibrationCount = 0;
         this.calibrationLimit = 6;
-        this.lightRing = new lightRing(100, 50, 25);
-
+        
         this.setPattern(current_gaze_pattern);
 
-        // this.socket.onAny(this.catchAll);
-        this.socket.on("face", this.nextFrame); //no 100% sure on this one...
+        //This prefixes all the logs made by this camera with the cameraname
+        this.log = logger.child({ camera: this.nsp.name });
+
+        this.socket.on("face", this.nextFrame); 
         this.socket.on('bulb', this.statusHandler);
 
     }
 
-    async catchAll(name, item) {
-        console.log(name);
-        console.log(item);
-    }
-
     setPattern(gaze_pattern) {
-        this.log.info("Updating pattern on " + this.nsp.name + " to " + gaze_pattern);
+        this.log.info("Updating pattern to " + gaze_pattern);
         this.pattern = gaze_pattern.split(" ");
         this.stateMachine = 0;
         this.t_cooldown = Date.now()
@@ -48,7 +46,7 @@ class bulbController {
 
     setAverageFace(avgFace) {
         this.average_face = avgFace;
-        this.log.info('set average face');
+        this.log.info('Average face set');
     }
 
     compare_numbers_linear(_compare, average, _sum) {
@@ -73,6 +71,7 @@ class bulbController {
     setState(newLight) {
         if (newLight != this.lightOn) {
             this.nsp.emit('bulb', '{"command":"toggle"}');
+            this.log.info('Toggling LED Bulb');
         }
     }
 
@@ -81,6 +80,7 @@ class bulbController {
     }
 
     async updateFeedback() {
+        //Called when state changes to update the light ring
         if (this.calibrating) {
             var baseCol = [0, 0, 0];
             var acol = [120, 120, 120];
@@ -99,6 +99,7 @@ class bulbController {
             return;
         }
 
+        //Add new feedback behaviours as options in the case statement below
         switch (this.feedbackType) {
             case "rotate":
                 var baseCol = [0, 0, 0];
@@ -127,16 +128,15 @@ class bulbController {
             case "status":
                 //Update the object and send to dashboard
                 this.lightOn = parseInt(payload['light']) == 0 ? false : true;
-                this.dashnsp.emit('bulb', "{bulb:'" + this.nsp.name + "', status:'" + this.lightOn.toString() + "'}");
-                break;
-            case "calibrationDone":
-                this.calibrating = false;
+                this.dashnsp.emit('bulb', '{"bulb":"'+ this.nsp.name + '", "status":"' + this.lightOn.toString() + '"}');
                 break;
         }
     }
 
+    
     async nextFrame(rawface) {
-        console.log(rawface);
+        //Process a face
+        //console.log(rawface);
         if (this.processing) {
             return;
         } else {
@@ -156,7 +156,8 @@ class bulbController {
             } else {
                 this.lightRing.setAll(0, 0, 0);
                 this.calibrating = false;
-                this.log.info('Calibration Finiished');
+                this.log.info('Calibration Finished');
+                this.dashnsp.emit('bulb', '{"command":"calibrationComplete", "bulb":"'+this.nsp.name +'"}');
             }
         }
 

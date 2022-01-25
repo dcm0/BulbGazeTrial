@@ -55,7 +55,12 @@
 			calibration[but] =true;
 			console.log(but+" calibration done");
 			break;
-
+		case "interactionStatus":
+			var but = payload["bulb"];
+			var machine = payload["machine"];
+			var pattern = payload["pattern_length"];
+			console.log(but+" at state"+ machine+" out of "+ pattern);
+			//Should probably display in dash too?			
 		}
 	});
 
