@@ -155,6 +155,7 @@ class bulbController {
             this.average_face.face_yaw = this.average_face.face_yaw + face.face_yaw;
             this.calibrationCount++;
             if (this.calibrationCount < this.calibrationLimit) {
+                console.log("calibration frame "+this.calibrationCount);
                 this.updateFeedback();
             } else {
                 this.lightRing.setAll(0, 0, 0);
@@ -162,11 +163,14 @@ class bulbController {
                 this.log.info('Calibration Finished');
                 this.dashnsp.emit('bulb', '{"command":"calibrationComplete", "bulb":"'+this.nsp.name +'"}');
             }
+            this.processing = false;
+            return;
         }
 
         if (this.pattern.length == 0) {
             //not initalised with an interaction pattern, so do nothing
             //Might be depreciated, can use it to turn off interaction though.
+            this.processing = false;
             return;
         }
 
@@ -297,7 +301,7 @@ class bulbController {
             //Send the new progress to the dashboard
             this.dashnsp.emit('game', "{x:'" + this.state_machine + "', outof:'" + this.pattern.length + "'}");
         }
-
+        this.processing = false;
     }
 }
 
