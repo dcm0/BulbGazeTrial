@@ -8,6 +8,7 @@
 	let form;
 	let gaze_pattern;
 	let completed = false;
+	let checked = 0; // this is the value that is added to send another shake to the game view
 	let patterDict = {
 		"center center center center": 1,
 		"center center left left": 2,
@@ -51,10 +52,13 @@
 	})
 	socket.on('game', function(msg) {
 	jsonData = JSON.parse(msg);
+	console.log((jsonData["command"] == "passCheck"));
+
 	if (jsonData["command"] == "passCheck"){
-
+		checked = 0;
+		completed = true;
 	} else if (jsonData["command"] == "failCheck") {
-
+		checked += 1;
 	} else if (jsonData["command"] == "newQuiz") {
 		console.log("newQuiz found!")
 		updateGameMode(jsonData)
@@ -111,7 +115,7 @@ function updateGameMode(jsonData){
 </button>
 </div> -->
 {:else}
-	<GameView bind:chosenGameValue bind:chosenGameMode bind:activeList bind:socket bind:completed bind:gameActive/>
+	<GameView bind:chosenGameValue bind:chosenGameMode bind:activeList bind:socket bind:completed bind:gameActive bind:checked/>
 {/if}
 <style>
 	h1{
