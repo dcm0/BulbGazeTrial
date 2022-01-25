@@ -71,8 +71,9 @@ class bulbController {
 
     setState(newLight) {
         if (newLight != this.lightOn) {
-            this.nsp.emit('bulb', '{"command":"toggle"}');
-            this.log.info('Toggling LED Bulb');
+            this.lightOn=newLight;
+            this.nsp.emit('bulb', '{"command":"status", "status":"'+this.lightOn+'"}');
+            this.log.info('Toggling LED Bulb'+this.lightOn);
         }
     }
 
