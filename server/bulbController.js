@@ -25,6 +25,9 @@ class bulbController {
         this.lightOn = false;
         this.lightRing = new lightRing(100, 50, 25);
         this.average_face = { face_yaw: 0, face_pitch: 0, pitch: 0, yaw: 0 };
+        this.timeout_pointer = setTimeout(this.nextFrame.bind(this), this.cooldown);
+         // timout pointer identifier
+        
 
         //Calibration Options. 5 Frames at the moment.
         this.calibrating = false;
@@ -39,9 +42,7 @@ class bulbController {
 
         this.socket.on("face", this.nextFrame.bind(this)); 
    
-
         this.bulbController = this;
-
     }
 
     setPattern(gaze_pattern) {
@@ -153,11 +154,26 @@ class bulbController {
         //console.log(rawface);
         //this.logSomething("do you work?");
        // this.log.info('strange test');
+        if(rawface === null){
+            //then this is a timeout callback
+            console.log('timeout ' + this.nsp.name);
+            this.t_cooldown = Date.now();
+            this.log.info('TIMEOUT');
+            this.state_machine = 0;
+            this.updateFeedback();
+        }
+
+        
+
         if (this.processing) {
             return;
         } else {
             this.processing = true;
         }
+
+        //Cancel and reset the callback to fire timeout when nobody is watching. 
+        clearTimeout(this.timeout_pointer);
+        this.timeout_pointer = setTimeout(this.nextFrame.bind(this), this.cooldown);
 
         if (this.calibrating) {
             face = JSON.parse(rawface)["face"][0];
