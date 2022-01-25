@@ -149,11 +149,11 @@ dnsp.on('connection', function (socket) {
           console.log(bulb.nsp.name.toString());
           if (bulb.nsp.name.toString().includes(cam)) {
             console.log(bulb.nsp.name.toString());
-            bulb.setState(light == 'off' ? false : true);
+            bulb.setState(!bulb.lightOn);
 
             /***********DEBUG CODE SENDING LIGHT RING VALUES */
-            bulb.lightRing.setRange(0, 6, 250, 0, 0);
-            bulb.lightRing.setRange(7, 11, 0, 250, 0);
+            //bulb.lightRing.setRange(0, 6, 250, 0, 0);
+            //bulb.lightRing.setRange(7, 11, 0, 250, 0);
            // bulb.sendRing();
             /***********END   CODE SENDING LIGHT RING VALUES */
           }
