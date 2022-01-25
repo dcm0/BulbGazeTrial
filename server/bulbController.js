@@ -15,6 +15,7 @@ class bulbController {
         this.cooldown = 2000;
         this.t_cooldown = Date.now()
         this.pattern;
+        this.logger = logger;
         this.feedbackType = current_feedback;
         this.processing = false;
         this.last_pitch = 0;
@@ -29,7 +30,7 @@ class bulbController {
 
         //This prefixes all the logs made by this camera with the cameraname
         logger.info("Testing");
-        this.log = logger.child({ camera: this.nsp.name });
+        this.log = this.logger.child({ camera: this.nsp.name });
         console.log(this.log);
         this.setPattern(current_gaze_pattern);
 
