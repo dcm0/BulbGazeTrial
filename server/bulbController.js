@@ -189,6 +189,8 @@ class bulbController {
         //GET THE FACE OUT OF THE RAW DATA
         var face = JSON.parse(rawface);
         let old_machine = this.stateMachine;
+        console.log(util.inspect(face, {breakLength: Infinity}))
+
 
         if ((Date.now() - this.t_cooldown) > this.cooldown) {
             var yaw = face["gaze"]["yaw"];
