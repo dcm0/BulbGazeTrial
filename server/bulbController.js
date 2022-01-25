@@ -292,6 +292,8 @@ class bulbController {
             this.processing = false;
         } else {
             console.log('timeout');
+            console.log(this.nsp.name);
+            console.log(this.log);
             this.log.info('TIMEOUT');
             this.state_machine = 0;
             this.updateFeedback();
