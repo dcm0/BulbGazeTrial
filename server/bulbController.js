@@ -32,7 +32,7 @@ class bulbController {
 
         //This prefixes all the logs made by this camera with the cameraname
         logger.info("Testing");
-        this.log = logger.child({ camera: this.nsp.name });
+        this.log = logger.child({ camera: this.nsp.name }).bind(this);
         console.log(this.log);
         this.setPattern(current_gaze_pattern);
 
@@ -151,7 +151,7 @@ class bulbController {
         //Process a face
         //console.log(rawface);
         //this.logSomething("do you work?");
-        this.bulbController.log.info('strange test');
+        this.log.info('strange test');
         if (this.processing) {
             return;
         } else {
