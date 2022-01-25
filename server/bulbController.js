@@ -176,7 +176,7 @@ class bulbController {
         }
 
         //GET THE FACE OUT OF THE RAW DATA
-        face = JSON.parse(rawface);
+        var face = JSON.parse(rawface);
         let old_machine = this.stateMachine;
 
         if ((Date.now() - this.t_cooldown) > this.cooldown) {
