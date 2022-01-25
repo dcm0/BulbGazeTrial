@@ -41,6 +41,7 @@ class bulbController {
     setPattern(gaze_pattern) {
         this.log.info("Updating pattern to " + gaze_pattern);
         this.pattern = gaze_pattern.split(" ");
+        console.log("pattern length "+this.pattern.length);
         this.stateMachine = 0;
         this.t_cooldown = Date.now()
     }
@@ -167,7 +168,7 @@ class bulbController {
             return;
         }
 
-        if (this.pattern.length == 0) {
+        if (this.pattern != null && this.pattern.length == 0) {
             //not initalised with an interaction pattern, so do nothing
             //Might be depreciated, can use it to turn off interaction though.
             this.processing = false;
