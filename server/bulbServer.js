@@ -205,6 +205,7 @@ function checkQuiz() {
   //matches the target for the round
   correct = true;
   for (let index = 0; index < bulbControllers.length; index++) {
+    console.log("Checking Bulb "+ bulbControllers[index].lightOn + " = "+ current_target[index]);
     if (bulbControllers[index].lightOn != current_target[index]) {
       correct = false;
     }
