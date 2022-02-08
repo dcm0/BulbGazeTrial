@@ -16,6 +16,7 @@ class bulbController {
         this.max_trigger = 4;
         this.cooldown = 2000;
         this.t_cooldown = Date.now()
+        this.timeout_counter = 0;
         this.pattern;
         this.logger = logger;
         this.feedbackType = current_feedback;
@@ -118,8 +119,14 @@ class bulbController {
         switch (this.feedbackType) {
             case "rotate":
                 var baseCol = [0, 0, 0];
-                var acol = [20, 20, 20];
-                var gcol = [0, 30, 0];
+                var interactColA = [20, 20, 20];
+                var interactColG = [0, 30, 0];
+                var warnColA = [10, 10, 0];
+                var warnColG = [0, 15, 0];
+
+                //2 stage timeout colour change.
+                var acol = (this.timeout_counter>0)?warnColA:interactColA;
+                var gcol = (this.timeout_counter>0)?warnColG:interactColG;
 
                 if (this.state_machine == 0) {
                     this.lightRing.setAll(baseCol[0], baseCol[1], baseCol[2]);
@@ -156,11 +163,20 @@ class bulbController {
        // this.log.info('strange test');
         if(rawface === null){
             //then this is a timeout callback
-            console.log('timeout ' + this.nsp.name);
-            this.t_cooldown = Date.now();
-            this.log.info('TIMEOUT');
-            this.state_machine = 0;
-            this.updateFeedback();
+            if(this.timeout_counter == 0){
+                //first timeout so make it warning
+                this.timeout_counter++;
+                clearTimeout(this.timeout_pointer);
+                this.timeout_pointer = setTimeout(this.nextFrame.bind(this), this.cooldown);
+                this.updateFeedback(); //it knows what to do with timeout_counter
+            }else{
+                console.log('timeout ' + this.nsp.name);
+                this.t_cooldown = Date.now();
+                this.log.info('TIMEOUT');
+                this.state_machine = 0;
+                this.timeout_counter = 0;
+                this.updateFeedback();
+            }
         }
 
         
@@ -174,6 +190,7 @@ class bulbController {
         //Cancel and reset the callback to fire timeout when nobody is watching. 
         clearTimeout(this.timeout_pointer);
         this.timeout_pointer = setTimeout(this.nextFrame.bind(this), this.cooldown);
+        this.timeout_counter = 0;
 
         if (this.calibrating) {
             face = JSON.parse(rawface)["face"][0];
