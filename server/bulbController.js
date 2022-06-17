@@ -316,7 +316,7 @@ class bulbController {
                 this.last_yaw = this.average_face.yaw;
             }
 
-            var percentage = 10;
+            var percentage = 3; //DEGREES
 
             console.log("State: " + this.state_machine + " at " + this.pattern[this.state_machine]);
             console.log(" Fyaw " + face_yaw + " Fptich " + this.average_face.face_yaw + " yaw " + yaw + " pitch " + pitch );
@@ -324,7 +324,7 @@ class bulbController {
 
             switch (this.pattern[this.state_machine]) {
                 case "up":
-                    if ((this.compare_numbers_linear(face_yaw, this.average_face.face_yaw, percentage + 10)) && (this.compare_numbers_linear(face_pitch, this.average_face.face_pitch, percentage + 10))) {
+                    if ((this.compare_numbers_linear(face_yaw, this.average_face.face_yaw, percentage)) && (this.compare_numbers_linear(face_pitch, this.average_face.face_pitch, percentage))) {
                         if (pitch > (this.last_pitch + percentage)) {
                             this.state_machine++;
                             this.t_cooldown = Date.now(); //got a good look, reset cooldown
@@ -338,7 +338,7 @@ class bulbController {
                     }
                     break;
                 case "down":
-                    if ((this.compare_numbers_linear(face_yaw, this.average_face.face_yaw, percentage + 10)) && (this.compare_numbers_linear(face_pitch, this.average_face.face_pitch, percentage + 10))) {
+                    if ((this.compare_numbers_linear(face_yaw, this.average_face.face_yaw, percentage)) && (this.compare_numbers_linear(face_pitch, this.average_face.face_pitch, percentage))) {
                         if (pitch < (this.last_pitch - percentage)) {
                             this.state_machine++;
                             this.log.info('DOWN, moving to ' + this.state_machine);
@@ -352,7 +352,7 @@ class bulbController {
                     }
                     break;
                 case "center":
-                    if ((this.compare_numbers_linear(face_yaw, this.average_face.face_yaw, percentage + 10)) && (this.compare_numbers_linear(face_pitch, this.average_face.face_pitch, percentage + 10))) {
+                    if ((this.compare_numbers_linear(face_yaw, this.average_face.face_yaw, percentage)) && (this.compare_numbers_linear(face_pitch, this.average_face.face_pitch, percentage))) {
                         if ((this.compare_numbers_linear(face_yaw, this.average_face.yaw, percentage)) && (this.compare_numbers_linear(face_pitch, this.average_face.pitch, percentage))) {
                             this.state_machine++;
                             this.log.info('CENTER, moving to ' + this.state_machine);
@@ -368,7 +368,7 @@ class bulbController {
                     }
                     break;
                 case "left":
-                    if ((this.compare_numbers_linear(face_yaw, this.average_face.face_yaw, percentage + 10)) && (this.compare_numbers_linear(face_pitch, this.average_face.face_pitch, percentage + 10))) {
+                    if ((this.compare_numbers_linear(face_yaw, this.average_face.face_yaw, percentage)) && (this.compare_numbers_linear(face_pitch, this.average_face.face_pitch, percentage))) {
                         if (yaw > (this.last_yaw + percentage)) {
                             this.state_machine++;
                             this.log.info('LEFT, moving to ' + this.state_machine);
@@ -382,7 +382,7 @@ class bulbController {
                     }
                     break;
                 case "right":
-                    if ((this.compare_numbers_linear(face_yaw, this.average_face.face_yaw, percentage + 10)) && (this.compare_numbers_linear(face_pitch, this.average_face.face_pitch, percentage + 10))) {
+                    if ((this.compare_numbers_linear(face_yaw, this.average_face.face_yaw, percentage)) && (this.compare_numbers_linear(face_pitch, this.average_face.face_pitch, percentage))) {
                         if (yaw < (this.last_yaw - percentage)) {
                             this.state_machine++;
                             this.log.info('RIGHT, moving to ' + this.state_machine);
