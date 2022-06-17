@@ -255,10 +255,10 @@ class bulbController {
         if (this.calibrating) {
             face = JSON.parse(rawface)["face"][0];
             //make the average face 
-            this.average_face.pitch = this.average_face.pitch + face.pitch;
-            this.average_face.yaw = this.average_face.yaw + face.yaw;
-            this.average_face.face_pitch = this.average_face.face_pitch + face.face_pitch;
-            this.average_face.face_yaw = this.average_face.face_yaw + face.face_yaw;
+            this.average_face.pitch = this.average_face.pitch + face["gaze"]["pitch"];
+            this.average_face.yaw = this.average_face.yaw + face["gaze"]["yaw"];
+            this.average_face.face_pitch = this.average_face.face_pitch + face["direction"]["pitch"];
+            this.average_face.face_yaw = this.average_face.face_yaw + face["direction"]["yaw"];
             this.calibrationCount++;
             if (this.calibrationCount < this.calibrationLimit) {
                 console.log("calibration frame "+this.calibrationCount);
@@ -266,6 +266,10 @@ class bulbController {
             } else {
                 this.lightRing.setAll(0, 0, 0);
                 this.calibrating = false;
+                this.average_face.pitch = this.average_face.pitch / this.calibrationLimit;
+                this.average_face.yaw = this.average_face.yaw  / this.calibrationLimit;
+                this.average_face.face_pitch = this.average_face.face_pitch  / this.calibrationLimit;
+                this.average_face.face_yaw = this.average_face.face_yaw  / this.calibrationLimit;
                 this.log.info('Calibration Finished');
                 this.dashnsp.emit('bulb', '{"command":"calibrationComplete", "bulb":"'+this.nsp.name +'"}');
             }
