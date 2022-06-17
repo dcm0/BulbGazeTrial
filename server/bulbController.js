@@ -1,4 +1,5 @@
 //Bulb Controller object
+const { raw } = require('express');
 const e = require('express');
 const lightRing = require('./lightRing');
 //const logger = require('pino')('./bulbLogs.log'); //pino.destination()
@@ -218,7 +219,7 @@ class bulbController {
         //console.log(rawface);
         //this.logSomething("do you work?");
        // this.log.info('strange test');
-        if(rawface == null){
+        if(rawface == null || typeof rawface === 'undefined'){
             //then this is a timeout callback
             if(this.timeout_counter == 0){
                 //first timeout so make it warning
@@ -234,6 +235,7 @@ class bulbController {
                 this.timeout_counter = 0;
                 this.updateFeedback();
             }
+            return;
         }
 
 
