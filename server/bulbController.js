@@ -218,7 +218,7 @@ class bulbController {
         //console.log(rawface);
         //this.logSomething("do you work?");
        // this.log.info('strange test');
-        if(rawface === null){
+        if(rawface == null){
             //then this is a timeout callback
             if(this.timeout_counter == 0){
                 //first timeout so make it warning
