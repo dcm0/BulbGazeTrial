@@ -353,7 +353,7 @@ class bulbController {
                     break;
                 case "center":
                     if ((this.compare_numbers_linear(face_yaw, this.average_face.face_yaw, percentage)) && (this.compare_numbers_linear(face_pitch, this.average_face.face_pitch, percentage))) {
-                        if ((this.compare_numbers_linear(face_yaw, this.average_face.yaw, percentage)) && (this.compare_numbers_linear(face_pitch, this.average_face.pitch, percentage))) {
+                        if ((this.compare_numbers_linear(yaw, this.average_face.yaw, percentage)) && (this.compare_numbers_linear(pitch, this.average_face.pitch, percentage))) {
                             this.state_machine++;
                             this.log.info('CENTER, moving to ' + this.state_machine);
                             this.t_cooldown = Date.now(); //got a good look, reset cooldown
