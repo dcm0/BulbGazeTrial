@@ -125,6 +125,14 @@ dnsp.on('connection', function (socket) {
         condition_counter = payload['value'];
         logger.info('Changed condition to' + payload['value']);
         break;
+      case "setSensitivity":
+        sensitivity_value = payload['value'];
+        console.log(sensitivity_value);
+        bulbControllers.forEach(bulb => {
+            bulb.setSensitivity(sensitivity_value);
+        });
+        break;
+
       case "logString":
         //Figure we might want to send participant ID to the logs or something
         logger.info(payload['logString']);

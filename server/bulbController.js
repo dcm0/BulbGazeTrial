@@ -25,6 +25,7 @@ class bulbController {
         this.last_pitch = 0;
         this.last_yaw = 0;
         this.lightOn = false;
+        this.sensitivity = 10;
         this.lightRing = new lightRing(100, 50, 25);
         this.average_face = { face_yaw: 0, face_pitch: 0, pitch: 0, yaw: 0 };
         this.timeout_pointer = setTimeout(this.nextFrame.bind(this), this.cooldown);
@@ -58,6 +59,10 @@ class bulbController {
     setAverageFace(avgFace) {
         this.average_face = avgFace;
         this.log.info('Average face set');
+    }
+
+    setSensitivity(newSensitivity){
+        this.sensitivity = newSensitivity;
     }
 
     compare_numbers_linear(_compare, average, _sum) {
@@ -316,7 +321,7 @@ class bulbController {
                 this.last_yaw = this.average_face.yaw;
             }
 
-            var percentage = 10; //DEGREES
+            var percentage = this.sensitivity; //DEGREES
 
             console.log("State: " + this.state_machine + " at " + this.pattern[this.state_machine]);
             console.log(" Fyaw " + face_yaw + " Fptich " + this.average_face.face_yaw + " yaw " + yaw + " pitch " + pitch );

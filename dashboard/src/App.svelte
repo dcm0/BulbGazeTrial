@@ -15,6 +15,8 @@
 	let participantName = "Participant";
 	let roundNumber = 0;
 	let conditionNumber = 0;
+	let sensitivity = 10;
+	let oldSensitivity = 10;
 	let currentPattern = 'Unset';
 
 
@@ -80,6 +82,14 @@
 	function sendNewgame(){
 
 		socket.emit('game', '{"command":"newQuiz"}');
+	}
+
+	function setSensitivity(){
+
+		if(oldSensitivity != sensitivity){
+			socket.emit('game', '{"command":"setSensitivity", "value":"'+sensitivity+'"}');
+			oldSensitivity = sensitivity;
+		}
 	}
 
 	function setPattern(patternString){
@@ -197,6 +207,13 @@
 		"center center right right up up"
 	</button>
 	<h4>Current Pattern: {currentPattern}</h4>
+	<label>
+		<input type=number bind:value={sensitivity} min=2 max=20>
+		<input type=range bind:value={sensitivity} min=2 max=20>
+	</label>
+	<button class="button" disabled='{sensitivity == oldSensitivity}' id="sensitivity" on:click={() => setSensitivity()}>
+		Update Sensitivity	
+	</button>
 
 	<br><br>
 	<h3>Trial Management</h3>
