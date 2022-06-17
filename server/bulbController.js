@@ -315,6 +315,7 @@ class bulbController {
             var percentage = 10;
 
             console.log("State: " + this.state_machine + " at " + this.pattern[this.state_machine]);
+            console.log(" Fyaw " + face_yaw + " Fptich " + this.average_face.face_yaw + " yaw " + this.yaw + " pitch " +this.pitch );
 
             switch (this.pattern[this.state_machine]) {
                 case "up":
