@@ -316,6 +316,7 @@ class bulbController {
 
             console.log("State: " + this.state_machine + " at " + this.pattern[this.state_machine]);
             console.log(" Fyaw " + face_yaw + " Fptich " + this.average_face.face_yaw + " yaw " + yaw + " pitch " + pitch );
+            console.log("Calibtate: " + this.average_face.face_yaw + " " +this.average_face.face_pitch + " GAZE " + this.average_face.yaw + " " + this.average_face.pitch);
 
             switch (this.pattern[this.state_machine]) {
                 case "up":
