@@ -236,6 +236,7 @@ class bulbController {
             }
         }
 
+
         
 
         if (this.processing) {
@@ -278,7 +279,14 @@ class bulbController {
         }
 
         //GET THE FACE OUT OF THE RAW DATA
-        var face = JSON.parse(rawface)["face"][0];
+        var good = false;
+        try{
+            var face = JSON.parse(rawface)["face"][0];
+            good=true;
+        } catch (error) {
+            console.error(rawface);
+        }
+        if(good){
         let old_machine = this.state_machine;
         console.log(face["face"]);
         console.log(face["gaze"]);
@@ -413,6 +421,7 @@ class bulbController {
             //Send the new progress to the dashboard
             this.dashnsp.emit('game', "{x:'" + this.state_machine + "', outof:'" + this.pattern.length + "'}");
         }
+    }
         this.processing = false;
     }
 }
