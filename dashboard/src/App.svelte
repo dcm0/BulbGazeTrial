@@ -134,38 +134,50 @@
 		</button>
 	</Toggle>
 
-
-	<button class="button" id="camera-1" on:click={() => handleBoxClick("camera-1")}>
-			Box 1 <br>
-			Light On: {lightStatus['camera-1']} |
-			Calibrated: {calibration['camera-1']}<br>
-	</button>
-	<button class="button" id="camera-2" on:click={() => handleBoxClick("camera-2")}>
-			Box 2<br>
-			Light On: {lightStatus['camera-2']} |
-			Calibrated: {calibration['camera-2']}<bR>
-	</button>
-	<button class="button" id="camera-3" on:click={() => handleBoxClick("camera-3")}>
-			Box 3<br>
-			Light On: {lightStatus['camera-3']} |
-			Calibrated: {calibration['camera-3']}<bR>
-	</button>
-	<br>
-	<button class="button" id="camera-4" on:click={() => handleBoxClick("camera-4")}>
-			Box 4<br>
-			Light On: {lightStatus['camera-4']} |
-			Calibrated: {calibration['camera-4']}<bR>
-	</button>
-	<button class="button" id="camera-5" on:click={() => handleBoxClick("camera-5")}>
-			Box 5<br>
-			Light On: {lightStatus['camera-5']} |
-			Calibrated: {calibration['camera-5']}<bR>
-	</button>
-	<button class="button" id="camera-6" on:click={() => handleBoxClick("camera-6")}>
-			Box 6<br>
-			Light On: {lightStatus['camera-6']} |
-			Calibrated: {calibration['camera-6']}<bR>
-	</button>
+	<table>
+		<tr>
+			<td>
+				<button class="button" id="camera-1" on:click={() => handleBoxClick("camera-1")}>
+						Box 1 <br>
+						Light On: {lightStatus['camera-1']} |
+						Calibrated: {calibration['camera-1']}<br>
+				</button>
+				
+			</td><td>
+				<button class="button" id="camera-2" on:click={() => handleBoxClick("camera-2")}>
+						Box 2<br>
+						Light On: {lightStatus['camera-2']} |
+						Calibrated: {calibration['camera-2']}<bR>
+				</button>
+			</td><td>
+				<button class="button" id="camera-3" on:click={() => handleBoxClick("camera-3")}>
+						Box 3<br>
+						Light On: {lightStatus['camera-3']} |
+						Calibrated: {calibration['camera-3']}<bR>
+				</button>
+			</td>
+	</tr><tr>
+			<td>
+				<button class="button" id="camera-4" on:click={() => handleBoxClick("camera-4")}>
+						Box 4<br>
+						Light On: {lightStatus['camera-4']} |
+						Calibrated: {calibration['camera-4']}<bR>
+				</button>
+			</td><td>
+				<button class="button" id="camera-5" on:click={() => handleBoxClick("camera-5")}>
+						Box 5<br>
+						Light On: {lightStatus['camera-5']} |
+						Calibrated: {calibration['camera-5']}<bR>
+				</button>
+			</td><td>
+				<button class="button" id="camera-6" on:click={() => handleBoxClick("camera-6")}>
+						Box 6<br>
+						Light On: {lightStatus['camera-6']} |
+						Calibrated: {calibration['camera-6']}<bR>
+				</button>
+		</td>
+	</tr>
+	</table>
 	<br>
 	<br>
 	<h3>Set Interaction Pattern</h3>
