@@ -316,7 +316,7 @@ class bulbController {
                 this.last_yaw = this.average_face.yaw;
             }
 
-            var percentage = 3; //DEGREES
+            var percentage = 10; //DEGREES
 
             console.log("State: " + this.state_machine + " at " + this.pattern[this.state_machine]);
             console.log(" Fyaw " + face_yaw + " Fptich " + this.average_face.face_yaw + " yaw " + yaw + " pitch " + pitch );
