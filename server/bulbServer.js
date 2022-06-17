@@ -126,10 +126,11 @@ dnsp.on('connection', function (socket) {
         logger.info('Changed condition to' + payload['value']);
         break;
       case "setSensitivity":
-        sensitivity_value = payload['value'];
-        console.log(sensitivity_value);
+        fSensitivity_value = payload['face'];
+        gSensitivity_value = payload['gaze'];
+        console.log(fSensitivity_value);
         bulbControllers.forEach(bulb => {
-            bulb.setSensitivity(sensitivity_value);
+            bulb.setSensitivity(fSensitivity_value, gSensitivity_value);
         });
         break;
 

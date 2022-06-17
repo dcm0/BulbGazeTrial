@@ -25,7 +25,8 @@ class bulbController {
         this.last_pitch = 0;
         this.last_yaw = 0;
         this.lightOn = false;
-        this.sensitivity = 10;
+        this.fsensitivity = 20;
+        this.gsensitivity = 10;
         this.lightRing = new lightRing(100, 50, 25);
         this.average_face = { face_yaw: 0, face_pitch: 0, pitch: 0, yaw: 0 };
         this.timeout_pointer = setTimeout(this.nextFrame.bind(this), this.cooldown);
@@ -321,7 +322,7 @@ class bulbController {
                 this.last_yaw = this.average_face.yaw;
             }
 
-            var percentage = this.sensitivity; //DEGREES
+            
 
             console.log("State: " + this.state_machine + " at " + this.pattern[this.state_machine]);
             console.log(" Fyaw " + face_yaw + " Fptich " + this.average_face.face_yaw + " yaw " + yaw + " pitch " + pitch );
@@ -329,8 +330,8 @@ class bulbController {
 
             switch (this.pattern[this.state_machine]) {
                 case "up":
-                    if ((this.compare_numbers_linear(face_yaw, this.average_face.face_yaw, percentage)) && (this.compare_numbers_linear(face_pitch, this.average_face.face_pitch, percentage))) {
-                        if (pitch > (this.last_pitch + percentage)) {
+                    if ((this.compare_numbers_linear(face_yaw, this.average_face.face_yaw, this.fsensitivity)) && (this.compare_numbers_linear(face_pitch, this.average_face.face_pitch, this.fsensitivity))) {
+                        if (pitch > (this.last_pitch + this.gsensitivity)) {
                             this.state_machine++;
                             this.t_cooldown = Date.now(); //got a good look, reset cooldown
                             console.log('Moving to state machine in state number ' + this.state_machine);
@@ -343,8 +344,8 @@ class bulbController {
                     }
                     break;
                 case "down":
-                    if ((this.compare_numbers_linear(face_yaw, this.average_face.face_yaw, percentage)) && (this.compare_numbers_linear(face_pitch, this.average_face.face_pitch, percentage))) {
-                        if (pitch < (this.last_pitch - percentage)) {
+                    if ((this.compare_numbers_linear(face_yaw, this.average_face.face_yaw, this.fsensitivity)) && (this.compare_numbers_linear(face_pitch, this.average_face.face_pitch, this.fsensitivity))) {
+                        if (pitch < (this.last_pitch - this.gsensitivity)) {
                             this.state_machine++;
                             this.log.info('DOWN, moving to ' + this.state_machine);
                             this.t_cooldown = Date.now(); //got a good look, reset cooldown
@@ -357,8 +358,8 @@ class bulbController {
                     }
                     break;
                 case "center":
-                    if ((this.compare_numbers_linear(face_yaw, this.average_face.face_yaw, percentage)) && (this.compare_numbers_linear(face_pitch, this.average_face.face_pitch, percentage))) {
-                        if ((this.compare_numbers_linear(yaw, this.average_face.yaw, percentage)) && (this.compare_numbers_linear(pitch, this.average_face.pitch, percentage))) {
+                    if ((this.compare_numbers_linear(face_yaw, this.average_face.face_yaw, this.fsensitivity)) && (this.compare_numbers_linear(face_pitch, this.average_face.face_pitch, this.fsensitivity))) {
+                        if ((this.compare_numbers_linear(yaw, this.average_face.yaw, this.gsensitivity)) && (this.compare_numbers_linear(pitch, this.average_face.pitch, this.gsensitivity))) {
                             this.state_machine++;
                             this.log.info('CENTER, moving to ' + this.state_machine);
                             this.t_cooldown = Date.now(); //got a good look, reset cooldown
@@ -373,8 +374,8 @@ class bulbController {
                     }
                     break;
                 case "left":
-                    if ((this.compare_numbers_linear(face_yaw, this.average_face.face_yaw, percentage)) && (this.compare_numbers_linear(face_pitch, this.average_face.face_pitch, percentage))) {
-                        if (yaw > (this.last_yaw + percentage)) {
+                    if ((this.compare_numbers_linear(face_yaw, this.average_face.face_yaw, this.fsensitivity)) && (this.compare_numbers_linear(face_pitch, this.average_face.face_pitch, this.fsensitivity))) {
+                        if (yaw > (this.last_yaw + this.gsensitivity)) {
                             this.state_machine++;
                             this.log.info('LEFT, moving to ' + this.state_machine);
                             this.t_cooldown = Date.now(); //got a good look, reset cooldown
@@ -387,8 +388,8 @@ class bulbController {
                     }
                     break;
                 case "right":
-                    if ((this.compare_numbers_linear(face_yaw, this.average_face.face_yaw, percentage)) && (this.compare_numbers_linear(face_pitch, this.average_face.face_pitch, percentage))) {
-                        if (yaw < (this.last_yaw - percentage)) {
+                    if ((this.compare_numbers_linear(face_yaw, this.average_face.face_yaw, this.fsensitivity)) && (this.compare_numbers_linear(face_pitch, this.average_face.face_pitch, this.fsensitivity))) {
+                        if (yaw < (this.last_yaw - this.gsensitivity)) {
                             this.state_machine++;
                             this.log.info('RIGHT, moving to ' + this.state_machine);
                             this.t_cooldown = Date.now(); //got a good look, reset cooldown

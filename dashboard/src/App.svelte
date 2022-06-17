@@ -15,8 +15,11 @@
 	let participantName = "Participant";
 	let roundNumber = 0;
 	let conditionNumber = 0;
-	let sensitivity = 10;
-	let oldSensitivity = 10;
+	let faceSensitivity = 20;
+	let oldFaceSensitivity = 20;
+	let gazeSensitivity = 10;
+	let oldGazeSensitivity = 10;
+	
 	let currentPattern = 'Unset';
 
 
@@ -86,10 +89,10 @@
 
 	function setSensitivity(){
 
-		if(oldSensitivity != sensitivity){
-			socket.emit('game', '{"command":"setSensitivity", "value":"'+sensitivity+'"}');
-			oldSensitivity = sensitivity;
-		}
+		socket.emit('game', '{"command":"setSensitivity", "face":"'+faceSensitivity+'", "gaze":"'+gazeSensitivity+'"}');
+		oldFaceSensitivity = faceSensitivity;
+		oldGazeSensitivity = gazeSensitivity;
+
 	}
 
 	function setPattern(patternString){
@@ -207,12 +210,18 @@
 		"center center right right up up"
 	</button>
 	<h4>Current Pattern: {currentPattern}</h4>
+	Face Sensitivity<br>
 	<label>
-		<input type=number bind:value={sensitivity} min=2 max=20>
-		<input type=range bind:value={sensitivity} min=2 max=20>
+		<input type=number bind:value={faceSensitivity} min=2 max=40>
+		<input type=range bind:value={faceSensitivity} min=2 max=40>
 	</label>
-	<button class="button" disabled='{sensitivity == oldSensitivity}' id="sensitivity" on:click={() => setSensitivity()}>
-		Update Sensitivity	
+	Gaze Sensitivity<br>
+	<label>
+		<input type=number bind:value={gazeSensitivity} min=2 max=20>
+		<input type=range bind:value={gazeSensitivity} min=2 max=20>
+	</label>
+	<button class="button" disabled='{(faceSensitivity == oldFaceSensitivity) & (gazeSensitivity == oldGazeSensitivity)}' id="sensitivity" on:click={() => setSensitivity()}>
+		Update Face Sensitivity	
 	</button>
 
 	<br><br>
