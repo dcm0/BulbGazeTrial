@@ -28,7 +28,7 @@
 	let feedback_type = 0;
 
 	$: {
-		updateFeedbackType(feedback_type);
+		setFeedbackType(feedback_type);
 	}
 
 	
@@ -116,7 +116,7 @@
 		}
 	}
 
-	function updateFeedbackType(feedback_type){		
+	function setFeedbackType(feedback_type){		
 			socket.emit('game', '{"command":"setFeedback", "feedback_type":"'+feedback_type+'"}');			
 	}
 

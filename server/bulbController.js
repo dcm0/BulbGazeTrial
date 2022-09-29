@@ -57,7 +57,7 @@ class bulbController {
         this.t_cooldown = Date.now()
     }
 
-    setFeebackType(feedback_type){
+    setFeedbackType(feedback_type){
         this.feedback_type = feedback_type;
     }
 
