@@ -157,9 +157,8 @@ class bulbController {
                 var warnColA = [10, 10, 0];
                 var warnColG = [0, 15, 0];
 
-                //2 stage timeout colour change.
-                var acol = (this.timeout_counter>0)?warnColA:interactColA;
-                var gcol = (this.timeout_counter>0)?warnColG:interactColG;
+                //2 stage timeout colour change.                
+                var gcol = interactColG;
 
                 if (this.state_machine == 0) {
                     //All off
@@ -170,7 +169,7 @@ class bulbController {
                 } else {
                     
                     //Show the next way to look -- this is very ineficient but whatever
-                    switch (this.pattern[this.state_machine]){
+                    switch (this.pattern[this.state_machine+1]){
                         case "up":
                             this.lightRing.setRange(0, 4, gcol[0], gcol[1], gcol[2]);
                             this.lightRing.setRange(5, 6, baseCol[0], baseCol[1], baseCol[2]);
@@ -182,9 +181,9 @@ class bulbController {
                             this.lightRing.setRange(11, 11, baseCol[0], baseCol[1], baseCol[2]);
                             break;
                         case "center":
-                            this.lightRing.setRange(0, 0, baseCol[0], baseCol[1], baseCol[2]);
-                            this.lightRing.setRange(1, 2, gcol[0], gcol[1], gcol[2]);
-                            this.lightRing.setRange(3, 3, baseCol[0], baseCol[1], baseCol[2]);
+                            this.lightRing.setRange(0, 1, baseCol[0], baseCol[1], baseCol[2]);
+                            this.lightRing.setRange(2, 3, gcol[0], gcol[1], gcol[2]);
+                            //this.lightRing.setRange(3, 3, baseCol[0], baseCol[1], baseCol[2]);
                             this.lightRing.setRange(4, 5, gcol[0], gcol[1], gcol[2]);
                             this.lightRing.setRange(6, 6, baseCol[0], baseCol[1], baseCol[2]);
                             this.lightRing.setRange(7, 8, gcol[0], gcol[1], gcol[2]);
