@@ -26,7 +26,7 @@
 	
 	let currentPattern = 'Unset';
 
-	let feedback_type = 0;
+	let feedback_type = 'on';
 
 	$: {
 		setFeedbackType(feedback_type);
@@ -119,7 +119,7 @@
 	}
 
 	function setFeedbackType(feedback_type){		
-			if(feedback_type == 0){
+			if(feedback_type == 'on'){
 				socket.emit('game', '{"command":"setFeedback", "feedback_type":"followMe"}');			
 			}else{
 				socket.emit('game', '{"command":"setFeedback", "feedback_type":"rotate"}');			
