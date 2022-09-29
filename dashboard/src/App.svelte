@@ -30,7 +30,7 @@
 
 	$: {
 		setFeedbackType(feedback_type);
-		console.log("onmount");
+		console.log(feedback_type);
 	}
 
 	
