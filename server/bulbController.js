@@ -173,32 +173,32 @@ class bulbController {
                     switch (this.pattern[this.state_machine]){
                         case "up":
                             this.lightRing.setRange(0, 4, gcol[0], gcol[1], gcol[2]);
-                            this.lightRing.setRange(5, 6, acol[0], acol[1], acol[2]);
+                            this.lightRing.setRange(5, 6, baseCol[0], baseCol[1], baseCol[2]);
                             this.lightRing.setRange(7, 11, gcol[0], gcol[1], gcol[2]);
                             break;
                         case "down":
                             this.lightRing.setRange(0, 0, gcol[0], gcol[1], gcol[2]);
-                            this.lightRing.setRange(1, 10, acol[0], acol[1], acol[2]);
-                            this.lightRing.setRange(11, 11, acol[0], acol[1], acol[2]);
+                            this.lightRing.setRange(1, 10, baseCol[0], baseCol[1], baseCol[2]);
+                            this.lightRing.setRange(11, 11, baseCol[0], baseCol[1], baseCol[2]);
                             break;
                         case "center":
-                            this.lightRing.setRange(0, 0, acol[0], acol[1], acol[2]);
+                            this.lightRing.setRange(0, 0, baseCol[0], baseCol[1], baseCol[2]);
                             this.lightRing.setRange(1, 2, gcol[0], gcol[1], gcol[2]);
-                            this.lightRing.setRange(3, 3, acol[0], acol[1], acol[2]);
+                            this.lightRing.setRange(3, 3, baseCol[0], baseCol[1], baseCol[2]);
                             this.lightRing.setRange(4, 5, gcol[0], gcol[1], gcol[2]);
-                            this.lightRing.setRange(6, 6, acol[0], acol[1], acol[2]);
+                            this.lightRing.setRange(6, 6, baseCol[0], baseCol[1], baseCol[2]);
                             this.lightRing.setRange(7, 8, gcol[0], gcol[1], gcol[2]);
-                            this.lightRing.setRange(9, 9, acol[0], acol[1], acol[2]);
+                            this.lightRing.setRange(9, 9, baseCol[0], baseCol[1], baseCol[2]);
                             this.lightRing.setRange(10, 11, gcol[0], gcol[1], gcol[2]);
                             break;
                         case "left":
                             this.lightRing.setRange(0, 2, gcol[0], gcol[1], gcol[2]);
-                            this.lightRing.setRange(3, 4, acol[0], acol[1], acol[2]);
+                            this.lightRing.setRange(3, 4, baseCol[0], baseCol[1], baseCol[2]);
                             this.lightRing.setRange(5, 11, gcol[0], gcol[1], gcol[2]);
                             break;
                         case "right":
                             this.lightRing.setRange(0, 7, gcol[0], gcol[1], gcol[2]);
-                            this.lightRing.setRange(8, 9, acol[0], acol[1], acol[2]);
+                            this.lightRing.setRange(8, 9, baseCol[0], baseCol[1], baseCol[2]);
                             this.lightRing.setRange(10, 11, gcol[0], gcol[1], gcol[2]);
                             break;
                     }
