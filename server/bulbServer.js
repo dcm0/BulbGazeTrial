@@ -107,10 +107,10 @@ dnsp.on('connection', function (socket) {
         //Possible patterns must be coded into bulbController
         //currently only 'rotate' is valid.
         bulbControllers.forEach(bulb => {
-          bulb.setPattern(payload['feedbackName']);
+          bulb.setFeedbackType(payload['feedback_type']);
         });
         //set default feedback for bulbs that connect later
-        current_feedback = payload['interaction_pattern'];
+        current_feedback = payload['feedback_type'];
         logger.info('Feedback Changed ' + payload['feedbackName']);
         break;
       case "resetCounter":

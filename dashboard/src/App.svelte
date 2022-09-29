@@ -25,6 +25,14 @@
 	
 	let currentPattern = 'Unset';
 
+	let feedback_type = 0;
+
+	$: {
+		updateFeedbackType(feedback_type);
+	}
+
+	
+
 
 	import { onMount } from 'svelte';
 	onMount(() => {
@@ -106,6 +114,10 @@
 			currentPattern = patternString;
 
 		}
+	}
+
+	function updateFeedbackType(feedback_type){		
+			socket.emit('game', '{"command":"setFeedback", "feedback_type":"'+feedback_type+'"}');			
 	}
 
 	function setParticipant(){
@@ -222,6 +234,10 @@
 		"center center right right up up"
 	</button>
 	<h4>Current Pattern: {currentPattern}</h4>
+	
+	<br>
+	<Switch bind:value={feedback_type} label="'Enable Followme'" design="inner" />
+
 	Face Sensitivity<br>
 	<label>
 		<input type=number bind:value={faceSensitivity} min=2 max=40>

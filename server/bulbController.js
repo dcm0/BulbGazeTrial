@@ -57,6 +57,10 @@ class bulbController {
         this.t_cooldown = Date.now()
     }
 
+    setFeebackType(feedback_type){
+        this.feedback_type = feedback_type;
+    }
+
     setAverageFace(avgFace) {
         this.average_face = avgFace;
         this.log.info('Average face set');
