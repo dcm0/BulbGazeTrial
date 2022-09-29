@@ -19,7 +19,7 @@ var current_target;
 var round_counter = 0;
 var condition_counter = 0;
 var current_gaze_pattern = "center center center center";
-var current_feedback = "rotate";
+var current_feedback = "followMe";
 
 var bulbControllers = [];
 
@@ -107,11 +107,12 @@ dnsp.on('connection', function (socket) {
         //Possible patterns must be coded into bulbController
         //currently only 'rotate' is valid.
         bulbControllers.forEach(bulb => {
+          logger.info('Feedback Changed ' + payload['feedback_type']);
           bulb.setFeedbackType(payload['feedback_type']);
         });
         //set default feedback for bulbs that connect later
         current_feedback = payload['feedback_type'];
-        logger.info('Feedback Changed ' + payload['feedbackName']);
+        logger.info('Feedback Changed ' + payload['feedback_type']);
         break;
       case "resetCounter":
         round_counter = 0;
