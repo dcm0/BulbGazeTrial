@@ -30,6 +30,7 @@
 
 	$: {
 		setFeedbackType(feedback_type);
+		console.log("onmount");
 	}
 
 	
@@ -118,7 +119,12 @@
 	}
 
 	function setFeedbackType(feedback_type){		
-			socket.emit('game', '{"command":"setFeedback", "feedback_type":"'+feedback_type+'"}');			
+			if(feedback_type == 0){
+				socket.emit('game', '{"command":"setFeedback", "feedback_type":"followMe"}');			
+			}else{
+				socket.emit('game', '{"command":"setFeedback", "feedback_type":"rotate"}');			
+			}
+			
 	}
 
 	function setParticipant(){
