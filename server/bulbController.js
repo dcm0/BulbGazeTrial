@@ -59,7 +59,7 @@ class bulbController {
 
     setFeedbackType(feedback_type){
         console.log("Feedback set "+ feedback_type);
-        this.feedback_type = feedback_type;
+        this.feedbackType = feedback_type;
     }
 
     setAverageFace(avgFace) {
