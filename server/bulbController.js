@@ -181,14 +181,14 @@ class bulbController {
                             this.lightRing.setRange(11, 11, baseCol[0], baseCol[1], baseCol[2]);
                             break;
                         case "center":
-                            this.lightRing.setRange(0, 1, baseCol[0], baseCol[1], baseCol[2]);
-                            this.lightRing.setRange(2, 3, gcol[0], gcol[1], gcol[2]);
+                            this.lightRing.setRange(0, 0, baseCol[0], baseCol[1], baseCol[2]);
+                            this.lightRing.setRange(1, 4, gcol[0], gcol[1], gcol[2]);
                             //this.lightRing.setRange(3, 3, baseCol[0], baseCol[1], baseCol[2]);
-                            this.lightRing.setRange(4, 5, gcol[0], gcol[1], gcol[2]);
-                            this.lightRing.setRange(6, 6, baseCol[0], baseCol[1], baseCol[2]);
-                            this.lightRing.setRange(7, 8, gcol[0], gcol[1], gcol[2]);
-                            this.lightRing.setRange(9, 9, baseCol[0], baseCol[1], baseCol[2]);
-                            this.lightRing.setRange(10, 11, gcol[0], gcol[1], gcol[2]);
+                            //this.lightRing.setRange(4, 5, gcol[0], gcol[1], gcol[2]);
+                            //this.lightRing.setRange(6, 6, baseCol[0], baseCol[1], baseCol[2]);
+                            //this.lightRing.setRange(7, 8, gcol[0], gcol[1], gcol[2]);
+                            //this.lightRing.setRange(9, 9, baseCol[0], baseCol[1], baseCol[2]);
+                            //this.lightRing.setRange(10, 11, gcol[0], gcol[1], gcol[2]);
                             break;
                         case "left":
                             this.lightRing.setRange(0, 2, gcol[0], gcol[1], gcol[2]);
