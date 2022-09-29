@@ -1,12 +1,15 @@
 <script>
 	import { io } from "socket.io-client";
-	import Toggle from './Toggle.svelte'
+	import Toggle from './Toggle.svelte';
+	
+
 	//import { io } from "https://cdn.socket.io/4.3.2/socket.io.esm.min.js";
 	// let src="/socket.io/socket.io.js"
-	var socket = io('http://10.204.0.101:8080/dashboard');
+	var socket = io('http://10.204.0.121:8080/dashboard');
 	console.log("connected");
 	//var socket = io('10.200.32.0');
 	let isCalibrate;
+	let active = 'Trial Management';
 
 	let calibration = {'camera-1':false, 'camera-2':false, 'camera-3':false, 'camera-4':false, 'camera-5':false, 'camera-6':false};
 	let lightStatus = {'camera-1':false, 'camera-2':false, 'camera-3':false, 'camera-4':false, 'camera-5':false, 'camera-6':false};
@@ -139,6 +142,15 @@
 
 
 <main>
+
+
+	<!-- <TabBar tabs={['Trial Management', 'Settings and Calibration']} let:tab bind:active>
+		<!-- Note: the `tab` property is required! -->
+		<!-- <Tab {tab}> -->
+		  <!-- <Label>{tab}</Label> -->
+		<!-- </Tab> -->
+	<!-- </TabBar> -->
+	 
 
 
 	<Toggle bind:checked={isCalibrate} let:checked={checked}>
