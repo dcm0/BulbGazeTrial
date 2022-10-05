@@ -67,8 +67,9 @@ class bulbController {
         this.log.info('Average face set');
     }
 
-    setSensitivity(newSensitivity){
-        this.sensitivity = newSensitivity;
+    setSensitivity(fSensitivity_value, gSensitivity_value){
+        this.fsensitivity = fSensitivity_value;
+        this.gsensitivity = gSensitivity_value;
     }
 
     compare_numbers_linear(_compare, average, _sum) {
