@@ -2,6 +2,7 @@
 	import { io } from "socket.io-client";
 	import Toggle from './Toggle.svelte';
 	import Switch from './Switch.svelte';
+	import ColorPicker from './ColorPicker.svelte';
 	
 
 	//import { io } from "https://cdn.socket.io/4.3.2/socket.io.esm.min.js";
@@ -27,6 +28,12 @@
 	let currentPattern = 'Unset';
 
 	let feedback_type = 'on';
+
+	let ringFrom=0;
+	let ringTo = 0;
+	let ringColR = 0;
+	let ringColG = 0;
+	let ringColB = 0;
 
 	$: {
 		setFeedbackType(feedback_type);
@@ -93,6 +100,12 @@
 		}
 
 
+	}
+
+
+	function setRing(){
+
+		socket.emit('game', '{"command":"setRings", "from":"'+ringFrom+'", "to":"'+ringTo+'", "r":"'+ringColR+'", "g":"'+ringColG+'", "b":"'+ringColB+'"}');
 	}
 
 	function sendNewgame(){
@@ -223,6 +236,39 @@
 	</tr>
 	</table>
 	<br>
+
+	<h3>Testing LightRings</h3>
+
+	From<br>
+	<label>
+		<input type=number bind:value={ringFrom} min=0 max=11>
+		<input type=range bind:value={ringFrom} min=0 max=11>
+	</label>
+	To<br>
+	<label>
+		<input type=number bind:value={ringTo} min=0 max=11>
+		<input type=range bind:value={ringTo} min=0 max=11>
+	</label>
+	R
+	<label>
+		<input type=number bind:value={ringColR} min=0 max=255>
+		<input type=range bind:value={ringColR} min=0 max=255>
+	</label>
+	G
+	<label>
+		<input type=number bind:value={ringColG} min=0 max=255>
+		<input type=range bind:value={ringColG} min=0 max=255>
+	</label>
+	B
+	<label>
+		<input type=number bind:value={ringColB} min=0 max=255>
+		<input type=range bind:value={ringColB} min=0 max=255>
+	</label>
+	<button class="button" id="setLight" on:click={() => setRing()}>
+		setRing
+	</button>
+
+
 	<br>
 	<h3>Set Interaction Pattern</h3>
 	<button class="button" id="pattern1" on:click={() => setPattern("center center center center")}>

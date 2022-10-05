@@ -134,6 +134,17 @@ dnsp.on('connection', function (socket) {
             bulb.setSensitivity(fSensitivity_value, gSensitivity_value);
         });
         break;
+      case "setRings":
+        bfrom = payload['from'];
+        bto = payload['to'];
+        r = payload['r'];
+        g = payload['g'];
+        b = payload['b'];
+        bulbControllers.forEach(bulb => {
+            bulb.lightRing.setRange(bfrom, bto, r, g, b);
+            bulb.sendRing();
+        });
+        break;
 
       case "logString":
         //Figure we might want to send participant ID to the logs or something
