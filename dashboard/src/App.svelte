@@ -2,7 +2,7 @@
 	import { io } from "socket.io-client";
 	import Toggle from './Toggle.svelte';
 	import Switch from './Switch.svelte';
-	import ColorPicker from './ColorPicker.svelte';
+	
 	
 
 	//import { io } from "https://cdn.socket.io/4.3.2/socket.io.esm.min.js";
