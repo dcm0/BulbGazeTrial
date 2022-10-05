@@ -32,6 +32,20 @@ class lightRing {
         }
     }
 
+
+    setLeft(r, g, b){
+        from=0;
+        to=this.lightArray.length;
+
+        for (let index = from; index < to; index++) {  
+            this.lightArray[index]['r'] = r;
+            this.lightArray[index]['g'] = g;
+            this.lightArray[index]['b'] = b;
+        }
+
+        
+    }
+
     toString(){
         var lightString = "";
         for (let index = 0; index < this.lightArray.length; index++) {
