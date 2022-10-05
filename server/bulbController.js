@@ -429,7 +429,7 @@ class bulbController {
 
         if(old_machine != this.state_machine){
             //Send the new progress to the dashboard
-            this.dashnsp.emit('game', "{'bulb':'"+this.nsp.name+"', 'x':'" + this.state_machine + "', 'outof':'" + this.pattern.length + "'}");
+            this.dashnsp.emit('game', '{"bulb":"'+this.nsp.name+'", "x":"' + this.state_machine + '", "outof":"' + this.pattern.length + '"}');
         }
     }
         this.processing = false;
