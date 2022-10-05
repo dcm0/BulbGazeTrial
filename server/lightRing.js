@@ -25,8 +25,9 @@ class lightRing {
         //if(from<0) from=0;
         //if(to>this.lightArray.length) to=this.lightArray.length;
         console.log(from + ' ' + to + ' ' + r + ' ' + g + ' ' + b);
-        let index = from;
-        while(index <= to){  
+        let index = parseInt(from);
+        let until = parseInt(to);
+        while(index <= until){  
             console.log(index + ':' + r + ',' + g + ',' + b);
             this.lightArray[index]['r'] = r;
             this.lightArray[index]['g'] = g;
