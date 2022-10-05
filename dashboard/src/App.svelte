@@ -104,7 +104,7 @@
 
 
 	function setRing(){
-
+		console.log('{"command":"setRings", "from":"'+ringFrom+'", "to":"'+ringTo+'", "r":"'+ringColR+'", "g":"'+ringColG+'", "b":"'+ringColB+'"}');
 		socket.emit('game', '{"command":"setRings", "from":"'+ringFrom+'", "to":"'+ringTo+'", "r":"'+ringColR+'", "g":"'+ringColG+'", "b":"'+ringColB+'"}');
 	}
 
