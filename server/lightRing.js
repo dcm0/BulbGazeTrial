@@ -24,11 +24,13 @@ class lightRing {
     setRange(from, to, r, g, b){
         if(from<0) from=0;
         if(to>this.lightArray.length) to=this.lightArray.length;
-
-        for (let index = from; index < to; index++) {  
+        
+        let index = from;
+        while(index <= to){  
             this.lightArray[index]['r'] = r;
             this.lightArray[index]['g'] = g;
             this.lightArray[index]['b'] = b;
+            index++;
         }
     }
 
