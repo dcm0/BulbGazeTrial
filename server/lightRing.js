@@ -22,9 +22,9 @@ class lightRing {
     }
 
     setRange(from, to, r, g, b){
-        if(from<0) from=0;
-        if(to>this.lightArray.length) to=this.lightArray.length;
-        
+        //if(from<0) from=0;
+        //if(to>this.lightArray.length) to=this.lightArray.length;
+        console.log(from + ' ' + to + ' ' + r + ' ' + g + ' ' + b);
         let index = from;
         while(index <= to){  
             this.lightArray[index]['r'] = r;
