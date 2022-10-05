@@ -169,7 +169,7 @@ class bulbController {
                 } else {
                     
                     //Show the next way to look -- this is very ineficient but whatever
-                    switch (this.pattern[this.state_machine+1]){
+                    switch (this.pattern[this.state_machine]){
                         case "up":
                             this.lightRing.setRange(0, 11, baseCol[0], baseCol[1], baseCol[2]);
                             this.lightRing.setRange(6, 7, interactColA[0], interactColA[1], interactColA[2]);
@@ -429,7 +429,7 @@ class bulbController {
 
         if(old_machine != this.state_machine){
             //Send the new progress to the dashboard
-            this.dashnsp.emit('game', "{'bulb':'"+this.controlnsp+", 'x':'" + this.state_machine + "', 'outof':'" + this.pattern.length + "'}");
+            this.dashnsp.emit('game', "{'bulb':'"+this.nsp.name+"', 'x':'" + this.state_machine + "', 'outof':'" + this.pattern.length + "'}");
         }
     }
         this.processing = false;
