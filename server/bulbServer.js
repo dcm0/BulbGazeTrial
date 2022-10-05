@@ -140,6 +140,7 @@ dnsp.on('connection', function (socket) {
         r = payload['r'];
         g = payload['g'];
         b = payload['b'];
+        console.log(bfrom + ' ' + bto + ' ' + r + ' ' + g + ' ' + b);
         bulbControllers.forEach(bulb => {
             bulb.lightRing.setRange(bfrom, bto, r, g, b);
             bulb.sendRing();
