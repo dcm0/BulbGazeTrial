@@ -108,6 +108,11 @@
 		socket.emit('game', '{"command":"setRings", "from":"'+ringFrom+'", "to":"'+ringTo+'", "r":"'+ringColR+'", "g":"'+ringColG+'", "b":"'+ringColB+'"}');
 	}
 
+	function clearRing(){
+
+		socket.emit('game', '{"command":"setRings", "from":"0", "to":"11", "r":"0", "g":"0", "b":"0"}');
+	}
+
 	function sendNewgame(){
 
 		socket.emit('game', '{"command":"newQuiz"}');
@@ -266,6 +271,9 @@
 	</label>
 	<button class="button" id="setLight" on:click={() => setRing()}>
 		setRing
+	</button>
+	<button class="button" id="setLight" on:click={() => clearRing()}>
+		Clear Rings
 	</button>
 
 
