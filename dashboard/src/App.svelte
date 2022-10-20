@@ -47,6 +47,25 @@
 		console.log(feedback_type);
 	}
 
+	$: if(currentPresetTrial == "Trial 1"){
+		setAllToPatter(gestureList[0])
+	} else if (currentPresetTrial == "Trial 2") {
+		setAllToPatter(gestureList[1])
+	} else if (currentPresetTrial == "Trial 3") {
+		setAllToPatter(gestureList[2])
+	} else if (currentPresetTrial == "Trial 4") {
+		setAllToPatter(gestureList[3])
+	} else if (currentPresetTrial == "Trial 5") {
+		setAllToPatter(gestureList[4])
+	}
+
+	//quick function for setting all to the same pattern
+	function setAllToPatter(pattern){
+		Object.keys(currentPatternArray).forEach(key => {
+			currentPatternArray[key] = pattern;
+		});
+	}
+
 
 
 
@@ -310,6 +329,7 @@
 	}
 
 	function setPattern(patternArray){
+		// why is this if statement relevant? /kasper
 		if(patternArray != currentPatternArray){
 			conditionNumber++;
 			roundNumber = 1;
@@ -319,6 +339,8 @@
 
 		}
 	}
+
+
 
 
 	function setFeedbackType(feedback_type){
