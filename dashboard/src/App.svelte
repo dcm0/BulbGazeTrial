@@ -66,6 +66,14 @@
 		});
 	}
 
+	function randomizePatterns(){
+		currentPresetTrial = "Custom Trial"
+		Object.keys(currentPatternArray).forEach(key => {
+			var random = Math.floor(Math.random() * gestureList.length);
+			currentPatternArray[key] = gestureList[random]
+		});
+	}
+
 
 
 
@@ -577,7 +585,7 @@
 	</td>
 	{#each cameraList as camera}
 	<td>
-	<label><input type="radio" {value} bind:group={currentPatternArray[camera]}></label>
+	<label><input type="radio" {value} bind:group={currentPatternArray[camera]} on:click={() => currentPresetTrial = "Custom Trial"}></label>
 	</td>
 	{/each}
 	</tr>
@@ -590,6 +598,10 @@
 	<button on:click={() => checkNewPattern()}>
 		Submit Pattern
 	</button>
+	<button on:click={() => randomizePatterns()}>
+		Randomize Patterns
+	</button>
+
 	<br>
 
 	<!-- <h4>Current Pattern: {currentPattern}</h4> -->
