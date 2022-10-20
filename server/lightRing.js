@@ -11,7 +11,7 @@ class lightRing {
             this.lightArray[index]['b'] = b;
             
         }
-        this.dirty=True;
+        this.dirty=true;
     }
 
     setAll(r,g,b){
@@ -20,7 +20,7 @@ class lightRing {
             this.lightArray[index]['g'] = g;
             this.lightArray[index]['b'] = b;
         }
-        this.dirty = True;
+        this.dirty = true;
     }
 
     setRange(from, to, r, g, b){
@@ -36,11 +36,11 @@ class lightRing {
             this.lightArray[index]['b'] = b;
             index++;
         }
-        this.dirty = True;
+        this.dirty = true;
     }
 
     clean(){
-        this.dirty = False;
+        this.dirty = false;
     }
 
     toString(){
