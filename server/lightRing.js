@@ -1,6 +1,6 @@
 class lightRing {
     
-
+    
     constructor(r, g, b) {
         this.no_lights = 12;
         this.lightArray = new Array();
@@ -11,6 +11,7 @@ class lightRing {
             this.lightArray[index]['b'] = b;
             
         }
+        this.dirty=True;
     }
 
     setAll(r,g,b){
@@ -19,24 +20,28 @@ class lightRing {
             this.lightArray[index]['g'] = g;
             this.lightArray[index]['b'] = b;
         }
+        this.dirty = True;
     }
 
     setRange(from, to, r, g, b){
         //if(from<0) from=0;
         //if(to>this.lightArray.length) to=this.lightArray.length;
-        console.log(from + ' ' + to + ' ' + r + ' ' + g + ' ' + b);
+        //console.log(from + ' ' + to + ' ' + r + ' ' + g + ' ' + b);
         let index = parseInt(from);
         let until = parseInt(to);
         while(index <= until){  
-            console.log(index + ':' + r + ',' + g + ',' + b);
+            //console.log(index + ':' + r + ',' + g + ',' + b);
             this.lightArray[index]['r'] = r;
             this.lightArray[index]['g'] = g;
             this.lightArray[index]['b'] = b;
             index++;
         }
+        this.dirty = True;
     }
 
-
+    clean(){
+        this.dirty = False;
+    }
 
     toString(){
         var lightString = "";
