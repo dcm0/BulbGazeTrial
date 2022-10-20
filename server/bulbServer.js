@@ -27,9 +27,9 @@ var bulbControllers = [];
 
 
 function checkFileExists(file) {
-  console.log(fs.promises.access(file, fs.constants.F_OK)
+  async () => {awaitconsole.log(fs.promises.access(file, fs.constants.F_OK)
   .then(() => true)
-  .catch(() => false));
+  .catch(() => false));}
   return fs.promises.access(file, fs.constants.F_OK)
            .then(() => true)
            .catch(() => false)
@@ -37,7 +37,7 @@ function checkFileExists(file) {
 
 //Manage list of gestures
 
-if(checkFileExists('./gestureList.txt')){
+if(async () => {await checkFileExists('./gestureList.txt')}){
   //Then we have a list so read it in
   current_gestures = fs.readFileSync('./gestureList.txt').toString().split("\n");
 
