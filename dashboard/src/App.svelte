@@ -524,20 +524,44 @@
 
 
 	<TabPanel>
-	<table>
+	<table style="width:50%;  display: block;
+  margin-left: auto;
+  margin-right: auto;">
 	{#each presetTrial as value}
-	<th>
+	<th style="width:200px">
 		<label><input type="radio" {value} bind:group={currentPresetTrial}> {value}</label>
 		</th>
 	{/each}
 	</table>
 
+	<table style="width:80%">
+	<!-- making the headers! -->
+	<tr>
+	<th>
+	</th>
 	{#each cameraList as camera}
+
+	<th>
 	<h4>{camera}</h4>
-		{#each gestureList as value}
-		<label><input type="radio" {value} bind:group={currentPatternArray[camera]}> {value}</label>
-		{/each}
+	</th>
+
 	{/each}
+	</tr>
+	<!-- making the buttons! -->
+	{#each gestureList as value}
+	<tr>
+	<td>
+	<h4>{value}</h4>
+	</td>
+	{#each cameraList as camera}
+	<td>
+	<label><input type="radio" {value} bind:group={currentPatternArray[camera]}></label>
+	</td>
+	{/each}
+	</tr>
+	{/each}
+
+	</table>
 	<br>
 	<input type=text name="newPat" bind:value={newPattern} pattern="{String.raw`(down|up|left|right|center| ){3,}`}">
 	<!-- TODO: change checkNewPattern -->
@@ -545,6 +569,7 @@
 		Submit Pattern
 	</button>
 	<br>
+
 	<!-- <h4>Current Pattern: {currentPattern}</h4> -->
 
 	<br>
