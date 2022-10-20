@@ -96,10 +96,12 @@
 			var but = payload["bulb"];
 			var ls = payload["lightStatus"];
 			lightStatus[but] = ls;
+			but = but.substring(1);
 			updateRingCanvas(but, lastRing[but]);
 			break;
 		case "ringStatus":
 			var but = payload["bulb"];
+			but = but.substring(1);
 			var ring = payload["lightRing"];
 			lastRing[but] = ring;
 			updateRingCanvas(but, ring);
@@ -158,7 +160,7 @@
 	}
 
 	function updateRingCanvas(boxString, ringString){
-
+		console.log(ringString)
 		let ctx = canvas[boxString].getContext('2d');
 
 		//Bulb
