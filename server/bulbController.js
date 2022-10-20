@@ -107,7 +107,7 @@ class bulbController {
 
     sendRing() {
         this.nsp.emit('bulb', '{"command":"ring", ' + this.lightRing.toString() + '}');
-        this.dashnsp.emit('game', '{"command":"ringStatus", "bulb":"'+ this.nsp.name + '", "lightRing":"' + this.lightRing.toString() + '"}');
+        this.dashnsp.emit('game', '{"command":"ringStatus", "bulb":"'+ this.nsp.name + '", "lightRing":{' + this.lightRing.toString() + '}}');
     }
 
     async updateFeedback() {

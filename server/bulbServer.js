@@ -6,8 +6,9 @@ const { runInThisContext } = require('vm');
 const logger = require('pino')('./bulbLogs.log'); //pino.destination()
 const bulbController = require('./bulbController');
 const lightRing = require('./lightRing');
-const fs = require('fs').promises;
+const fs = require('fs');
 const http = require('http').createServer(app);
+const Path = require('path');
 const io = require('socket.io')(http, {
   cors: {
     origin: "*",
@@ -26,26 +27,29 @@ var current_gestures = [];
 var bulbControllers = [];
 
 
-function checkFileExists(file) {
-  return fs.promises.access(file, fs.constants.F_OK)
-           .then(() => true)
-           .catch(() => false)
+async function checkFileExists(file) {
+  
+  var result = await fs.promises.access(file, fs.constants.F_OK)
+  .then(() => true)
+  .catch(() => false);
+  
+  console.log(result);
+  
+  return result;
 }
 
 //Manage list of gestures
+const gesturePath = Path.join(__dirname, "gestureList.txt")
 
-if(checkFileExists('./gestureList.txt')){
+if(fs.existsSync(gesturePath)){
   //Then we have a list so read it in
-  current_gestures = fs.readFileSync('gestureList.txt').toString().split("\n");
+  current_gestures = fs.readFileSync(gesturePath).toString().split("\n");
 
 }else{
   //Make a new file and write out the default?
   let defaultGestures = ['center center center center', 'center center left left', 'center center up up', 'center center down down right right', 'center center right right up up'];
-  (async () => {
-    await fs.writeFile('./gestureList.txt', defaultGestures.join('\n'), 'utf8');
-  })();
+  fs.writeFileSync(gesturePath, defaultGestures.join('\n'), 'utf8');
   current_gestures = defaultGestures;
-
 }
 
 
@@ -256,7 +260,7 @@ cameras.on("connection", (socket) => {
 
 function sendGestureList(){
     
-  this.dashnsp.emit('game', '{"command":"gestureList", "gestures":"'+JSON.stringify(current_gestures)+'"}');
+  dnsp.emit('game', '{"command":"gestureList", "gestures":'+JSON.stringify(current_gestures)+'}');
 }
 
 
@@ -276,9 +280,9 @@ function updateGestureList(newList){
     }
 
     //Overwrite the file and change the variable
-    (async () => {
-      await fs.writeFile('./gestureList.txt', newList.join('\n'), 'utf8');
-    })();
+    
+    fs.writeFileSync(gesturePath, newList.join('\n'), 'utf8');
+    
     current_gestures = newList;
 }
 
