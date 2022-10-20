@@ -4,8 +4,8 @@
 	import Switch from './Switch.svelte';
 	import { Tabs, TabList, TabPanel, Tab } from './tabs.js';
 
-	
-	
+
+
 
 	//import { io } from "https://cdn.socket.io/4.3.2/socket.io.esm.min.js";
 	// let src="/socket.io/socket.io.js"
@@ -19,8 +19,9 @@
 	let canvas = {'camera-1':null, 'camera-2':null, 'camera-3':null, 'camera-4':null, 'camera-5':null, 'camera-6':null};
 	let lastRing = {'camera-1':null, 'camera-2':null, 'camera-3':null, 'camera-4':null, 'camera-5':null, 'camera-6':null};
 	let gestureList = ["center center center center", "center center left left", "center center up up", "center center down down right right", "center center right right up up"];
+	let presetTrial = ["Trial 1", "Trial 2", "Trial 3", "Trial 4", "Trial 5", "Custom Trial"];
+	let cameraList = ["camera-1", "camera-2", "camera-3", "camera-4", "camera-5", "camera-6"];
 	let newPattern;
-	
 
 	let participantNameD = "Participant";
 	let participantName = "Participant";
@@ -30,9 +31,9 @@
 	let oldFaceSensitivity = 20;
 	let gazeSensitivity = 10;
 	let oldGazeSensitivity = 10;
-	
-	let currentPattern = 'Unset';
 
+	let currentPatternArray = {'camera-1':"center center", 'camera-2':"center center", 'camera-3':"center center", 'camera-4':"center center", 'camera-5':"center center", 'camera-6':"center center"};
+	let currentPresetTrial = "Trial 1"
 	let feedback_type = 'on';
 
 	let ringFrom=0;
@@ -46,7 +47,7 @@
 		console.log(feedback_type);
 	}
 
-	
+
 
 
 	import { onMount } from 'svelte';
@@ -109,7 +110,7 @@
 			var pattern = payload["pattern_length"];
 			//var ringStatus = payload["ring_status"];
 			console.log(but+" at state"+ machine+" out of "+ pattern);
-			//Should probably display in dash too?			
+			//Should probably display in dash too?
 		}
 	});
 
@@ -142,13 +143,18 @@
 		}else{
 			socket.emit('game', '{"command":"toggleCamera", "camString":"'+boxString+'", "status":"off"}');
 			lightStatus[boxString] = !lightStatus[boxString];//testing wait for callback
-			
+
 			//ringTests
 
 			updateRingCanvas(boxString, testRing());
 
 		}
 
+	}
+
+	function sendCameraSpecificPatterns(){
+
+	// json with camera
 	}
 
 	function updateRingCanvas(boxString, ringString){
@@ -181,7 +187,7 @@
 		ctx.rect(18.381809, 47.051258, 8.674548, 8.674548);
 		ctx.fill();
 		ctx.stroke();
-	
+
 		// #rect2
 		ctx.beginPath();
 		ctx.fillStyle = 'rgb('+ringString['2r']+','+ringString['2g']+','+ringString['2b']+')';
@@ -199,7 +205,7 @@
 		ctx.rect(1.032715, 29.702162, 8.674548, 8.674548);
 		ctx.fill();
 		ctx.stroke();
-	
+
 		// #rect4
 		ctx.beginPath();
 		ctx.fillStyle = 'rgb('+ringString['4r']+','+ringString['4g']+','+ringString['4b']+')';
@@ -209,7 +215,7 @@
 		ctx.fill();
 		ctx.stroke();
 
-		// #rect5	
+		// #rect5
 		ctx.beginPath();
 		ctx.fillStyle = 'rgb('+ringString['5r']+','+ringString['5g']+','+ringString['5b']+')';
 		ctx.strokeStyle = 'rgb(0, 0, 0)';
@@ -217,7 +223,7 @@
 		ctx.rect(9.707260, 9.707223, 8.674548, 8.674548);
 		ctx.fill();
 		ctx.stroke();
-	
+
 		// #rect6
 		ctx.beginPath();
 		ctx.fillStyle = 'rgb('+ringString['6r']+','+ringString['6g']+','+ringString['6b']+')';
@@ -226,9 +232,9 @@
 		ctx.rect(18.381809, 1.032674, 8.674548, 8.674548);
 		ctx.fill();
 		ctx.stroke();
-	
 
-	
+
+
 		// #rect7
 		ctx.beginPath();
 		ctx.fillStyle = 'rgb('+ringString['7r']+','+ringString['7g']+','+ringString['7b']+')';
@@ -238,7 +244,7 @@
 		ctx.fill();
 		ctx.stroke();
 
-	
+
 		// #rect8
 		ctx.beginPath();
 		ctx.fillStyle = 'rgb('+ringString['8r']+','+ringString['8g']+','+ringString['8b']+')';
@@ -301,23 +307,25 @@
 
 	}
 
-	function setPattern(patternString){
-		if(patternString != currentPattern){
+	function setPattern(patternArray){
+		if(patternArray != currentPatternArray){
 			conditionNumber++;
 			roundNumber = 1;
-			socket.emit('game', '{"command":"setInteraction", "interaction_pattern":"'+patternString+'", "condition":"'+conditionNumber+'"}');
-			currentPattern = patternString;
+			// TODO: change here!
+			socket.emit('game', '{"command":"setInteraction", "interaction_pattern":"'+patternArray+'", "condition":"'+conditionNumber+'"}');
+			currentPatternArray = patternArray;
 
 		}
 	}
 
-	function setFeedbackType(feedback_type){		
+
+	function setFeedbackType(feedback_type){
 			if(feedback_type == 'on'){
-				socket.emit('game', '{"command":"setFeedback", "feedback_type":"followMe"}');			
+				socket.emit('game', '{"command":"setFeedback", "feedback_type":"followMe"}');
 			}else{
-				socket.emit('game', '{"command":"setFeedback", "feedback_type":"rotate"}');			
+				socket.emit('game', '{"command":"setFeedback", "feedback_type":"rotate"}');
 			}
-			
+
 	}
 
 	function setParticipant(){
@@ -360,7 +368,7 @@
 				setPattern(newPattern);
 				//Send new pattern string to be stored on the server?
 			}
-			
+
 
 		}else{
 			console.log("error pattern "+newPattern);
@@ -368,7 +376,7 @@
 	}
 
 	function validatePattern(pattern) {
-    	var patRegEx = /^((down|up|left|right|center| ){3,})$/;  
+    	var patRegEx = /^((down|up|left|right|center| ){3,})$/;
     	return patRegEx.test(String(pattern).toLowerCase());
   	}
 
@@ -384,13 +392,13 @@
 		  <!-- <Label>{tab}</Label> -->
 		<!-- </Tab> -->
 	<!-- </TabBar> -->
-	 
+
 	<Tabs>
 		<TabList>
 			<Tab>Status</Tab>
 			<Tab>Calibration</Tab>
 		</TabList>
-	
+
 		<TabPanel>
 			<center>
 				<h2>Click to toggle light</h2>
@@ -400,11 +408,11 @@
 						<button class="button" id="camera-1" on:click={() => handleBoxClick("camera-1", false)}>
 								Box 1 <br>
 								<canvas width='70' height='70' bind:this={canvas["camera-1"]}></canvas>
-								
+
 								Light On: {lightStatus['camera-1']} |
 								Calibrated: {calibration['camera-1']}<br>
 						</button>
-						
+
 					</td><td>
 						<button class="button" id="camera-2" on:click={() => handleBoxClick("camera-2", false)}>
 								Box 2<br>
@@ -447,9 +455,9 @@
 			</table>
 		</center>
 			<br>
-			
+
 		</TabPanel>
-	
+
 		<TabPanel>
 			<center>
 				<h2>Click to start calibration</h2>
@@ -461,7 +469,7 @@
 								Light On: {lightStatus['camera-1']} |
 								Calibrated: {calibration['camera-1']}<br>
 						</button>
-						
+
 					</td><td>
 						<button class="button" id="camera-2" on:click={() => handleBoxClick("camera-2", true)}>
 								Box 2<br>
@@ -500,7 +508,7 @@
 			<br>
 				</center>
 
-	
+
 		</TabPanel>
 </Tabs>
 
@@ -510,23 +518,33 @@
 			<Tab>Sensitivity Settings</Tab>
 			<Tab>Light Ring Testing</Tab>
 		</TabList>
-	
-		
+
+
 
 	<TabPanel>
-		
-	{#each gestureList as value}
-		<label><input type="radio" {value} bind:group={currentPattern}> {value}</label>
+	<table>
+	{#each presetTrial as value}
+	<th>
+		<label><input type="radio" {value} bind:group={currentPresetTrial}> {value}</label>
+		</th>
+	{/each}
+	</table>
+
+	{#each cameraList as camera}
+	<h4>{camera}</h4>
+		{#each gestureList as value}
+		<label><input type="radio" {value} bind:group={currentPatternArray[camera]}> {value}</label>
+		{/each}
 	{/each}
 	<br>
 	<input type=text name="newPat" bind:value={newPattern} pattern="{String.raw`(down|up|left|right|center| ){3,}`}">
-
+	<!-- TODO: change checkNewPattern -->
 	<button on:click={() => checkNewPattern()}>
 		Submit Pattern
 	</button>
 	<br>
-	<h4>Current Pattern: {currentPattern}</h4>
-	
+	<!-- <h4>Current Pattern: {currentPattern}</h4> -->
+
 	<br>
 	<Switch bind:value={feedback_type} label="'Enable Followme'" design="inner" />
 	</TabPanel>
@@ -543,7 +561,7 @@
 		<input type=range bind:value={gazeSensitivity} min=2 max=20>
 	</label>
 	<button class="button" disabled='{(faceSensitivity == oldFaceSensitivity) & (gazeSensitivity == oldGazeSensitivity)}' id="sensitivity" on:click={() => setSensitivity()}>
-		Update Face Sensitivity	
+		Update Face Sensitivity
 	</button>
 	</TabPanel>
 
