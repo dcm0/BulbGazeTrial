@@ -100,12 +100,14 @@ class bulbController {
             this.lightOn=newLight;
             console.log('Toggling LED Bulb'+this.lightOn);
             this.nsp.emit('bulb', '{"command":"status", "status":"'+this.lightOn+'"}');
+            this.dashnsp.emit('game', '{"command":"lightStatus", "bulb":"'+ this.nsp.name + '", "lightStatus":"'+this.lightOn+'"}');
             this.log.info('Toggling LED Bulb'+this.lightOn);
         //}
     }
 
     sendRing() {
         this.nsp.emit('bulb', '{"command":"ring", ' + this.lightRing.toString() + '}');
+        this.dashnsp.emit('game', '{"command":"ringStatus", "bulb":"'+ this.nsp.name + '", "lightRing":"' + this.lightRing.toString() + '"}');
     }
 
     async updateFeedback() {

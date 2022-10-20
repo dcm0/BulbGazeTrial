@@ -6,6 +6,7 @@ const { runInThisContext } = require('vm');
 const logger = require('pino')('./bulbLogs.log'); //pino.destination()
 const bulbController = require('./bulbController');
 const lightRing = require('./lightRing');
+const fs = require('fs').promises;
 const http = require('http').createServer(app);
 const io = require('socket.io')(http, {
   cors: {
@@ -20,8 +21,35 @@ var round_counter = 0;
 var condition_counter = 0;
 var current_gaze_pattern = "center center center center";
 var current_feedback = "followMe";
+var current_gestures = [];
 
 var bulbControllers = [];
+
+
+function checkFileExists(file) {
+  return fs.promises.access(file, fs.constants.F_OK)
+           .then(() => true)
+           .catch(() => false)
+}
+
+//Manage list of gestures
+
+if(checkFileExists('./gestureList.txt')){
+  //Then we have a list so read it in
+  current_gestures = fs.readFileSync('gestureList.txt').toString().split("\n");
+
+}else{
+  //Make a new file and write out the default?
+  let defaultGestures = ['center center center center', 'center center left left', 'center center up up', 'center center down down right right', 'center center right right up up'];
+  (async () => {
+    await fs.writeFile('./gestureList.txt', defaultGestures.join('\n'), 'utf8');
+  })();
+  current_gestures = defaultGestures;
+
+}
+
+
+
 
 //Connect everything up
 /*********GAME CONTROLLER ROUTING***************** */
@@ -75,6 +103,7 @@ dnsp.on('connection', function (socket) {
   console.log('dash connected');
   logger.info('Dashboard connected');
   dnsp.emit('bulb', 'Hello dash!');
+  sendGestureList();
 
   socket.on('game', (json_data) => {
 
@@ -91,6 +120,12 @@ dnsp.on('connection', function (socket) {
         console.log('DASHBOARD New Quiz');
         logger.info('DASHBOARD New Quiz');
         setupNewQuiz(payload['differences']);
+        break;
+      case "refreshGestures":
+        sendGestureList();
+        break;
+      case "updateGestureList":
+        updateGestureList(payload['gesture_list']);
         break;
       case "setInteraction":
         //Loop each bulb and update the interaction pattern
@@ -140,7 +175,7 @@ dnsp.on('connection', function (socket) {
         r = payload['r'];
         g = payload['g'];
         b = payload['b'];
-        console.log(bfrom + ' ' + bto + ' ' + r + ' ' + g + ' ' + b);
+        //console.log(bfrom + ' ' + bto + ' ' + r + ' ' + g + ' ' + b);
         bulbControllers.forEach(bulb => {
             bulb.lightRing.setRange(bfrom, bto, r, g, b);
             bulb.sendRing();
@@ -216,6 +251,39 @@ cameras.on("connection", (socket) => {
   cameras.emit('bulb', 'Hello camera ' + socket.nsp.name);
 });
 /*********END GAZEBULB ROUTING*********************** */
+
+
+
+function sendGestureList(){
+    
+  this.dashnsp.emit('game', '{"command":"gestureList", "gestures":"'+JSON.stringify(current_gestures)+'"}');
+}
+
+
+function updateGestureList(newList){
+
+    if(newList.length == current_gestures.length){
+      //check if the orders are the same. 
+      var dirty = false;
+      for (let idx = 0; idx < newList.length; idx++) {
+        if (newList[idx] != current_gestures[idx]){
+            dirty = true;
+        }
+      }
+      if(!dirty){
+        return;
+      }
+    }
+
+    //Overwrite the file and change the variable
+    (async () => {
+      await fs.writeFile('./gestureList.txt', newList.join('\n'), 'utf8');
+    })();
+    current_gestures = newList;
+}
+
+
+
 
 
 

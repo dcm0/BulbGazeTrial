@@ -2,6 +2,8 @@
 	import { io } from "socket.io-client";
 	import Toggle from './Toggle.svelte';
 	import Switch from './Switch.svelte';
+	import { Tabs, TabList, TabPanel, Tab } from './tabs.js';
+
 	
 	
 
@@ -10,11 +12,15 @@
 	var socket = io('http://10.204.0.121:8080/dashboard');
 	console.log("connected");
 	//var socket = io('10.200.32.0');
-	let isCalibrate;
 	let active = 'Trial Management';
 
 	let calibration = {'camera-1':false, 'camera-2':false, 'camera-3':false, 'camera-4':false, 'camera-5':false, 'camera-6':false};
 	let lightStatus = {'camera-1':false, 'camera-2':false, 'camera-3':false, 'camera-4':false, 'camera-5':false, 'camera-6':false};
+	let canvas = {'camera-1':null, 'camera-2':null, 'camera-3':null, 'camera-4':null, 'camera-5':null, 'camera-6':null};
+	let lastRing = {'camera-1':null, 'camera-2':null, 'camera-3':null, 'camera-4':null, 'camera-5':null, 'camera-6':null};
+	let gestureList = ["center center center center", "center center left left", "center center up up", "center center down down right right", "center center right right up up"];
+	let newPattern;
+	
 
 	let participantNameD = "Participant";
 	let participantName = "Participant";
@@ -51,8 +57,12 @@
 	  //   console.log("Opened")
 	  // })
 	  	console.log("onmount");
+		let keys = Object.keys(calibration);
+		keys.forEach(boxString => updateRingCanvas(boxString, testRing()));
 
 	});
+
+
 	socket.on('game', function(msg) {
 		//catch updates from server
 		//jsonData = JSON.parse(msg);
@@ -81,16 +91,50 @@
 			calibration[but] =true;
 			console.log(but+" calibration done");
 			break;
+		case "lightStatus":
+			var but = payload["bulb"];
+			var ls = payload["lightStatus"];
+			lightStatus[but] = ls;
+			updateRingCanvas(but, lastRing[but]);
+			break;
+		case "ringStatus":
+			var but = payload["bulb"];
+			var ring = payload["lightRing"];
+			lastRing[but] = ring;
+			updateRingCanvas(but, ring);
+			break;
 		case "interactionStatus":
 			var but = payload["bulb"];
 			var machine = payload["machine"];
 			var pattern = payload["pattern_length"];
+			//var ringStatus = payload["ring_status"];
 			console.log(but+" at state"+ machine+" out of "+ pattern);
 			//Should probably display in dash too?			
 		}
 	});
 
-	function handleBoxClick(boxString){
+
+	function testRing(){
+
+		var lightString = "{";
+        for (let index = 0; index < 12; index++) {
+			let r = Math.floor(Math.random() * 255);
+			let g = Math.floor(Math.random() * 255);;
+			let b = Math.floor(Math.random() * 255);;
+            lightString = `${lightString} "${index}r": "${r}", "${index}g":"${g}", "${index}b":"${b}"`;
+            if(index!=11){
+                lightString = lightString + ", ";
+            }else{
+				lightString = lightString + "}";
+			}
+        }
+		//console.log( Math.floor(Math.random() * 255));
+        //console.log(lightString);
+		return JSON.parse(lightString);
+
+	}
+
+	function handleBoxClick(boxString, isCalibrate){
 		if(isCalibrate){
 			socket.emit('game', '{"command":"calibrate", "camString":"'+boxString+'"}');
 			calibration[boxString] = true; //testing wait for callback
@@ -98,11 +142,141 @@
 		}else{
 			socket.emit('game', '{"command":"toggleCamera", "camString":"'+boxString+'", "status":"off"}');
 			lightStatus[boxString] = !lightStatus[boxString];//testing wait for callback
-		}
+			
+			//ringTests
 
+			updateRingCanvas(boxString, testRing());
+
+		}
 
 	}
 
+	function updateRingCanvas(boxString, ringString){
+
+		let ctx = canvas[boxString].getContext('2d');
+
+		//Bulb
+		ctx.beginPath();
+		ctx.fillStyle = lightStatus[boxString]?'rgb(255, 228, 42)':'rgb(255, 255, 255)';
+		ctx.strokeStyle = 'rgb(0, 0, 0)';
+		ctx.lineWidth = 1;
+		ctx.arc(28.379272, 28.379236, 9.997467, 0.000000, 6.28318531, 1);
+		ctx.fill();
+		ctx.stroke();
+
+		// #rect0
+		ctx.beginPath();
+		ctx.fillStyle = 'rgb('+ringString['0r']+','+ringString['0g']+','+ringString['0b']+')';
+		ctx.strokeStyle = 'rgb(0, 0, 0)';
+		ctx.lineWidth = 1;
+		ctx.rect(29.702194, 47.051254, 8.674548, 8.674548);
+		ctx.fill();
+		ctx.stroke();
+
+		// #rect1
+		ctx.beginPath();
+		ctx.fillStyle = 'rgb('+ringString['1r']+','+ringString['1g']+','+ringString['1b']+')';
+		ctx.strokeStyle = 'rgb(0, 0, 0)';
+		ctx.lineWidth = 1;
+		ctx.rect(18.381809, 47.051258, 8.674548, 8.674548);
+		ctx.fill();
+		ctx.stroke();
+	
+		// #rect2
+		ctx.beginPath();
+		ctx.fillStyle = 'rgb('+ringString['2r']+','+ringString['2g']+','+ringString['2b']+')';
+		ctx.strokeStyle = 'rgb(0, 0, 0)';
+		ctx.lineWidth = 1;
+		ctx.rect(9.707262, 38.376709, 8.674548, 8.674548);
+		ctx.fill();
+		ctx.stroke();
+
+		// #rect3
+		ctx.beginPath();
+		ctx.fillStyle = 'rgb('+ringString['3r']+','+ringString['3g']+','+ringString['3b']+')';
+		ctx.strokeStyle = 'rgb(0, 0, 0)';
+		ctx.lineWidth = 1;
+		ctx.rect(1.032715, 29.702162, 8.674548, 8.674548);
+		ctx.fill();
+		ctx.stroke();
+	
+		// #rect4
+		ctx.beginPath();
+		ctx.fillStyle = 'rgb('+ringString['4r']+','+ringString['4g']+','+ringString['4b']+')';
+		ctx.strokeStyle = 'rgb(0, 0, 0)';
+		ctx.lineWidth = 1;
+		ctx.rect(1.032712, 18.381773, 8.674548, 8.674548);
+		ctx.fill();
+		ctx.stroke();
+
+		// #rect5	
+		ctx.beginPath();
+		ctx.fillStyle = 'rgb('+ringString['5r']+','+ringString['5g']+','+ringString['5b']+')';
+		ctx.strokeStyle = 'rgb(0, 0, 0)';
+		ctx.lineWidth = 1;
+		ctx.rect(9.707260, 9.707223, 8.674548, 8.674548);
+		ctx.fill();
+		ctx.stroke();
+	
+		// #rect6
+		ctx.beginPath();
+		ctx.fillStyle = 'rgb('+ringString['6r']+','+ringString['6g']+','+ringString['6b']+')';
+		ctx.strokeStyle = 'rgb(0, 0, 0)';
+		ctx.lineWidth = 1;
+		ctx.rect(18.381809, 1.032674, 8.674548, 8.674548);
+		ctx.fill();
+		ctx.stroke();
+	
+
+	
+		// #rect7
+		ctx.beginPath();
+		ctx.fillStyle = 'rgb('+ringString['7r']+','+ringString['7g']+','+ringString['7b']+')';
+		ctx.strokeStyle = 'rgb(0, 0, 0)';
+		ctx.lineWidth = 1;
+		ctx.rect(29.702194, 1.032674, 8.674548, 8.674548);
+		ctx.fill();
+		ctx.stroke();
+
+	
+		// #rect8
+		ctx.beginPath();
+		ctx.fillStyle = 'rgb('+ringString['8r']+','+ringString['8g']+','+ringString['8b']+')';
+		ctx.strokeStyle = 'rgb(0, 0, 0)';
+		ctx.lineWidth = 1;
+		ctx.rect(38.376743, 9.707223, 8.674548, 8.674548);
+		ctx.fill();
+		ctx.stroke();
+
+		// #rect9
+		ctx.beginPath();
+		ctx.fillStyle = 'rgb('+ringString['9r']+','+ringString['9g']+','+ringString['9b']+')';
+		ctx.strokeStyle = 'rgb(0, 0, 0)';
+		ctx.lineWidth = 1;
+		ctx.rect(47.051292, 18.381773, 8.674548, 8.674548);
+		ctx.fill();
+		ctx.stroke();
+
+		// #rect10
+		ctx.beginPath();
+		ctx.fillStyle = 'rgb('+ringString['10r']+','+ringString['10g']+','+ringString['10b']+')';
+		ctx.strokeStyle = 'rgb(0, 0, 0)';
+		ctx.lineWidth = 1;
+		ctx.rect(47.051292, 29.702158, 8.674548, 8.674548);
+		ctx.fill();
+		ctx.stroke();
+
+		// #rect11
+		ctx.beginPath();
+		ctx.fillStyle = 'rgb('+ringString['11r']+','+ringString['11g']+','+ringString['11b']+')';
+		ctx.strokeStyle = 'rgb(0, 0, 0)';
+		ctx.lineWidth = 1;
+		ctx.rect(38.376743, 38.376705, 8.674548, 8.674548);
+		ctx.fill();
+		ctx.stroke();
+
+
+	}
 
 	function setRing(){
 		console.log('{"command":"setRings", "from":"'+ringFrom+'", "to":"'+ringTo+'", "r":"'+ringColR+'", "g":"'+ringColG+'", "b":"'+ringColB+'"}');
@@ -176,6 +350,28 @@
 		}
 	}
 
+	function checkNewPattern(){
+		if(validatePattern(newPattern)){
+			if(gestureList.includes(newPattern)){
+				setPattern(newPattern);
+			}else{
+				gestureList.push(newPattern);
+				gestureList = gestureList;
+				setPattern(newPattern);
+				//Send new pattern string to be stored on the server?
+			}
+			
+
+		}else{
+			console.log("error pattern "+newPattern);
+		}
+	}
+
+	function validatePattern(pattern) {
+    	var patRegEx = /^((down|up|left|right|center| ){3,})$/;  
+    	return patRegEx.test(String(pattern).toLowerCase());
+  	}
+
 </script>
 
 
@@ -189,61 +385,170 @@
 		<!-- </Tab> -->
 	<!-- </TabBar> -->
 	 
+	<Tabs>
+		<TabList>
+			<Tab>Status</Tab>
+			<Tab>Calibration</Tab>
+		</TabList>
+	
+		<TabPanel>
+			<center>
+				<h2>Click to toggle light</h2>
+			<table>
+				<tr>
+					<td>
+						<button class="button" id="camera-1" on:click={() => handleBoxClick("camera-1", false)}>
+								Box 1 <br>
+								<canvas width='70' height='70' bind:this={canvas["camera-1"]}></canvas>
+								
+								Light On: {lightStatus['camera-1']} |
+								Calibrated: {calibration['camera-1']}<br>
+						</button>
+						
+					</td><td>
+						<button class="button" id="camera-2" on:click={() => handleBoxClick("camera-2", false)}>
+								Box 2<br>
+								<canvas width='70' height='70' bind:this={canvas["camera-2"]}></canvas>
+								Light On: {lightStatus['camera-2']} |
+								Calibrated: {calibration['camera-2']}<bR>
+						</button>
+					</td><td>
+						<button class="button" id="camera-3" on:click={() => handleBoxClick("camera-3", false)}>
+								Box 3<br>
+								<canvas width='70' height='70' bind:this={canvas["camera-3"]}></canvas>
+								Light On: {lightStatus['camera-3']} |
+								Calibrated: {calibration['camera-3']}<bR>
+						</button>
+					</td>
+			</tr><tr>
+					<td>
+						<button class="button" id="camera-4" on:click={() => handleBoxClick("camera-4", false)}>
+								Box 4<br>
+								<canvas width='70' height='70' bind:this={canvas["camera-4"]}></canvas>
+								Light On: {lightStatus['camera-4']} |
+								Calibrated: {calibration['camera-4']}<bR>
+						</button>
+					</td><td>
+						<button class="button" id="camera-5" on:click={() => handleBoxClick("camera-5", false)}>
+								Box 5<br>
+								<canvas width='70' height='70' bind:this={canvas["camera-5"]}></canvas>
+								Light On: {lightStatus['camera-5']} |
+								Calibrated: {calibration['camera-5']}<bR>
+						</button>
+					</td><td>
+						<button class="button" id="camera-6" on:click={() => handleBoxClick("camera-6", false)}>
+								Box 6<br>
+								<canvas width='70' height='70' bind:this={canvas["camera-6"]}></canvas>
+								Light On: {lightStatus['camera-6']} |
+								Calibrated: {calibration['camera-6']}<bR>
+						</button>
+				</td>
+			</tr>
+			</table>
+		</center>
+			<br>
+			
+		</TabPanel>
+	
+		<TabPanel>
+			<center>
+				<h2>Click to start calibration</h2>
+				<table>
+				<tr>
+					<td>
+						<button class="button" id="camera-1" on:click={() => handleBoxClick("camera-1", true)}>
+								Box 1 <br>
+								Light On: {lightStatus['camera-1']} |
+								Calibrated: {calibration['camera-1']}<br>
+						</button>
+						
+					</td><td>
+						<button class="button" id="camera-2" on:click={() => handleBoxClick("camera-2", true)}>
+								Box 2<br>
+								Light On: {lightStatus['camera-2']} |
+								Calibrated: {calibration['camera-2']}<bR>
+						</button>
+					</td><td>
+						<button class="button" id="camera-3" on:click={() => handleBoxClick("camera-3", true)}>
+								Box 3<br>
+								Light On: {lightStatus['camera-3']} |
+								Calibrated: {calibration['camera-3']}<bR>
+						</button>
+					</td>
+			</tr><tr>
+					<td>
+						<button class="button" id="camera-4" on:click={() => handleBoxClick("camera-4", true)}>
+								Box 4<br>
+								Light On: {lightStatus['camera-4']} |
+								Calibrated: {calibration['camera-4']}<bR>
+						</button>
+					</td><td>
+						<button class="button" id="camera-5" on:click={() => handleBoxClick("camera-5", true)}>
+								Box 5<br>
+								Light On: {lightStatus['camera-5']} |
+								Calibrated: {calibration['camera-5']}<bR>
+						</button>
+					</td><td>
+						<button class="button" id="camera-6" on:click={() => handleBoxClick("camera-6", true)}>
+								Box 6<br>
+								Light On: {lightStatus['camera-6']} |
+								Calibrated: {calibration['camera-6']}<bR>
+						</button>
+				</td>
+			</tr>
+			</table>
+			<br>
+				</center>
 
+	
+		</TabPanel>
+</Tabs>
 
-	<Toggle bind:checked={isCalibrate} let:checked={checked}>
-		<button>
-			{checked ? 'Calibration Mode' : 'Light Control'}
-		</button>
-	</Toggle>
+	<Tabs>
+		<TabList>
+			<Tab>Interaction Pattern</Tab>
+			<Tab>Sensitivity Settings</Tab>
+			<Tab>Light Ring Testing</Tab>
+		</TabList>
+	
+		
 
-	<table>
-		<tr>
-			<td>
-				<button class="button" id="camera-1" on:click={() => handleBoxClick("camera-1")}>
-						Box 1 <br>
-						Light On: {lightStatus['camera-1']} |
-						Calibrated: {calibration['camera-1']}<br>
-				</button>
-				
-			</td><td>
-				<button class="button" id="camera-2" on:click={() => handleBoxClick("camera-2")}>
-						Box 2<br>
-						Light On: {lightStatus['camera-2']} |
-						Calibrated: {calibration['camera-2']}<bR>
-				</button>
-			</td><td>
-				<button class="button" id="camera-3" on:click={() => handleBoxClick("camera-3")}>
-						Box 3<br>
-						Light On: {lightStatus['camera-3']} |
-						Calibrated: {calibration['camera-3']}<bR>
-				</button>
-			</td>
-	</tr><tr>
-			<td>
-				<button class="button" id="camera-4" on:click={() => handleBoxClick("camera-4")}>
-						Box 4<br>
-						Light On: {lightStatus['camera-4']} |
-						Calibrated: {calibration['camera-4']}<bR>
-				</button>
-			</td><td>
-				<button class="button" id="camera-5" on:click={() => handleBoxClick("camera-5")}>
-						Box 5<br>
-						Light On: {lightStatus['camera-5']} |
-						Calibrated: {calibration['camera-5']}<bR>
-				</button>
-			</td><td>
-				<button class="button" id="camera-6" on:click={() => handleBoxClick("camera-6")}>
-						Box 6<br>
-						Light On: {lightStatus['camera-6']} |
-						Calibrated: {calibration['camera-6']}<bR>
-				</button>
-		</td>
-	</tr>
-	</table>
+	<TabPanel>
+		
+	{#each gestureList as value}
+		<label><input type="radio" {value} bind:group={currentPattern}> {value}</label>
+	{/each}
 	<br>
+	<input type=text name="newPat" bind:value={newPattern} pattern="{String.raw`(down|up|left|right|center| ){3,}`}">
 
-	<h3>Testing LightRings</h3>
+	<button on:click={() => checkNewPattern()}>
+		Submit Pattern
+	</button>
+	<br>
+	<h4>Current Pattern: {currentPattern}</h4>
+	
+	<br>
+	<Switch bind:value={feedback_type} label="'Enable Followme'" design="inner" />
+	</TabPanel>
+
+	<TabPanel>
+		Face Sensitivity<br>
+	<label>
+		<input type=number bind:value={faceSensitivity} min=2 max=40>
+		<input type=range bind:value={faceSensitivity} min=2 max=40>
+	</label>
+	Gaze Sensitivity<br>
+	<label>
+		<input type=number bind:value={gazeSensitivity} min=2 max=20>
+		<input type=range bind:value={gazeSensitivity} min=2 max=20>
+	</label>
+	<button class="button" disabled='{(faceSensitivity == oldFaceSensitivity) & (gazeSensitivity == oldGazeSensitivity)}' id="sensitivity" on:click={() => setSensitivity()}>
+		Update Face Sensitivity	
+	</button>
+	</TabPanel>
+
+	<TabPanel>
+		<h3>Testing LightRings</h3>
 
 	From<br>
 	<label>
@@ -276,43 +581,8 @@
 	<button class="button" id="setLight" on:click={() => clearRing()}>
 		Clear Rings
 	</button>
-
-
-	<br>
-	<h3>Set Interaction Pattern</h3>
-	<button class="button" id="pattern1" on:click={() => setPattern("center center center center")}>
-		"center center center center"
-	</button>
-	<button class="button" id="pattern2" on:click={() => setPattern("center center left left")}>
-		"center center left left"
-	</button>
-	<button class="button" id="pattern3" on:click={() => setPattern("center center up up")}>
-		"center center up up"
-	</button>
-	<button class="button" id="pattern4" on:click={() => setPattern("center center down down right right")}>
-		"center center down down right right"
-	</button>
-	<button class="button" id="pattern5" on:click={() => setPattern("center center right right up up")}>
-		"center center right right up up"
-	</button>
-	<h4>Current Pattern: {currentPattern}</h4>
-	
-	<br>
-	<Switch bind:value={feedback_type} label="'Enable Followme'" design="inner" />
-
-	Face Sensitivity<br>
-	<label>
-		<input type=number bind:value={faceSensitivity} min=2 max=40>
-		<input type=range bind:value={faceSensitivity} min=2 max=40>
-	</label>
-	Gaze Sensitivity<br>
-	<label>
-		<input type=number bind:value={gazeSensitivity} min=2 max=20>
-		<input type=range bind:value={gazeSensitivity} min=2 max=20>
-	</label>
-	<button class="button" disabled='{(faceSensitivity == oldFaceSensitivity) & (gazeSensitivity == oldGazeSensitivity)}' id="sensitivity" on:click={() => setSensitivity()}>
-		Update Face Sensitivity	
-	</button>
+	</TabPanel>
+</Tabs>
 
 	<br><br>
 	<h3>Trial Management</h3>
