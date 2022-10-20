@@ -260,7 +260,7 @@ cameras.on("connection", (socket) => {
 
 function sendGestureList(){
     
-  this.dashnsp.emit('game', '{"command":"gestureList", "gestures":"'+JSON.stringify(current_gestures)+'"}');
+  this.dnsp.emit('game', '{"command":"gestureList", "gestures":"'+JSON.stringify(current_gestures)+'"}');
 }
 
 
