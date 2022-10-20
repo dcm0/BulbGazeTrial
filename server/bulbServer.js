@@ -8,6 +8,7 @@ const bulbController = require('./bulbController');
 const lightRing = require('./lightRing');
 const fs = require('fs');
 const http = require('http').createServer(app);
+const Path = require('path');
 const io = require('socket.io')(http, {
   cors: {
     origin: "*",
@@ -38,22 +39,17 @@ async function checkFileExists(file) {
 }
 
 //Manage list of gestures
+const gesturePath = Path.join(__dirname, "gestureList.txt")
 
-var checkresult = checkFileExists('gestureList.txt');
-console.log(checkresult);
-
-if(checkresult){
+if(Fs.existsSync(gesturePath)){
   //Then we have a list so read it in
-  current_gestures = fs.readFileSync('gestureList.txt').toString().split("\n");
+  current_gestures = fs.readFileSync(gesturePath).toString().split("\n");
 
 }else{
   //Make a new file and write out the default?
   let defaultGestures = ['center center center center', 'center center left left', 'center center up up', 'center center down down right right', 'center center right right up up'];
-  (async () => {
-    await fs.writeFile('gestureList.txt', defaultGestures.join('\n'), 'utf8');
-  })();
+  fs.writeFileSync(gesturePath, defaultGestures.join('\n'), 'utf8');
   current_gestures = defaultGestures;
-
 }
 
 
@@ -284,9 +280,9 @@ function updateGestureList(newList){
     }
 
     //Overwrite the file and change the variable
-    (async () => {
-      await fs.writeFile('./gestureList.txt', newList.join('\n'), 'utf8');
-    })();
+    
+    fs.writeFileSync(gesturePath, newList.join('\n'), 'utf8');
+    
     current_gestures = newList;
 }
 
