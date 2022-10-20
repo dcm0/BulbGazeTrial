@@ -28,14 +28,18 @@ var bulbControllers = [];
 
 async function checkFileExists(file) {
   
-  return await fs.promises.access(file, fs.constants.F_OK)
-           .then(() => true)
-           .catch(() => false)
+  var result = await fs.promises.access(file, fs.constants.F_OK)
+  .then(() => true)
+  .catch(() => false);
+  
+  console.log(result);
+  
+  return result;
 }
 
 //Manage list of gestures
 
-var checkresult = await checkFileExists('./gestureList.txt');
+var checkresult = checkFileExists('./gestureList.txt');
 console.log(checkresult);
 
 if(checkresult){
