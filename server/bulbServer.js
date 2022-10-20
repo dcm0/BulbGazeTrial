@@ -27,7 +27,7 @@ var bulbControllers = [];
 
 
 async function checkFileExists(file) {
-  await console.log(fs.promises.access(file, fs.constants.F_OK)
+  console.log(await fs.promises.access(file, fs.constants.F_OK)
   .then(() => true)
   .catch(() => false));
   return await fs.promises.access(file, fs.constants.F_OK)
