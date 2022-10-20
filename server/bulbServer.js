@@ -6,7 +6,7 @@ const { runInThisContext } = require('vm');
 const logger = require('pino')('./bulbLogs.log'); //pino.destination()
 const bulbController = require('./bulbController');
 const lightRing = require('./lightRing');
-const fs = require('fs').promises;
+const fs = require('fs');
 const http = require('http').createServer(app);
 const io = require('socket.io')(http, {
   cors: {
