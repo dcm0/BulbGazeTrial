@@ -41,7 +41,7 @@ async function checkFileExists(file) {
 //Manage list of gestures
 const gesturePath = Path.join(__dirname, "gestureList.txt")
 
-if(Fs.existsSync(gesturePath)){
+if(fs.existsSync(gesturePath)){
   //Then we have a list so read it in
   current_gestures = fs.readFileSync(gesturePath).toString().split("\n");
 
