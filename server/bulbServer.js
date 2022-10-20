@@ -36,7 +36,7 @@ function checkFileExists(file) {
 
 if(checkFileExists('./gestureList.txt')){
   //Then we have a list so read it in
-  current_gestures = fs.readFileSync('gestureList.txt').toString().split("\n");
+  current_gestures = fs.readFileSync('./gestureList.txt').toString().split("\n");
 
 }else{
   //Make a new file and write out the default?
