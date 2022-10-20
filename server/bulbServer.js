@@ -35,9 +35,10 @@ async function checkFileExists(file) {
 
 //Manage list of gestures
 
-console.log(await checkFileExists('./gestureList.txt'));
+var checkresult = await checkFileExists('./gestureList.txt');
+console.log(checkresult);
 
-if(await checkFileExists('./gestureList.txt')){
+if(checkresult){
   //Then we have a list so read it in
   current_gestures = fs.readFileSync('./gestureList.txt').toString().split("\n");
 
