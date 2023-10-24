@@ -91,9 +91,20 @@ struct FACE {//structure for detected face
   byte face_expression_d[6];
   signed char face_ID_d[4];
 };
-const int reset = 8;     // the number of the pushbutton pin//BOX NUMBER 2 HAS reset 8 and BULB 7, the rest is the otherway around
 
-const int bulb = 7;     // the number of the pushbutton pin
+// *************************************************************
+// THIS IS WHERE TO CHANGE TO GET BOX 2 WORKING WITH THE ODD PIN
+// *************************************************************
+
+//BOX NUMBER 2 HAS reset 8 and BULB 7, the rest is the otherway around
+const int reset = 8;    
+
+const int bulb = 7;     
+
+// *************************************************************
+// THIS IS WHERE TO CHANGE TO GET BOX 2 WORKING WITH THE ODD PIN
+// *************************************************************
+
 unsigned long timeout;
 
 FACE face[8];//face structure array
