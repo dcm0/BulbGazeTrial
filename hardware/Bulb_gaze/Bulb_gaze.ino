@@ -26,8 +26,10 @@ SocketIOclient socketIO;
 
 int status = WL_IDLE_STATUS;
 
+byte mac[6];
+
 // Select the IP address according to your local network
-IPAddress clientIP(192, 168, 137, 39); // this is a default uses dcp later on 
+IPAddress clientIP(10,204,0,121);
 
 
 #include "arduino_secrets.h"
@@ -81,7 +83,7 @@ struct FACE {//structure for detected face
   int blink_eyes[2];
   int expression[6];
   byte face_d[8];
-  byte face_deg_d[8];
+  int face_deg_d[8];
   byte face_age_d[3];
   byte face_gend_d[3];
   signed char face_gaze_d[2];
@@ -89,6 +91,21 @@ struct FACE {//structure for detected face
   byte face_expression_d[6];
   signed char face_ID_d[4];
 };
+
+// *************************************************************
+// THIS IS WHERE TO CHANGE TO GET BOX 2 WORKING WITH THE ODD PIN
+// *************************************************************
+
+//BOX NUMBER 2 HAS reset 8 and BULB 7, the rest is the otherway around
+const int reset = 8;    
+
+const int bulb = 7;     
+
+// *************************************************************
+// THIS IS WHERE TO CHANGE TO GET BOX 2 WORKING WITH THE ODD PIN
+// *************************************************************
+
+unsigned long timeout;
 
 FACE face[8];//face structure array
 
@@ -115,7 +132,7 @@ void socketIOEvent(socketIOmessageType_t type, uint8_t * payload, size_t length)
       Serial.println((char*) payload);
 
       // join default namespace (no auto join in Socket.IO V3)
-      socketIO.send(sIOtype_CONNECT, "/camera-1");
+      socketIO.send(sIOtype_CONNECT, "/camera-2");
 
       break;
     case sIOtype_EVENT:
@@ -128,11 +145,6 @@ void socketIOEvent(socketIOmessageType_t type, uint8_t * payload, size_t length)
 
         aux_payload = charTrim((char*) payload, '\\');
         aux_payload = aux_payload.substring(aux_payload.indexOf('{'), aux_payload.length() - 1);
-        /*while(aux_payload.indexOf("\\")){
-          aux_payload.remove(aux_payload.indexOf("\\"));
-          }*/
-        Serial.print("[XXXXXXX] parse event payload");
-        Serial.println(aux_payload);
 
         StaticJsonDocument<800> command_json;
 
@@ -149,9 +161,8 @@ void socketIOEvent(socketIOmessageType_t type, uint8_t * payload, size_t length)
 
           //println(command_json["command"]);
           String aux_s = command_json["command"];
-          Serial.println(aux_s);
           if (aux_s == "ring") {
-            Serial.println("inside IF");
+            Serial.println("-> Ring data received");
             for (int i = 0; i < NUMPIXELS; i++) { // For each pixel...
               String r_string = command_json[String(i) + "r"];
               int r = r_string.toInt();
@@ -162,10 +173,13 @@ void socketIOEvent(socketIOmessageType_t type, uint8_t * payload, size_t length)
               pixels.setPixelColor(i, pixels.Color(r, g, b));
             }
             pixels.show();   // Send the updated pixel colors to the hardware.
-          } else if (aux_s == "bulb") {
+          } else if (aux_s == "status") {
             String status = command_json["status"];
-            //send ON for LED
-            //pixels.setPixelColor(i, pixels.Color(r, g, b));
+            if (status == "true") {
+              digitalWrite(bulb, HIGH);
+            } else {
+              digitalWrite(bulb, LOW);
+            }
           }
         }
       }
@@ -202,9 +216,22 @@ void socketIOEvent(socketIOmessageType_t type, uint8_t * payload, size_t length)
 
 
 void setup() {
+  pinMode(reset, OUTPUT);
+  pinMode(bulb, OUTPUT);
+
+  //pinMode(pin, INPUT);           // set pin to input
+  //digitalWrite(pin, HIGH);       // turn on pullup resistors
+
+  digitalWrite(reset, LOW);
+  digitalWrite(bulb, HIGH);
+  delay(100);
+  digitalWrite(reset, HIGH);
+  digitalWrite(bulb, LOW);
+  delay(2000);
+
   //Initialize serial and wait for port to open:
   Serial.begin(57600);
-  while (!Serial);
+  //while (!Serial);
 
   Serial1.begin(9600);
   Serial.println("Initialising Arduino");
@@ -214,20 +241,6 @@ void setup() {
     pixels.setPixelColor(i, pixels.Color(50, 0, 0)); //down
   }
   pixels.show();   // Send the updated pixel colors to the hardware.
-  delay(250);
-  pixels.clear();
-  for (int i = 0; i < NUMPIXELS; i++) { // For each pixel...
-    pixels.setPixelColor(i, pixels.Color(0, 50, 0)); //down
-  }
-  pixels.show();   // Send the updated pixel colors to the hardware.
-  delay(250);
-  pixels.clear();
-  for (int i = 0; i < NUMPIXELS; i++) { // For each pixel...
-    pixels.setPixelColor(i, pixels.Color(0, 0, 50)); //down
-  }
-  pixels.show();   // Send the updated pixel colors to the hardware.
-  delay(250);
-  pixels.clear();
 
   Serial.print("\nStart WebSocketClientSocketIO_NINA on ");
   Serial.println(WEBSOCKETS_GENERIC_VERSION);
@@ -249,7 +262,25 @@ void setup() {
     // don't continue
     while (true);
   }
+  for (int i = 0; i < NUMPIXELS; i++) { // For each pixel...
+    pixels.setPixelColor(i, pixels.Color(0, 50, 0)); //down
+  }
+  pixels.show();   // Send the updated pixel colors to the hardware.
   Serial.println("Communication with WiFi module succeded!");
+
+  WiFi.macAddress(mac);
+  Serial.print("MAC: ");
+  Serial.print(mac[5], HEX);
+  Serial.print(":");
+  Serial.print(mac[4], HEX);
+  Serial.print(":");
+  Serial.print(mac[3], HEX);
+  Serial.print(":");
+  Serial.print(mac[2], HEX);
+  Serial.print(":");
+  Serial.print(mac[1], HEX);
+  Serial.print(":");
+  Serial.println(mac[0], HEX);
 
   String fv = WiFi.firmwareVersion();
   if (fv < WIFI_FIRMWARE_LATEST_VERSION)
@@ -257,7 +288,6 @@ void setup() {
     Serial.println("Please upgrade the firmware");
   }
   Serial.println("Correct firmware");
-
 
   // attempt to connect to Wifi network:
   while (status != WL_CONNECTED)
@@ -268,7 +298,7 @@ void setup() {
     status = WiFi.begin(SECRET_SSID, SECRET_PASS);
 
     // wait 10 seconds for connection:
-    //delay(10000);
+    delay(2000);
   }
 
   printWifiStatus();
@@ -280,8 +310,12 @@ void setup() {
     pixels.setPixelColor(i, pixels.Color(0, 50, 0));
   }
   pixels.show();   // Send the updated pixel colors to the hardware.
-  delay(200);
-  pixels.clear();
+  delay(500);
+
+  IPAddress result;
+  Serial.println(WiFi.hostByName(WS_SERVER_IP, result));
+  Serial.print("XXXXXXXXXXXXXX IP address: ");
+  Serial.println(result);
 
   // server address, port and URL
   Serial.print("Connecting to WebSockets Server @ IP address: ");
@@ -302,102 +336,123 @@ void setup() {
   // event handler
   socketIO.onEvent(socketIOEvent);
   for (int i = 0; i < NUMPIXELS; i++) { // For each pixel...
-
-    // pixels.Color() takes RGB values, from 0,0,0 up to 255,255,255
-    // Here we're using a moderately bright green color:
-    pixels.setPixelColor(i, pixels.Color(50, 0, 0));
+    pixels.setPixelColor(i, pixels.Color(0, 0, 50)); //down
   }
   pixels.show();   // Send the updated pixel colors to the hardware.
-  delay(1000);
+  delay(500);
   pixels.clear();
   pixels.show();   // Send the updated pixel colors to the hardware.
+  timeout = millis();
 }
 
 void loop() {
   socketIO.loop();
-  if (cam_initialized == false) {
+  unsigned long stamp = millis();
+
+  if ((cam_initialized == false) || (millis() - timeout > 1500)) {
+    if (millis() - timeout > 1500) {
+      Serial.println("-------------------------------------");
+      Serial.println("TIMEOUT!");
+      Serial.println("-------------------------------------");
+    }
+    Serial.println("-------------------------------------");
     Serial.println("Initialising OMRON HVC camera module: ");
+    Serial.println("-------------------------------------");
     Serial1.write(com_setface, sizeof(com_setface));
     Serial1.write(com_setTH, sizeof(com_setTH));
     Serial1.write(com_read, sizeof(com_read));
     cam_initialized = true;
+    timeout = millis();
   }
   while (Serial1.available())
   {
     update();
   }
   if (new_message) {
-
+    socketIO.loop();
     new_message = false;
+    timeout = millis();
     Serial1.write(com_read, sizeof(com_read));
     if (num_faces <= 0) {
-      Serial.print(".");
+      Serial.print("-NF");
+    } else {
+      for (int i = 0; i < num_faces; i++) {
+        Serial.print("F:");
+        Serial.print(i);
+        Serial.print(": ");
+        Serial.print(face[i].pos[0]);
+        Serial.print(":");
+        Serial.print(face[i].pos[1]);
+        Serial.print(":FD: ");
+        Serial.print(face[i].deg[0]);
+        Serial.print(":");
+        Serial.print(face[i].deg[1]);
+        Serial.print(":");
+        Serial.print(":G: ");
+        Serial.print(face[i].gaze[0]);
+        Serial.print(":");
+        Serial.print(face[i].gaze[1]);
+        Serial.println(":.");
+      }
+      StaticJsonDocument<1000> doc;
+      JsonArray faces_ = doc.createNestedArray("face");
+
+      for (int i = 0; i < num_faces; i++) {
+        StaticJsonDocument<100> face_features;
+        StaticJsonDocument<100> direction_features;
+        StaticJsonDocument<100> gaze_features;
+        StaticJsonDocument<800> aux_face;
+
+        face_features["x"] = 1;
+        face_features["y"] = 2;
+        face_features["size"] = 3;
+        face_features["confidence"] = 4;
+
+        direction_features["yaw"] = face[i].deg[0];
+        direction_features["pitch"] = face[i].deg[1];
+        direction_features["roll"] = face[i].deg[2];
+        direction_features["confidence"] = face[i].deg[3];
+
+        gaze_features["yaw"] = face[i].gaze[0];
+        gaze_features["pitch"] = face[i].gaze[1];
+
+        aux_face["face"] = face_features;
+        aux_face["direction"] = direction_features;
+        aux_face["gaze"] = gaze_features;
+
+        faces_.add(aux_face);
+      }
+
+      // JSON to String (serializion)
+      String output;
+
+      serializeJson(doc, output);
+
+      // Send event
+      //socketIO.sendEVENT(output);
+
+      output.replace("\"", "\\\"");
+
+
+      String msg = String("/camera-2,[\"");
+      msg += "face";
+      msg += "\"";
+      if (output) {
+        msg += ",\"";
+        //msg += "{\\\"command\\\":\\\"calibrate\\\"}";
+        msg += output;
+      }
+      msg += "\"]";
+      socketIO.sendEVENT(msg);
+
+
+      socketIO.loop();
+
+      /*Serial.print("-> ");
+      Serial.print(millis());
+      Serial.println(" <-");
+      Serial.println(msg);*/
     }
-  }
-  for (int i = 0; i < num_faces; i++) {
-    /*Serial.print("F:");
-      Serial.print(i);
-      Serial.print(": ");
-      Serial.print(face[i].pos[0]);
-      Serial.print(":");
-      Serial.print(face[i].pos[1]);
-      Serial.print(":G: ");
-      Serial.print(face[i].gaze[0]);
-      Serial.print(":");
-      Serial.print(face[i].gaze[1]);
-      Serial.println(":.");*/
-
-    StaticJsonDocument<1000> doc;
-    JsonArray faces_ = doc.createNestedArray("face");
-
-    for (int i = 0; i < num_faces; i++) {
-      StaticJsonDocument<100> face_features;
-      StaticJsonDocument<100> direction_features;
-      StaticJsonDocument<100> gaze_features;
-      StaticJsonDocument<800> aux_face;
-
-      face_features["x"] = 1;
-      face_features["y"] = 2;
-      face_features["size"] = 3;
-      face_features["confidence"] = 4;
-
-      direction_features["yaw"] = 5;
-      direction_features["pitch"] = 6;
-      direction_features["roll"] = 7;
-      direction_features["confidence"] = 8;
-
-      gaze_features["yaw"] = 9;
-      gaze_features["pitch"] = 10;
-
-      aux_face["face"] = face_features;
-      aux_face["direction"] = direction_features;
-      aux_face["gaze"] = gaze_features;
-
-      faces_.add(aux_face);
-    }
-
-    // JSON to String (serializion)
-    String output;
-
-    serializeJson(doc, output);
-
-    // Send event
-    //socketIO.sendEVENT(output);
-
-    output.replace("\"", "\\\"");
-
-
-    String msg = String("/camera-1,[\"");
-    msg += "bulb";
-    msg += "\"";
-    if (output) {
-      msg += ",\"";
-      //msg += "{\\\"command\\\":\\\"calibrate\\\"}";
-      msg += output;
-    }
-    msg += "\"]";
-    socketIO.sendEVENT(msg);
-    Serial.println(msg);
   }
 }
 
@@ -482,10 +537,12 @@ void update()
                   for (int j = 0; j < 8; j++) {
                     face[z].face_deg_d[j] = msgInBuf[message_pos];
                     message_pos++;
-                    face[z].deg[0] = (int)face[z].face_deg_d[0] + 256 * (int)face[z].face_deg_d[1];
-                    face[z].deg[1] = (int)face[z].face_deg_d[2] + 256 * (int)face[z].face_deg_d[3];
-                    face[z].deg[3] = (int)face[z].face_deg_d[4] + 256 * (int)face[z].face_deg_d[5];
-                    face[z].deg[4] = (int)face[z].face_deg_d[6] + 256 * (int)face[z].face_deg_d[7];
+                    //face[z].deg[0] = (int)face[z].face_deg_d[0] + 256 * (int)face[z].face_deg_d[1];
+                    face[z].deg[0] = (int)face[z].face_deg_d[0];
+                    //face[z].deg[1] = (int)face[z].face_deg_d[2] + 256 * (int)face[z].face_deg_d[3];
+                    face[z].deg[1] = (int)face[z].face_deg_d[1];
+                    face[z].deg[2] = (int)face[z].face_deg_d[4] + 256 * (int)face[z].face_deg_d[5];
+                    face[z].deg[3] = (int)face[z].face_deg_d[6] + 256 * (int)face[z].face_deg_d[7];
                   }
                 }
                 if (flag_age) {
