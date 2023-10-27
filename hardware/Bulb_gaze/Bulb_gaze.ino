@@ -97,9 +97,9 @@ struct FACE {//structure for detected face
 // *************************************************************
 
 //BOX NUMBER 2 HAS reset 8 and BULB 7, the rest is the otherway around
-const int reset = 8;    
+const int reset = 7;    
 
-const int bulb = 7;     
+const int bulb = 8;     
 
 // *************************************************************
 // THIS IS WHERE TO CHANGE TO GET BOX 2 WORKING WITH THE ODD PIN
@@ -132,7 +132,7 @@ void socketIOEvent(socketIOmessageType_t type, uint8_t * payload, size_t length)
       Serial.println((char*) payload);
 
       // join default namespace (no auto join in Socket.IO V3)
-      socketIO.send(sIOtype_CONNECT, "/camera-2");
+      socketIO.send(sIOtype_CONNECT, "/camera-4");
 
       break;
     case sIOtype_EVENT:
@@ -434,7 +434,7 @@ void loop() {
       output.replace("\"", "\\\"");
 
 
-      String msg = String("/camera-2,[\"");
+      String msg = String("/camera-4,[\"");
       msg += "face";
       msg += "\"";
       if (output) {

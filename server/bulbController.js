@@ -13,6 +13,8 @@ class bulbController {
         this.controlnsp = controlnsp;
         this.dashnsp = dashnsp;
         this.state_machine = 0;
+        this.toleranceCount= 0;
+        this.tolerenceMax = 3;
         this.counter = 0;
         this.max_trigger = 4;
         this.cooldown = 2000;
@@ -325,7 +327,6 @@ class bulbController {
                 this.last_yaw = this.average_face.yaw;
             }
 
-            
 
             console.log("State: " + this.state_machine + " at " + this.pattern[this.state_machine]);
             console.log(" Fyaw " + face_yaw + " Fptich " + this.average_face.face_yaw + " yaw " + yaw + " pitch " + pitch );
@@ -339,11 +340,16 @@ class bulbController {
                             this.t_cooldown = Date.now(); //got a good look, reset cooldown
                             console.log('Moving to state machine in state number ' + this.state_machine);
                             this.log.info('UP, moving to ' + this.state_machine);
+                            this.toleranceCount = 0;
                         }
                     } else {
-                        this.state_machine = 0;
-                        this.log.info('UP, moving to ' + this.state_machine);
-                        console.log('state machine reset to 0 for face missalignment');
+                        this.toleranceCount ++;
+                        if(this.toleranceCount>this.tolerenceMax){
+                            this.state_machine = 0;
+                            this.log.info('UP, moving to ' + this.state_machine);
+                            console.log('state machine reset to 0 for face missalignment');
+                        }
+                        
                     }
                     break;
                 case "down":
@@ -369,11 +375,15 @@ class bulbController {
                             console.log('Moving to state machine in state number ' + this.state_machine);
                             this.last_pitch = this.average_face.pitch;
                             this.last_yaw = this.average_face.yaw;
+                            this.toleranceCount = 0;
                         }
                     } else {
-                        this.state_machine = 0;
-                        this.log.info('CENTER, moving to ' + this.state_machine);
-                        console.log('state machine reset to 0 for face missalignment');
+                        this.toleranceCount ++;
+                        if(this.toleranceCount>this.tolerenceMax){
+                            this.state_machine = 0;
+                            this.log.info('CENTER, moving to ' + this.state_machine);
+                            console.log('state machine reset to 0 for face missalignment');
+                        }
                     }
                     break;
                 case "left":
