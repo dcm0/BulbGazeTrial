@@ -130,7 +130,7 @@ class bulbController {
             } else {
                 var fill_level = this.calibrationCount * Math.abs(this.lightRing.no_lights / this.calibrationLimit);
                 this.lightRing.setRange(0, fill_level, gcol[0], gcol[1], gcol[2]);
-                this.lightRing.setRange(fill_level, this.lightRing.no_lights, acol[0], acol[1], acol[2]);
+                this.lightRing.setRange(fill_level, this.lightRing.no_lights-1, acol[0], acol[1], acol[2]);
             }
             this.sendRing();
             return;
@@ -156,7 +156,8 @@ class bulbController {
                 } else {
                     var fill_level = this.state_machine * Math.abs(this.lightRing.no_lights / this.pattern.length);
                     this.lightRing.setRange(0, fill_level, gcol[0], gcol[1], gcol[2]);
-                    this.lightRing.setRange(fill_level, this.lightRing.no_lights, acol[0], acol[1], acol[2]);
+                    this.lightRing.setRange(fill_level, this.lightRing.no_lights-1, acol[0], acol[1], acol[2]);
+    
                 }
                 break;
             case "followMe":
