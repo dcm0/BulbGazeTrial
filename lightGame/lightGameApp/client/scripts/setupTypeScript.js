@@ -27,7 +27,8 @@ packageJSON.devDependencies = Object.assign(packageJSON.devDependencies, {
   "@rollup/plugin-typescript": "^8.0.0",
   "typescript": "^4.0.0",
   "tslib": "^2.0.0",
-  "@tsconfig/svelte": "^2.0.0"
+  "@tsconfig/svelte": "^2.0.0",
+  "rollup": "rollup" 
 })
 
 // Add script for checking
