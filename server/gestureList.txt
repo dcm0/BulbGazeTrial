@@ -1,0 +1,5 @@
+center center center center
+center center left left
+center center up up
+center center down down right right
+center center right right up up

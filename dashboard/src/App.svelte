@@ -9,7 +9,7 @@
 
 	//import { io } from "https://cdn.socket.io/4.3.2/socket.io.esm.min.js";
 	// let src="/socket.io/socket.io.js"
-	var socket = io('http://10.204.0.121:8080/dashboard');
+	var socket = io('http://10.204.0.27:8080/dashboard');
 	console.log("connected");
 	//var socket = io('10.200.32.0');
 	let active = 'Trial Management';
