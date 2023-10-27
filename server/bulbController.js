@@ -359,11 +359,16 @@ class bulbController {
                             this.log.info('DOWN, moving to ' + this.state_machine);
                             this.t_cooldown = Date.now(); //got a good look, reset cooldown
                             console.log('Moving to state machine in state number ' + this.state_machine);
+                            this.toleranceCount =0;
                         }
                     } else {
+                        this.toleranceCount ++;
+                        if(this.toleranceCount>this.tolerenceMax){
                         this.state_machine = 0;
                         this.log.info('DOWN, moving to ' + this.state_machine);
                         console.log('state machine reset to 0 for face missalignment');
+                        }
+                        
                     }
                     break;
                 case "center":
@@ -393,11 +398,15 @@ class bulbController {
                             this.log.info('LEFT, moving to ' + this.state_machine);
                             this.t_cooldown = Date.now(); //got a good look, reset cooldown
                             console.log('Moving to state machine in state number ' + this.state_machine);
+                            this.toleranceCount = 0;
                         }
                     } else {
+                        this.toleranceCount ++;
+                        if(this.toleranceCount>this.tolerenceMax){
                         this.state_machine = 0;
                         this.log.info('LEFT, moving to ' + this.state_machine);
                         console.log('state machine reset to 0 for face missalignment');
+                        }
                     }
                     break;
                 case "right":
@@ -407,11 +416,15 @@ class bulbController {
                             this.log.info('RIGHT, moving to ' + this.state_machine);
                             this.t_cooldown = Date.now(); //got a good look, reset cooldown
                             console.log('Moving to state machine in state number ' + this.state_machine);
+                            this.toleranceCount = 0;
                         }
                     } else {
+                        this.toleranceCount ++;
+                        if(this.toleranceCount>this.tolerenceMax){
                         this.state_machine = 0;
                         this.log.info('RIGHT, moving to ' + this.state_machine);
                         console.log('state machine reset to 0 for face missalignment');
+                        }
                     }
                     break;
                 default:
@@ -431,6 +444,7 @@ class bulbController {
                 //this.nsp.emit('interaction complete'); //bulb should do something when it gets this.
                 this.setState(!this.lightOn);
                 this.log.info('Toggling LED Bulb');
+                this.toleranceCount = 0;
             }
 
 
@@ -441,6 +455,7 @@ class bulbController {
             this.log.info('TIMEOUT');
             this.state_machine = 0;
             this.updateFeedback();
+            this.toleranceCount =0;
             
         }
 
