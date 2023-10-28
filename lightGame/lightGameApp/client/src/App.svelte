@@ -22,7 +22,7 @@
 	import { io } from "socket.io-client";
 	//import { io } from "https://cdn.socket.io/4.3.2/socket.io.esm.min.js";
 	// let src="/socket.io/socket.io.js"
-	var socket = io('http://192.168.137.1:8080/controller');
+	var socket = io('http://127.0.0.1:8080/controller');
 	//var socket = io('10.200.32.0');
 
 
