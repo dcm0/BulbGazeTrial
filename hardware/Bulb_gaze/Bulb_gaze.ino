@@ -61,6 +61,7 @@ IPAddress clientIP(10,204,0,121);
 
 // *************************************************************
 // SET THE CURRENT CAMERA
+// e.g. "/camera-1" "/camera-2" etc.
 // *************************************************************
 
 const String camera_name = "/camera-1";    
