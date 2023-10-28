@@ -28,7 +28,7 @@ int status = WL_IDLE_STATUS;
 
 byte mac[6];
 
-// Select the IP address according to your local network
+// Dummy IP address to initialise the variable
 IPAddress clientIP(10,204,0,121);
 
 
@@ -57,6 +57,17 @@ IPAddress clientIP(10,204,0,121);
 #define HVC_BODY_POS 6
 #define FILTER_MODE 0
 #define HVC_NUM 2
+
+
+// *************************************************************
+// SET THE CURRENT CAMERA
+// *************************************************************
+
+const String camera_name = "/camera-1";    
+
+// *************************************************************
+// *************************************************************
+
 
 
 byte msgInBuf[162];
@@ -97,9 +108,13 @@ struct FACE {//structure for detected face
 // *************************************************************
 
 //BOX NUMBER 2 HAS reset 8 and BULB 7, the rest is the otherway around
-const int reset = 7;    
-
-const int bulb = 8;     
+if(camera_name == "/camera-2"){
+  const int reset = 8;
+  const int bulb = 7; 
+}else{
+  const int reset = 7;
+  const int bulb = 8;    
+}
 
 // *************************************************************
 // THIS IS WHERE TO CHANGE TO GET BOX 2 WORKING WITH THE ODD PIN
@@ -132,7 +147,7 @@ void socketIOEvent(socketIOmessageType_t type, uint8_t * payload, size_t length)
       Serial.println((char*) payload);
 
       // join default namespace (no auto join in Socket.IO V3)
-      socketIO.send(sIOtype_CONNECT, "/camera-4");
+      socketIO.send(sIOtype_CONNECT, camera_name);
 
       break;
     case sIOtype_EVENT:
@@ -434,7 +449,9 @@ void loop() {
       output.replace("\"", "\\\"");
 
 
-      String msg = String("/camera-4,[\"");
+      //String msg = String("/camera-4,[\"");
+      String msg = camera_name;
+      msg += ",[\"";
       msg += "face";
       msg += "\"";
       if (output) {
